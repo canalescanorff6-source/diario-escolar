@@ -101,9 +101,9 @@
     </form>
 
     <div class="panel aula-fechamento-card no-print">
-      <div class="panel-header"><div><h3>Fechamento da aula</h3><span>Depois de salvar chamada e conteúdo, confira o status mensal.</span></div></div>
-      <div class="premium-row"><strong>Chamada</strong><span>{{ resumo.presencas }} P • {{ resumo.faltas }} F • {{ resumo.fj }} FJ</span></div>
-      <div class="premium-row"><strong>Conteúdo</strong><span>{% if conteudo %}Registrado para {{ data_aula|date:'d/m/Y' }}{% else %}Pendente para esta data{% endif %}</span></div>
+      <div class="panel-header"><div><h3>Fechamento da aula </h3><span>Depois de salvar chamada e conteúdo, confira o status mensal.</span></div></div>
+      <div class="premium-row"><strong>Chamada  </strong><span>{{ resumo.presencas }} P • {{ resumo.faltas }} F • {{ resumo.fj }} FJ</span></div>
+      <div class="premium-row"><strong>Conteúdo  </strong><span>{% if conteudo %}Registrado para {{ data_aula|date:'d/m/Y' }}{% else %} Pendente para esta data{% endif %}</span></div>
       <a class="btn-secondary-premium" href="{% url 'professor_prontidao_lancamentos_163' %}">Abrir pendências de lançamentos</a>
     </div>
 

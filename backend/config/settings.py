@@ -5,13 +5,29 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 ON_RENDER = os.environ.get('RENDER', '').lower() == 'true'
-RUNNING_DEV_SERVER = any(arg == 'runserver' or arg.startswith('runserver') for arg in sys.argv)
-# No servidor local do Django, segurança HTTPS de produção fica desligada mesmo que o terminal ainda tenha RENDER=true.
-LOCAL_DEV_SERVER = RUNNING_DEV_SERVER and os.environ.get('FORCE_RENDER_SECURITY', '').lower() not in ('1', 'true', 'yes', 'on')
+ON_RUNSITE = any(
+    os.environ.get(name, '').lower() in ('1', 'true', 'yes', 'on')
+    for name in ('RUNSITE', 'RUNSITE_APP', 'RUNSITE_DEPLOY')
+)
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'diario-ia-premium-local-dev-secret-key-1221-1280-render-safe-fallback-9f8a7b6c5d4e3')
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('1', 'true', 'yes', 'on')
-ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver,.onrender.com').split(',') if h.strip()]
+PRODUCTION_SERVER = (
+    ON_RENDER
+    or ON_RUNSITE
+    or os.environ.get('PRODUCTION', '').lower() in ('1', 'true', 'yes', 'on')
+    or (not DEBUG and bool(os.environ.get('DATABASE_URL')))
+)
+RUNNING_DEV_SERVER = any(arg == 'runserver' or arg.startswith('runserver') for arg in sys.argv)
+# No servidor local do Django, segurança HTTPS de produção fica desligada mesmo que o terminal ainda tenha RENDER=true/RUNSITE=true.
+LOCAL_DEV_SERVER = RUNNING_DEV_SERVER and os.environ.get('FORCE_RENDER_SECURITY', '').lower() not in ('1', 'true', 'yes', 'on')
+
+DEFAULT_ALLOWED_HOSTS = (
+    'diario-escolar.runsite.app,.runsite.app,'
+    'diario-escolar.onrender.com,.onrender.com,'
+    'localhost,127.0.0.1,testserver'
+)
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', DEFAULT_ALLOWED_HOSTS).split(',') if h.strip()]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -70,7 +86,7 @@ DATABASES = {
 }
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
-REQUIRE_DATABASE_URL = os.environ.get('DJANGO_REQUIRE_DATABASE_URL', 'true' if ON_RENDER else 'false').lower() in ('1', 'true', 'yes', 'on')
+REQUIRE_DATABASE_URL = os.environ.get('DJANGO_REQUIRE_DATABASE_URL', 'true' if PRODUCTION_SERVER else 'false').lower() in ('1', 'true', 'yes', 'on')
 if DATABASE_URL:
     try:
         import dj_database_url
@@ -82,8 +98,8 @@ if DATABASE_URL:
         pass
 elif REQUIRE_DATABASE_URL:
     raise RuntimeError(
-        'No Render, configure DATABASE_URL com um banco PostgreSQL externo/persistente. '
-        'Não use SQLite em produção porque o sistema de arquivos do Render é temporário.'
+        'Na hospedagem online, configure DATABASE_URL com um banco PostgreSQL externo/persistente. '
+        'Não use SQLite em produção porque o sistema de arquivos da hospedagem é temporário.'
     )
 
 AUTH_PASSWORD_VALIDATORS = []
@@ -143,23 +159,31 @@ STORAGES = {
     'staticfiles': {'BACKEND': STATICFILES_STORAGE},
 }
 
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://*.onrender.com').split(',') if origin.strip()]
+DEFAULT_CSRF_TRUSTED_ORIGINS = (
+    'https://diario-escolar.runsite.app,https://*.runsite.app,'
+    'https://diario-escolar.onrender.com,https://*.onrender.com'
+)
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', DEFAULT_CSRF_TRUSTED_ORIGINS).split(',')
+    if origin.strip()
+]
 
 # Segurança progressiva: local continua simples, Render/produção já sobe com HTTPS e cookies seguros.
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = False if LOCAL_DEV_SERVER else os.environ.get('SESSION_COOKIE_SECURE', str(ON_RENDER)).lower() in ('1', 'true', 'yes', 'on')
-CSRF_COOKIE_SECURE = False if LOCAL_DEV_SERVER else os.environ.get('CSRF_COOKIE_SECURE', str(ON_RENDER)).lower() in ('1', 'true', 'yes', 'on')
-SECURE_SSL_REDIRECT = False if LOCAL_DEV_SERVER else os.environ.get('SECURE_SSL_REDIRECT', str(ON_RENDER and not DEBUG)).lower() in ('1', 'true', 'yes', 'on')
-SECURE_HSTS_SECONDS = 0 if LOCAL_DEV_SERVER else int(os.environ.get('SECURE_HSTS_SECONDS', '31536000' if ON_RENDER and not DEBUG else '0'))
-SECURE_HSTS_INCLUDE_SUBDOMAINS = False if LOCAL_DEV_SERVER else os.environ.get('SECURE_HSTS_INCLUDE_SUBDOMAINS', str(ON_RENDER and not DEBUG)).lower() in ('1', 'true', 'yes', 'on')
-SECURE_HSTS_PRELOAD = False if LOCAL_DEV_SERVER else os.environ.get('SECURE_HSTS_PRELOAD', str(ON_RENDER and not DEBUG)).lower() in ('1', 'true', 'yes', 'on')
+SESSION_COOKIE_SECURE = False if LOCAL_DEV_SERVER else os.environ.get('SESSION_COOKIE_SECURE', str(PRODUCTION_SERVER)).lower() in ('1', 'true', 'yes', 'on')
+CSRF_COOKIE_SECURE = False if LOCAL_DEV_SERVER else os.environ.get('CSRF_COOKIE_SECURE', str(PRODUCTION_SERVER)).lower() in ('1', 'true', 'yes', 'on')
+SECURE_SSL_REDIRECT = False if LOCAL_DEV_SERVER else os.environ.get('SECURE_SSL_REDIRECT', str(PRODUCTION_SERVER and not DEBUG)).lower() in ('1', 'true', 'yes', 'on')
+SECURE_HSTS_SECONDS = 0 if LOCAL_DEV_SERVER else int(os.environ.get('SECURE_HSTS_SECONDS', '31536000' if PRODUCTION_SERVER and not DEBUG else '0'))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False if LOCAL_DEV_SERVER else os.environ.get('SECURE_HSTS_INCLUDE_SUBDOMAINS', str(PRODUCTION_SERVER and not DEBUG)).lower() in ('1', 'true', 'yes', 'on')
+SECURE_HSTS_PRELOAD = False if LOCAL_DEV_SERVER else os.environ.get('SECURE_HSTS_PRELOAD', str(PRODUCTION_SERVER and not DEBUG)).lower() in ('1', 'true', 'yes', 'on')
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = False
 
 # E-mail para envio do código numérico de 6 dígitos da gestão.
-# Em produção, configure no Render: GESTAO_AUTORIZACAO_EMAIL e variáveis SMTP/EMAIL.
+# Em produção, configure na hospedagem: GESTAO_AUTORIZACAO_EMAIL e variáveis de e-mail.
 GESTAO_AUTORIZACAO_EMAIL = os.environ.get(
     "GESTAO_AUTORIZACAO_EMAIL",
     os.environ.get("EMAIL_GESTAO_AUTORIZADA", "thiago01268230@gmail.com"),
@@ -183,9 +207,9 @@ DEFAULT_FROM_EMAIL = os.environ.get(
 )
 SERVER_EMAIL = os.environ.get("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
 
-# Alternativa gratuita recomendada para Render Free: envio por API HTTPS da Brevo.
-# O Render Free bloqueia SMTP nas portas 25/465/587; por isso, para e-mail real
-# no plano gratuito, prefira EMAIL_BACKEND=apps.core.email_backends.BrevoEmailBackend.
+# Envio gratuito recomendado em hospedagens free: API HTTPS da Brevo.
+# Algumas hospedagens bloqueiam SMTP nas portas 25/465/587; para e-mail real,
+# prefira EMAIL_BACKEND=apps.core.email_backends.BrevoEmailBackend.
 BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
 BREVO_API_URL = os.environ.get("BREVO_API_URL", "https://api.brevo.com/v3/smtp/email")
 BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", EMAIL_HOST_USER or "")

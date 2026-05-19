@@ -26,68 +26,70 @@ def _add_column_if_missing(connection, cursor, table_name, column_name, sql_frag
     if _table_exists(connection, cursor, table_name):
         if column_name not in _columns(connection, cursor, table_name):
             cursor.execute(
-                f"ALTER TABLE {table_name} ADD COLUMN {column_name} {sql_fragment}"
+                f"ALTER TABLE {schema_editor_quote(table_name)} "
+                f"ADD COLUMN {schema_editor_quote(column_name)} {sql_fragment}"
             )
+
+
+def schema_editor_quote(name):
+    return '"' + name.replace('"', '""') + '"'
 
 
 def reparar_schema(apps, schema_editor):
     connection = schema_editor.connection
-    cursor = connection.cursor()
 
-    if connection.vendor == "postgresql":
+    with connection.cursor() as cursor:
         ordem_sql = "smallint NOT NULL DEFAULT 1"
-    else:
-        ordem_sql = "smallint unsigned NOT NULL DEFAULT 1"
 
-    _add_column_if_missing(
-        connection,
-        cursor,
-        "academico_escola",
-        "ano_letivo_ativo_id",
-        "bigint NULL REFERENCES academico_anoletivo(id) DEFERRABLE INITIALLY DEFERRED",
-    )
+        _add_column_if_missing(
+            connection,
+            cursor,
+            "academico_escola",
+            "ano_letivo_ativo_id",
+            "bigint NULL REFERENCES academico_anoletivo(id) DEFERRABLE INITIALLY DEFERRED",
+        )
 
-    _add_column_if_missing(
-        connection,
-        cursor,
-        "academico_horarioaula",
-        "ordem",
-        ordem_sql,
-    )
+        _add_column_if_missing(
+            connection,
+            cursor,
+            "academico_horarioaula",
+            "ordem",
+            ordem_sql,
+        )
 
-    _add_column_if_missing(
-        connection,
-        cursor,
-        "academico_professorperfil",
-        "usuario_id",
-        "bigint NULL REFERENCES usuarios_usuario(id) DEFERRABLE INITIALLY DEFERRED",
-    )
+        _add_column_if_missing(
+            connection,
+            cursor,
+            "academico_professorperfil",
+            "usuario_id",
+            "bigint NULL REFERENCES usuarios_usuario(id) DEFERRABLE INITIALLY DEFERRED",
+        )
 
-    if _table_exists(connection, cursor, "academico_professorperfil"):
-        cols = _columns(connection, cursor, "academico_professorperfil")
-        if "usuario_id" in cols and "professor_id" in cols:
-            cursor.execute(
-                "UPDATE academico_professorperfil "
-                "SET usuario_id = professor_id "
-                "WHERE usuario_id IS NULL"
-            )
+        if _table_exists(connection, cursor, "academico_professorperfil"):
+            cols = _columns(connection, cursor, "academico_professorperfil")
+            if "usuario_id" in cols and "professor_id" in cols:
+                cursor.execute(
+                    "UPDATE academico_professorperfil "
+                    "SET usuario_id = professor_id "
+                    "WHERE usuario_id IS NULL"
+                )
 
-    modelos_para_garantir = [
-        "ProfessorTurmaDisciplina",
-        "CalendarioEvento",
-        "FechamentoBimestre",
-        "ParecerAluno",
-        "AssinaturaDocumento",
-        "HistoricoAluno",
-        "AuditoriaSistema",
-        "DocumentoGerado",
-        "NotificacaoGestao",
-    ]
+        modelos_para_garantir = [
+            "ProfessorTurmaDisciplina",
+            "CalendarioEvento",
+            "FechamentoBimestre",
+            "ParecerAluno",
+            "AssinaturaDocumento",
+            "HistoricoAluno",
+            "AuditoriaSistema",
+            "DocumentoGerado",
+            "NotificacaoGestao",
+        ]
 
-    for model_name in modelos_para_garantir:
-        Model = apps.get_model("academico", model_name)
-        if not _table_exists(connection, cursor, Model._meta.db_table):
-            schema_editor.create_model(Model)
+        for model_name in modelos_para_garantir:
+            Model = apps.get_model("academico", model_name)
+            if not _table_exists(connection, cursor, Model._meta.db_table):
+                schema_editor.create_model(Model)
 
 
 def reverter_reparo(apps, schema_editor):

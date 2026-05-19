@@ -206,7 +206,7 @@ EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "true").lower() in ("1", "true",
 EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "false").lower() in ("1", "true", "yes", "on")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", "20"))
+EMAIL_TIMEOUT = _int_env("EMAIL_TIMEOUT", 20)
 DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL",
     f"Diário IA Escolar <{EMAIL_HOST_USER}>" if EMAIL_HOST_USER else "Diário IA Escolar <no-reply@diarioia.local>",
@@ -220,3 +220,27 @@ BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
 BREVO_API_URL = os.environ.get("BREVO_API_URL", "https://api.brevo.com/v3/smtp/email")
 BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", EMAIL_HOST_USER or "")
 BREVO_SENDER_NAME = os.environ.get("BREVO_SENDER_NAME", "Diário IA Escolar")
+
+
+# Logs claros no console da hospedagem para diagnosticar erro 500 em RunSite/Render.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "django.security.DisallowedHost": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}

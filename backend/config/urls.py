@@ -7,33 +7,30 @@ from django.views.static import serve as media_serve
 from django.http import HttpResponse
 
 
-
 def health_check_runsite(request):
     return HttpResponse('ok', content_type='text/plain')
 
+
 urlpatterns = [
-    path('healthz', health_check_runsite, name='healthz'),
-    path('health', health_check_runsite, name='health'),
-    path('admin/', admin.site.urls),
+    path('healthz', health_check_runsite, name='healthz_no_slash'),
+    path('healthz/', health_check_runsite, name='healthz'),
+    path('health', health_check_runsite, name='health_no_slash'),
+    path('health/', health_check_runsite, name='health'),
+
+    # Django Admin protegido: /admin/ não é usado.
+    # A URL real vem de CRIADOR_ADMIN_URL, normalmente /admin-criador/.
+    path(settings.CRIADOR_ADMIN_URL, admin.site.urls),
+
     path('logout/', LogoutView.as_view(), name='logout_direct'),
-
-    # LOGIN / LOGOUT DO DJANGO
     path('accounts/', include('django.contrib.auth.urls')),
-
-    # CORE
     path('', include('apps.core.urls')),
-
-    # DIARIO
-    path(
-        'diario-inteligente/',
-        include('apps.diario.urls')
-    ),
-
+    path('diario-inteligente/', include('apps.diario.urls')),
 ]
-# Uploads do sistema (imagens de perfil) — necessário para uso local e para implantação simples.
-# Para produção com muitos uploads, use Persistent Disk ou armazenamento externo.
+
+# Uploads do sistema (imagens de perfil).
 urlpatterns += [
     re_path(r'^media/(?P<path>.*)$', media_serve, {'document_root': settings.MEDIA_ROOT}),
 ]
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

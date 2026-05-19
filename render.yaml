@@ -1,0 +1,54 @@
+services:
+  - type: web
+    name: diario-ia-escolar-premium
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: bash build.sh
+    preDeployCommand: python manage.py migrate --noinput
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers ${WEB_CONCURRENCY:-1} --threads ${GUNICORN_THREADS:-2} --timeout 120 --access-logfile - --error-logfile -
+    healthCheckPath: /healthz/
+    autoDeployTrigger: commit
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: DEBUG
+        value: "False"
+      - key: DJANGO_REQUIRE_DATABASE_URL
+        value: "True"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com,localhost,127.0.0.1"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: "1"
+      - key: GUNICORN_THREADS
+        value: "2"
+      - key: SESSION_COOKIE_SECURE
+        value: "True"
+      - key: CSRF_COOKIE_SECURE
+        value: "True"
+      - key: SECURE_SSL_REDIRECT
+        value: "True"
+      - key: DATABASE_URL
+        sync: false
+
+      - key: GESTAO_AUTORIZACAO_EMAIL
+        value: "thiago01268230@gmail.com"
+
+      # Render Free bloqueia SMTP nas portas 25/465/587.
+      # Para envio real gratuito, use a API HTTPS da Brevo.
+      - key: EMAIL_BACKEND
+        value: "apps.core.email_backends.BrevoEmailBackend"
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_SENDER_EMAIL
+        sync: false
+      - key: BREVO_SENDER_NAME
+        value: "Diário IA Escolar"
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+      - key: EMAIL_TIMEOUT
+        value: "20"

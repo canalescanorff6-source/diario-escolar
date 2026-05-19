@@ -1,1 +1,12 @@
-const CACHE='diario-ia-shell-v33';const ASSETS=['/static/css/desktop_pwa_mobile.css'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))})
+const CACHE='diario-ia-shell-v34';
+const ASSETS=['/static/css/premium_base_final.css','/static/css/desktop_pwa_mobile.css'];
+self.addEventListener('install',event=>{
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).catch(()=>null).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',event=>{
+  event.waitUntil(self.clients.claim());
+});
+self.addEventListener('fetch',event=>{
+  if(event.request.method!=='GET') return;
+  event.respondWith(fetch(event.request).catch(()=>caches.match(event.request)));
+});

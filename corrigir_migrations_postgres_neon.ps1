@@ -1,4 +1,33 @@
-﻿from django.db import migrations
+$ErrorActionPreference = "Stop"
+
+function Find-MigrationsDir {
+    $candidates = @()
+    $current = (Get-Location).Path
+    $candidates += $current
+    $parent = Split-Path $current -Parent
+    if ($parent) { $candidates += $parent }
+    $grand = Split-Path $parent -Parent
+    if ($grand) { $candidates += $grand }
+
+    foreach ($base in $candidates) {
+        $p1 = Join-Path $base "apps\academico\migrations"
+        if (Test-Path $p1) { return $p1 }
+
+        $p2 = Join-Path $base "backend\apps\academico\migrations"
+        if (Test-Path $p2) { return $p2 }
+    }
+
+    throw "Não encontrei apps\academico\migrations. Rode este script dentro da pasta diario-escolar ou diario-escolar\backend."
+}
+
+$migrationsDir = Find-MigrationsDir
+Write-Host "Pasta de migrations encontrada:" $migrationsDir
+
+$arquivo0007 = Join-Path $migrationsDir "0007_reparo_schema_banco_existente.py"
+$arquivo0008 = Join-Path $migrationsDir "0008_reparo_horario_numero.py"
+
+@'
+from django.db import migrations
 
 
 def _table_exists(connection, cursor, table_name):
@@ -101,3 +130,59 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(reparar_schema, reverter_reparo),
     ]
+'@ | Set-Content -Encoding UTF8 $arquivo0007
+
+@'
+from django.db import migrations
+
+
+def _table_exists(connection, cursor, table_name):
+    return table_name in connection.introspection.table_names(cursor)
+
+
+def _columns(connection, cursor, table_name):
+    if not _table_exists(connection, cursor, table_name):
+        return set()
+
+    description = connection.introspection.get_table_description(cursor, table_name)
+    columns = set()
+
+    for column in description:
+        name = getattr(column, "name", None)
+        if not name and len(column) > 0:
+            name = column[0]
+        if name:
+            columns.add(name)
+
+    return columns
+
+
+def garantir_horario_numero(apps, schema_editor):
+    connection = schema_editor.connection
+    table = "academico_horarioaula"
+
+    with connection.cursor() as cursor:
+        if not _table_exists(connection, cursor, table):
+            return
+
+        if "numero" not in _columns(connection, cursor, table):
+            cursor.execute(
+                f"ALTER TABLE {schema_editor.quote_name(table)} "
+                f"ADD COLUMN {schema_editor.quote_name('numero')} integer NOT NULL DEFAULT 1"
+            )
+
+
+class Migration(migrations.Migration):
+    dependencies = [
+        ("academico", "0007_reparo_schema_banco_existente"),
+    ]
+
+    operations = [
+        migrations.RunPython(garantir_horario_numero, migrations.RunPython.noop),
+    ]
+'@ | Set-Content -Encoding UTF8 $arquivo0008
+
+Write-Host "OK: migrations corrigidas para PostgreSQL/Neon."
+Write-Host "Arquivos atualizados:"
+Write-Host $arquivo0007
+Write-Host $arquivo0008

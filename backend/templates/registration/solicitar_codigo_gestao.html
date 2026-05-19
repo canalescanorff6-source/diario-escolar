@@ -1,5 +1,6 @@
 {% extends "registration/base_auth_premium.html" %}
 {% block title %}Receber código da gestão{% endblock %}
+
 {% block auth_content %}
   <div class="auth-access-head auth-access-head-v3">
     <span>E-mail autorizado</span>
@@ -15,15 +16,39 @@
 
   <form method="post" class="auth-form auth-form-v3 auth-locked-email-form" novalidate>
     {% csrf_token %}
+
     <div class="auth-locked-email-card">
       <span class="auth-locked-email-label">E-mail autorizado para receber o código</span>
-      <strong class="auth-locked-email-value">{{ email_autorizado|default:"thiago01268230@gmail.com" }}</strong>
-      <small>Esse e-mail fica travado por segurança. Para alterar, configure a variável GESTAO_AUTORIZACAO_EMAIL no ambiente do sistema.</small>
+
+      <strong class="auth-locked-email-value">
+        {{ email_autorizado|default:"thiago01268230@gmail.com" }}
+      </strong>
+
+      <small>
+        Este é o e-mail autorizado para receber o código de criação da conta da gestão escolar.
+        Em caso de dificuldade no acesso ou necessidade de alteração do e-mail autorizado,
+        entre em contato pelo WhatsApp:
+        <a href="https://wa.me/5598996127032" target="_blank" rel="noopener">
+          (98) 99612-7032
+        </a>.
+      </small>
     </div>
-    <button type="submit" class="auth-submit auth-submit-v3">Enviar código para este e-mail</button>
+
+    <button type="submit" class="auth-submit auth-submit-v3">
+      Enviar código para este e-mail
+    </button>
   </form>
 
-  <a class="auth-secondary-link" href="{% url 'criar_conta_gestao_autorizada' %}">Já tenho o código</a>
-  <a class="auth-secondary-link auth-secondary-link-soft" href="{% url 'login' %}">Voltar ao acesso</a>
-  <div class="auth-help-box">Somente a direção/gestão autorizada recebe o código numérico de 6 dígitos para criar a conta inicial da gestão. O código expira em {{ validade_minutos|default:15 }} minutos.</div>
+  <a class="auth-secondary-link" href="{% url 'criar_conta_gestao_autorizada' %}">
+    Já tenho o código
+  </a>
+
+  <a class="auth-secondary-link auth-secondary-link-soft" href="{% url 'login' %}">
+    Voltar ao acesso
+  </a>
+
+  <div class="auth-help-box">
+    Somente a direção/gestão autorizada recebe o código numérico de 6 dígitos para criar a conta inicial da gestão.
+    O código expira em {{ validade_minutos|default:15 }} minutos.
+  </div>
 {% endblock %}

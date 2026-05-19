@@ -2,10 +2,171 @@
 {% block titulo %}Vínculos e carga horária{% endblock %}
 {% block subtitulo %}Controle semanal oficial por professor, turma, disciplina e horário cadastrado pela gestão.{% endblock %}
 {% block conteudo %}
-<section class="cards">
-  <article class="card"><span>Total de aulas</span><strong>{{ total_aulas }}</strong><small>na semana</small></article>
-  <article class="card"><span>Carga total</span><strong>{{ total_horas }}h</strong><small>somando professores</small></article>
-  <article class="card"><span>Professores</span><strong>{{ linhas|length }}</strong><small>cadastrados</small></article>
+<style>
+  .carga-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+  .carga-kpi-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-height: 88px;
+    padding: 20px 24px;
+    border: 1px solid rgba(94, 255, 238, .22);
+    border-radius: 20px;
+    background: rgba(2, 15, 28, .72);
+  }
+  .carga-kpi-card div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .carga-kpi-card span {
+    color: rgba(226,245,255,.78);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .carga-kpi-card small {
+    color: rgba(226,245,255,.60);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .carga-kpi-card strong {
+    flex: 0 0 auto;
+    color: #5fffee;
+    font-size: 48px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -2px;
+    text-align: right;
+  }
+  .carga-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+  .carga-form-grid .clean-form-card label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  @media (max-width: 900px) {
+    .carga-kpi-grid,
+    .carga-form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+{% if messages %}
+<section class="clean-card">
+  {% for message in messages %}<span class="clean-pill">{{ message }}</span>{% endfor %}
+</section>
+{% endif %}
+
+<section class="carga-kpi-grid">
+  <article class="carga-kpi-card">
+    <div><span>Total de aulas</span><small>Na semana</small></div>
+    <strong>{{ total_aulas }}</strong>
+  </article>
+  <article class="carga-kpi-card">
+    <div><span>Carga total</span><small>Somando professores</small></div>
+    <strong>{{ total_horas }}h</strong>
+  </article>
+  <article class="carga-kpi-card">
+    <div><span>Professores</span><small>Cadastrados</small></div>
+    <strong>{{ linhas|length }}</strong>
+  </article>
+</section>
+
+<section class="carga-form-grid">
+  <form class="clean-form-card clean-form" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="acao" value="vinculo">
+    <h3>Vincular professor</h3>
+    <p>Ligue o professor à turma e à disciplina antes de criar a carga horária.</p>
+    <label>Professor
+      <select name="professor" required>
+        <option value="">Selecione...</option>
+        {% for p in professores %}<option value="{{ p.id }}">{{ p.get_full_name|default:p.username }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Turma
+      <select name="turma" required>
+        <option value="">Selecione...</option>
+        {% for t in turmas %}<option value="{{ t.id }}">{{ t.nome }}{% if t.ano_letivo %} • {{ t.ano_letivo.ano }}{% endif %}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Disciplina
+      <select name="disciplina" required>
+        <option value="">Selecione...</option>
+        {% for d in disciplinas %}<option value="{{ d.id }}">{{ d.nome }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Ano letivo
+      <select name="ano_letivo">
+        <option value="">Usar padrão</option>
+        {% for a in anos %}<option value="{{ a.id }}">{{ a.ano }}</option>{% endfor %}
+      </select>
+    </label>
+    <button class="clean-btn" type="submit">Salvar vínculo</button>
+  </form>
+
+  <form class="clean-form-card clean-form" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="acao" value="horario">
+    <h3>Cadastrar carga horária</h3>
+    <p>Crie o horário semanal que aparecerá para o professor e na aula rápida.</p>
+    <label>Professor
+      <select name="professor" required>
+        <option value="">Selecione...</option>
+        {% for p in professores %}<option value="{{ p.id }}">{{ p.get_full_name|default:p.username }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Turma
+      <select name="turma" required>
+        <option value="">Selecione...</option>
+        {% for t in turmas %}<option value="{{ t.id }}">{{ t.nome }}{% if t.ano_letivo %} • {{ t.ano_letivo.ano }}{% endif %}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Disciplina
+      <select name="disciplina" required>
+        <option value="">Selecione...</option>
+        {% for d in disciplinas %}<option value="{{ d.id }}">{{ d.nome }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Dia da semana
+      <select name="dia_semana">
+        {% for valor, nome in dias_semana %}<option value="{{ valor }}">{{ nome }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Horário/Aula nº
+      <input name="ordem" type="number" min="1" value="1">
+    </label>
+    <label>Turno
+      <select name="turno">
+        <option value="">Selecione...</option>
+        {% for valor, nome in turnos %}<option value="{{ valor }}">{{ nome }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Início
+      <input name="hora_inicio" type="time" value="07:00">
+    </label>
+    <label>Fim
+      <input name="hora_fim" type="time" value="07:45">
+    </label>
+    <label>Ano letivo
+      <select name="ano_letivo">
+        <option value="">Usar padrão</option>
+        {% for a in anos %}<option value="{{ a.id }}">{{ a.ano }}</option>{% endfor %}
+      </select>
+    </label>
+    <button class="clean-btn" type="submit">Salvar carga horária</button>
+  </form>
 </section>
 
 <section class="clean-list-card">
@@ -28,6 +189,32 @@
           </tr>
         {% empty %}
           <tr><td colspan="6"><div class="clean-empty">Nenhum professor cadastrado.</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="clean-list-card" style="margin-top:22px;">
+  <div style="display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:14px;">
+    <div><h3>Horários cadastrados</h3><p>Grade semanal usada pelo professor e pela aula rápida.</p></div>
+    <span class="clean-pill">{{ horarios|length }} horário(s)</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Dia</th><th>Aula</th><th>Professor</th><th>Turma</th><th>Disciplina</th><th>Horário</th></tr></thead>
+      <tbody>
+        {% for h in horarios %}
+          <tr>
+            <td>{{ h.get_dia_semana_display }}</td>
+            <td>{{ h.ordem }}º</td>
+            <td>{{ h.professor.get_full_name|default:h.professor.username }}</td>
+            <td>{{ h.turma.nome }}</td>
+            <td>{{ h.disciplina.nome }}</td>
+            <td>{{ h.hora_inicio|time:'H:i' }} às {{ h.hora_fim|time:'H:i' }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6"><div class="clean-empty">Nenhum horário cadastrado ainda.</div></td></tr>
         {% endfor %}
       </tbody>
     </table>

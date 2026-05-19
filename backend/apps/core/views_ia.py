@@ -2382,6 +2382,75 @@ def professor_carga_horaria_301(request):
 def gestao_carga_horaria_professores_301(request):
     if not usuario_gestor(request.user):
         return render(request, "core/acesso_negado.html")
+
+    User = get_user_model()
+
+    if request.method == "POST":
+        acao = request.POST.get("acao")
+
+        if acao == "vinculo":
+            professor_id = request.POST.get("professor")
+            turma_id = request.POST.get("turma")
+            disciplina_id = request.POST.get("disciplina")
+            ano_id = request.POST.get("ano_letivo") or None
+
+            if professor_id and turma_id and disciplina_id:
+                ProfessorTurmaDisciplina.objects.get_or_create(
+                    professor_id=professor_id,
+                    turma_id=turma_id,
+                    disciplina_id=disciplina_id,
+                    ano_letivo_id=ano_id,
+                    defaults={"ativo": True},
+                )
+                messages.success(request, "Vínculo professor/turma/disciplina salvo com sucesso.")
+            else:
+                messages.error(request, "Selecione professor, turma e disciplina para criar o vínculo.")
+
+        elif acao == "horario":
+            professor_id = request.POST.get("professor")
+            turma_id = request.POST.get("turma")
+            disciplina_id = request.POST.get("disciplina")
+            dia_semana = int(request.POST.get("dia_semana") or 1)
+            ordem = int(request.POST.get("ordem") or request.POST.get("horario_numero") or 1)
+
+            if professor_id and turma_id and disciplina_id:
+                horario, criado = HorarioAula.objects.get_or_create(
+                    professor_id=professor_id,
+                    turma_id=turma_id,
+                    disciplina_id=disciplina_id,
+                    dia_semana=dia_semana,
+                    ordem=ordem,
+                    defaults={
+                        "horario_numero": ordem,
+                        "hora_inicio": _parse_hora(request.POST.get("hora_inicio"), "07:00"),
+                        "hora_fim": _parse_hora(request.POST.get("hora_fim"), "07:45"),
+                        "turno": request.POST.get("turno") or None,
+                        "ativo": True,
+                    },
+                )
+
+                if not criado:
+                    horario.horario_numero = ordem
+                    horario.hora_inicio = _parse_hora(request.POST.get("hora_inicio"), "07:00")
+                    horario.hora_fim = _parse_hora(request.POST.get("hora_fim"), "07:45")
+                    horario.turno = request.POST.get("turno") or None
+                    horario.ativo = True
+                    horario.save()
+
+                ProfessorTurmaDisciplina.objects.get_or_create(
+                    professor_id=professor_id,
+                    turma_id=turma_id,
+                    disciplina_id=disciplina_id,
+                    ano_letivo_id=request.POST.get("ano_letivo") or None,
+                    defaults={"ativo": True},
+                )
+
+                messages.success(request, "Horário semanal salvo e vinculado ao professor.")
+            else:
+                messages.error(request, "Selecione professor, turma e disciplina para cadastrar o horário.")
+
+        return redirect("gestao_carga_horaria_professores_301")
+
     linhas = carga_horaria_professores_resumo()
     total_horas = round(sum(l["horas"] for l in linhas), 2)
     total_aulas = sum(l["aulas"] for l in linhas)
@@ -2389,6 +2458,13 @@ def gestao_carga_horaria_professores_301(request):
         "linhas": linhas,
         "total_horas": total_horas,
         "total_aulas": total_aulas,
+        "professores": User.objects.filter(tipo="PROF").order_by("first_name", "username"),
+        "turmas": Turma.objects.filter(ativa=True).select_related("ano_letivo").order_by("nome"),
+        "disciplinas": Disciplina.objects.all().order_by("nome"),
+        "anos": AnoLetivo.objects.all().order_by("-ano"),
+        "dias_semana": HorarioAula.DIAS_SEMANA,
+        "turnos": HorarioAula.TURNO_CHOICES,
+        "horarios": HorarioAula.objects.select_related("professor", "turma", "disciplina").filter(ativo=True).order_by("dia_semana", "ordem", "hora_inicio")[:80],
         "hoje": date.today(),
     })
 

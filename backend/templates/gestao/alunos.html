@@ -1,8 +1,45 @@
 {% extends "gestao/base_premium_gestao.html" %}
 {% block titulo %}Alunos{% endblock %}
-{% block subtitulo %}Ficha oficial, boletim, frequência e acompanhamento individual sem telas antigas soltas.{% endblock %}
+{% block subtitulo %}Cadastro de alunos, ficha oficial, boletim, frequência e acompanhamento individual.{% endblock %}
 {% block icone %}👨‍🎓{% endblock %}
 {% block conteudo %}
+{% if messages %}
+<section class="clean-card">
+  {% for message in messages %}<span class="clean-pill">{{ message }}</span>{% endfor %}
+</section>
+{% endif %}
+
+<section class="clean-form-card clean-form" style="margin-bottom:22px;">
+  <h3>Novo aluno</h3>
+  <p>Cadastre o aluno direto pela gestão e vincule à turma oficial.</p>
+  <form method="post" class="clean-page-grid" style="margin-top:14px;">
+    {% csrf_token %}
+    <label>Nome do aluno
+      <input name="nome" placeholder="Nome completo do aluno" required>
+    </label>
+    <label>Matrícula
+      <input name="matricula" placeholder="Opcional: o sistema gera se ficar vazio">
+    </label>
+    <label>Turma
+      <select name="turma" required>
+        <option value="">Selecione a turma...</option>
+        {% for turma in turmas %}
+          <option value="{{ turma.id }}">{{ turma.nome }}{% if turma.ano_letivo %} • {{ turma.ano_letivo.ano }}{% endif %}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Responsável
+      <input name="responsavel" placeholder="Nome do responsável">
+    </label>
+    <label>Telefone/WhatsApp
+      <input name="telefone" placeholder="(98) 99999-9999">
+    </label>
+    <div style="display:flex;align-items:end;">
+      <button class="clean-btn" type="submit">Salvar aluno</button>
+    </div>
+  </form>
+</section>
+
 <section class="clean-card">
   <form method="get" class="clean-filter">
     <input type="text" name="busca" value="{{ busca }}" placeholder="Buscar aluno pelo nome...">
@@ -13,7 +50,6 @@
       {% endfor %}
     </select>
     <button class="clean-btn" type="submit">Filtrar</button>
-    <a class="clean-btn" href="{% url 'gestao_cadastros_operacionais_301' %}">Novo aluno</a>
   </form>
 </section>
 

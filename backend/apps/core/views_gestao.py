@@ -16,27 +16,6 @@ def gestao_escola(request):
     if request.method == "POST":
         nome = request.POST.get("nome") or "Minha Escola"
         ano_id = request.POST.get("ano_letivo_ativo") or None
-        ano_novo = (request.POST.get("ano_letivo_novo") or "").strip()
-
-        if ano_novo:
-            try:
-                ano_numero = int(ano_novo)
-                if ano_numero < 2000 or ano_numero > 2100:
-                    raise ValueError
-                ano_obj, _ = AnoLetivo.objects.get_or_create(
-                    ano=ano_numero,
-                    defaults={"ativo": True},
-                )
-                AnoLetivo.objects.exclude(pk=ano_obj.pk).update(ativo=False)
-                ano_obj.ativo = True
-                ano_obj.save(update_fields=["ativo"])
-                ano_id = ano_obj.pk
-            except ValueError:
-                messages.error(request, "Informe um ano letivo válido, por exemplo 2026.")
-                return redirect("gestao_escola")
-        elif ano_id:
-            AnoLetivo.objects.filter(pk=ano_id).update(ativo=True)
-            AnoLetivo.objects.exclude(pk=ano_id).update(ativo=False)
 
         if escola is None:
             escola = Escola.objects.create(nome=nome)
@@ -253,6 +232,47 @@ def gestao_alunos(request):
 
     if not usuario_gestor(request.user):
         return render(request, "core/acesso_negado.html")
+
+    if request.method == "POST":
+        nome = (request.POST.get("nome") or "").strip()
+        matricula = (request.POST.get("matricula") or "").strip()
+        turma_id_post = request.POST.get("turma")
+        responsavel = (request.POST.get("responsavel") or "").strip()
+        telefone = (request.POST.get("telefone") or "").strip()
+
+        if nome and turma_id_post:
+            if not matricula:
+                base_matricula = f"ALU-{date.today().strftime('%Y%m%d')}"
+                sequencia = Aluno.objects.count() + 1
+                matricula = f"{base_matricula}-{sequencia:04d}"
+                while Aluno.objects.filter(matricula=matricula).exists():
+                    sequencia += 1
+                    matricula = f"{base_matricula}-{sequencia:04d}"
+
+            aluno, criado = Aluno.objects.get_or_create(
+                matricula=matricula,
+                defaults={
+                    "nome": nome,
+                    "turma_id": turma_id_post,
+                    "responsavel": responsavel or None,
+                    "telefone": telefone or None,
+                    "ativo": True,
+                },
+            )
+
+            if not criado:
+                aluno.nome = nome
+                aluno.turma_id = turma_id_post
+                aluno.responsavel = responsavel or None
+                aluno.telefone = telefone or None
+                aluno.ativo = True
+                aluno.save()
+
+            messages.success(request, "Aluno cadastrado/atualizado com sucesso.")
+            return redirect("gestao_alunos")
+
+        messages.error(request, "Informe pelo menos o nome do aluno e a turma.")
+        return redirect("gestao_alunos")
 
     busca = request.GET.get("busca", "").strip()
     turma_id = request.GET.get("turma")

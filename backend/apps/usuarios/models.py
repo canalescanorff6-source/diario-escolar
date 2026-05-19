@@ -21,6 +21,27 @@ class Usuario(AbstractUser):
         blank=True
     )
 
+    gestao_teste_inicio = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Início do teste da gestão",
+    )
+    gestao_acesso_expira_em = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Acesso da gestão expira em",
+    )
+    gestao_acesso_bloqueado = models.BooleanField(
+        default=False,
+        verbose_name="Acesso da gestão bloqueado",
+    )
+    gestao_serial_ultimo = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Último serial aplicado",
+    )
+
     def __str__(self):
         return f"{self.username} - {self.get_tipo_display()}"
 

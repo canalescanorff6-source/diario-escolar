@@ -1,0 +1,62 @@
+{% extends "registration/base_auth_premium.html" %}
+{% block title %}Ativar acesso da gestão{% endblock %}
+
+{% block auth_content %}
+  <div class="auth-access-head auth-access-head-v3">
+    <span>Acesso da gestão</span>
+    <h2>Ativar serial/key</h2>
+    <p>
+      O acesso da gestão funciona com período de teste. Após o vencimento,
+      informe o serial/key fornecido pelo criador do sistema para liberar novamente.
+    </p>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="{% if message.tags == 'success' %}auth-success{% else %}auth-error{% endif %}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="auth-locked-email-card" style="margin-bottom:18px;">
+    <span class="auth-locked-email-label">Validade atual</span>
+    <strong class="auth-locked-email-value">
+      {% if dias_restantes and dias_restantes > 0 %}
+        {{ dias_restantes }} dia(s) restante(s)
+      {% else %}
+        Acesso expirado
+      {% endif %}
+    </strong>
+    <small>
+      O período de teste padrão é de {{ dias_teste }} dia(s).
+      {% if expira_em %}Validade atual: {{ expira_em|date:"d/m/Y H:i" }}.{% endif %}
+    </small>
+  </div>
+
+  <form method="post" class="auth-form auth-form-v3" novalidate>
+    {% csrf_token %}
+    <label for="serial">Serial/key de ativação</label>
+    <textarea
+      id="serial"
+      name="serial"
+      rows="5"
+      required
+      placeholder="Cole aqui o serial/key enviado pelo criador"
+      style="width:100%;resize:vertical;border-radius:18px;padding:14px 16px;border:1px solid rgba(125,249,255,.22);background:rgba(8,18,33,.78);color:#e5fbff;outline:none;"
+    ></textarea>
+
+    <button type="submit" class="auth-submit auth-submit-v3">
+      Ativar acesso da gestão
+    </button>
+  </form>
+
+  <div class="auth-help-box">
+    Para solicitar liberação, entre em contato pelo WhatsApp:
+    <a href="https://wa.me/55{{ whatsapp }}" target="_blank" rel="noopener">{{ whatsapp }}</a>.
+    O serial/key também é enviado para o e-mail autorizado do criador:
+    <strong>{{ email_autorizado }}</strong>.
+  </div>
+
+  <a class="auth-secondary-link auth-secondary-link-soft" href="{% url 'logout_direct' %}">
+    Sair do sistema
+  </a>
+{% endblock %}

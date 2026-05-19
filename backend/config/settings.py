@@ -37,6 +37,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apps.core.middleware.SessaoGestaoExpiraMiddleware',
     'apps.core.middleware.PerfilAreaSeguraMiddleware',
 ]
 
@@ -104,6 +105,36 @@ AUTH_USER_MODEL = 'usuarios.Usuario'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+# Segurança da sessão da gestão. Gestores criam contas e mexem nos dados oficiais,
+# por isso a sessão da gestão expira automaticamente após inatividade.
+def _int_env(name, default):
+    try:
+        return int(os.environ.get(name, str(default)))
+    except (TypeError, ValueError):
+        return int(default)
+
+GESTAO_SESSION_IDLE_MINUTES = _int_env('GESTAO_SESSION_IDLE_MINUTES', 30)
+GESTAO_SESSION_ABSOLUTE_MINUTES = _int_env('GESTAO_SESSION_ABSOLUTE_MINUTES', 480)
+GESTAO_SESSION_IDLE_SECONDS = max(GESTAO_SESSION_IDLE_MINUTES, 1) * 60
+GESTAO_SESSION_ABSOLUTE_SECONDS = max(GESTAO_SESSION_ABSOLUTE_MINUTES, 1) * 60
+
+# Validade comercial do acesso da gestão.
+# Padrão: 7 dias de teste. Depois disso a gestão consegue fazer login,
+# mas fica presa na tela de ativação até aplicar um serial/key válido.
+GESTAO_TRIAL_DIAS = _int_env('GESTAO_TRIAL_DIAS', 7)
+GESTAO_LICENCA_CONTATO_WHATSAPP = os.environ.get('GESTAO_LICENCA_CONTATO_WHATSAPP', '98996127032').strip()
+
+# Acesso ao Django Admin reservado ao criador do sistema.
+# /admin/ deixa de existir; use a URL configurada em CRIADOR_ADMIN_URL.
+# No Render, configure CRIADOR_ADMIN_EMAILS com o e-mail do seu superusuário criador.
+def _csv_env(name, default=''):
+    return {item.strip().lower() for item in os.environ.get(name, default).split(',') if item.strip()}
+
+CRIADOR_ADMIN_URL = os.environ.get('CRIADOR_ADMIN_URL', 'admin-criador/').strip().strip('/') + '/'
+CRIADOR_ADMIN_EMAILS = _csv_env('CRIADOR_ADMIN_EMAILS', 'canalescanorff28@gmail.com')
+CRIADOR_ADMIN_USERNAMES = _csv_env('CRIADOR_ADMIN_USERNAMES', '')
+CRIADOR_ADMIN_IDENTIFICADORES = CRIADOR_ADMIN_EMAILS | CRIADOR_ADMIN_USERNAMES
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage' if LOCAL_DEV_SERVER else 'whitenoise.storage.CompressedManifestStaticFilesStorage'

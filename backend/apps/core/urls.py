@@ -7,6 +7,7 @@ urlpatterns = [
     path('healthz/', views.healthz, name='healthz'),
     path('criar-conta-gestao/', views.criar_conta_gestao_autorizada, name='criar_conta_gestao_autorizada'),
     path('solicitar-codigo-gestao/', views.solicitar_codigo_gestao, name='solicitar_codigo_gestao'),
+    path('ativar-acesso-gestao/', views.ativar_acesso_gestao, name='ativar_acesso_gestao'),
 
     path(
         'professor/',

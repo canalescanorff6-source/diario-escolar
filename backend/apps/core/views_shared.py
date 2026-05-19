@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model, login
 from django.utils import timezone
 from django.http import JsonResponse
 from django.core.mail import send_mail
+from django.contrib.auth import logout
 
 import json
 import os
@@ -98,6 +99,14 @@ from apps.core.diario_real_utils import (
 
 from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation
+
+from apps.core.licenca_gestao import (
+    dias_restantes_gestao,
+    dias_teste_gestao,
+    garantir_periodo_teste,
+    usuario_eh_gestao,
+    validar_serial_gestao,
+)
 
 
 # =====================================================
@@ -1871,8 +1880,8 @@ def solicitar_codigo_gestao(request):
             if "console.EmailBackend" in email_backend:
                 messages.warning(
                     request,
-                    "Código numérico de 6 dígitos gerado no terminal porque o SMTP ainda não está configurado. "
-                    "No Render, configure as variáveis EMAIL_HOST, EMAIL_HOST_USER e EMAIL_HOST_PASSWORD para envio real."
+                    "Código numérico de 6 dígitos gerado no terminal porque o envio real ainda não está configurado. "
+                    "No Render Free, use EMAIL_BACKEND=apps.core.email_backends.BrevoEmailBackend, BREVO_API_KEY e BREVO_SENDER_EMAIL."
                 )
             else:
                 messages.success(request, f"Código numérico de 6 dígitos enviado para {email_autorizado}.")
@@ -1922,6 +1931,7 @@ def criar_conta_gestao_autorizada(request):
             partes = nome.split()
             first_name = partes[0]
             last_name = " ".join(partes[1:])
+            agora = timezone.now()
             user = Usuario.objects.create_user(
                 username=username,
                 password=senha,
@@ -1931,6 +1941,9 @@ def criar_conta_gestao_autorizada(request):
                 tipo="ADMIN",
                 is_staff=True,
                 is_active=True,
+                gestao_teste_inicio=agora,
+                gestao_acesso_expira_em=agora + timedelta(days=dias_teste_gestao()),
+                gestao_acesso_bloqueado=False,
             )
             _limpar_codigo_gestao_da_sessao(request)
             messages.success(request, "Conta da gestão criada com sucesso. Você já pode acessar o sistema.")
@@ -1938,6 +1951,40 @@ def criar_conta_gestao_autorizada(request):
             return redirect("dashboard_gestao")
 
     return render(request, "registration/criar_conta_gestao.html")
+
+
+@login_required
+def ativar_acesso_gestao(request):
+    """Tela de ativação comercial da gestão por serial/key.
+
+    A gestão consegue abrir esta tela mesmo com o teste vencido. Ao aplicar
+    um serial válido, o acesso é liberado pela quantidade de dias do serial.
+    """
+    if not usuario_eh_gestao(request.user):
+        return redirect("dashboard_professor_home")
+
+    garantir_periodo_teste(request.user)
+
+    if request.method == "POST":
+        serial = (request.POST.get("serial") or "").strip()
+        ok, mensagem = validar_serial_gestao(serial, request.user)
+        if ok:
+            messages.success(request, mensagem)
+            return redirect("dashboard_gestao")
+        messages.error(request, mensagem)
+
+    return render(
+        request,
+        "registration/ativar_acesso_gestao.html",
+        {
+            "dias_teste": dias_teste_gestao(),
+            "dias_restantes": dias_restantes_gestao(request.user),
+            "expira_em": getattr(request.user, "gestao_acesso_expira_em", None),
+            "whatsapp": getattr(settings, "GESTAO_LICENCA_CONTATO_WHATSAPP", "98996127032"),
+            "email_autorizado": getattr(settings, "GESTAO_AUTORIZACAO_EMAIL", "thiago01268230@gmail.com"),
+        },
+    )
+
 
 # Atualiza exportação após views públicas adicionadas.
 __all__ = [name for name in globals() if not name.startswith("__")]

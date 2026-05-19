@@ -1,0 +1,40 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% block titulo %}Integrações e registros externos{% endblock %}
+{% block subtitulo %}Entrada oficial de dados feita pela gestão. Entrada oficial pelos cadastros da gestão.{% endblock %}
+{% block conteudo %}
+<section class="hero painel-unico-hero no-print">
+  <div>
+    <span class="hero-badge">Gestão como fonte única</span>
+    <h1>Dados oficiais cadastrados pela gestão</h1>
+    <p>O sistema não depende mais de banco de dados em Excel. Professores, alunos, turmas, disciplinas, vínculos e horários entram pelos cadastros administrativos.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="btn-primary" href="{% url 'gestao_cadastros_operacionais_301' %}">🧩 Turmas e disciplinas</a>
+    <a class="btn-secondary-premium" href="{% url 'gestao_professores' %}">👨‍🏫 Professores</a>
+    <a class="btn-secondary-premium" href="{% url 'gestao_alunos' %}">👨‍🎓 Alunos</a>
+  </div>
+</section>
+
+<section class="gestao-page-grid">
+  <article class="gestao-list-card">
+    <h2>Registros externos permitidos</h2>
+    <p>Use esta área apenas para documentar referências externas. Os dados que alimentam o Diário de Classe continuam vindo da gestão.</p>
+    <div class="clean-scroll clean-list">
+      {% for item in integracoes %}
+      <div class="clean-list-item">
+        <div class="clean-list-main"><strong>{{ item.nome }}</strong><small>{{ item.get_tipo_display }} • {% if item.ativa %}Ativa{% else %}Inativa{% endif %}</small>{% if item.descricao %}<p>{{ item.descricao }}</p>{% endif %}</div>
+        <span class="clean-pill">Gestão</span>
+      </div>
+      {% empty %}<div class="clean-empty">Nenhum registro externo cadastrado.</div>{% endfor %}
+    </div>
+  </article>
+  <form method="POST" class="gestao-form-card gestao-form">{% csrf_token %}
+    <h2>Novo registro documental</h2>
+    <p>Não importa alunos nem cria turmas. Serve somente para registrar documentos de apoio.</p>
+    <label class="gestao-field"><span>Nome</span><input name="nome" placeholder="Ex.: Documento orientador da secretaria" required></label>
+    <label class="gestao-field"><span>Tipo</span><select name="tipo"><option value="GESTAO">Cadastro pela gestão</option><option value="PDF">PDF/documento</option><option value="SISTEMA">Sistema externo</option><option value="OUTRO">Outro</option></select></label>
+    <label class="gestao-field"><span>Descrição</span><textarea name="descricao" rows="4" placeholder="Descreva a referência, sem importar dados automaticamente."></textarea></label>
+    <button class="btn-primary" type="submit">✅ Salvar registro</button>
+  </form>
+</section>
+{% endblock %}

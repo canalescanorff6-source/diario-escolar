@@ -1,0 +1,14 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência oficial{% endblock %}
+{% block subtitulo %}Diário de Classe Oficial completo, com dados oficiais da gestão{% endblock %}
+{% block conteudo %}
+<section class="hero painel-unico-hero no-print">
+  <div><span class="hero-badge">Saúde do sistema do diário</span><h1>Fases concluídas oficial concluídas</h1><p>Conferência de fonte única pela gestão, turnos oficiais, professor automático, frequência P/F/FJ, aulas mensais e fechamento persistente.</p></div>
+  <div class="hero-actions"><a class="btn-primary" href="{% url 'gestao_diario_classe_oficial_1281' %}">📘 Abrir diário completo</a><a class="btn-secondary-premium" href="{% url 'gestao_render_ready_1081' %}">☁️ Render</a></div>
+</section>
+<section class="clean-grid-3">
+  {% for card in cards %}<article class="clean-module-card"><span class="clean-pill">{% if card.ok %}✅ OK{% else %}⚠️ Revisar{% endif %}</span><h3>{{ card.titulo }}</h3><strong style="font-size:1.8rem;color:#67e8f9;display:block;margin:8px 0;">{{ card.valor }}</strong><p>{{ card.texto }}</p></article>{% endfor %}
+</section>
+<section class="gestao-list-card" style="margin-top:18px;"><h2>Fonte oficial dos dados</h2><div class="clean-list">{% for item in auditoria_excel.arquivos_antigos %}<div class="clean-list-item"><strong>{{ item.path }}</strong><span class="clean-pill">{% if item.existe %}⚠️ Revisar{% else %}✅ Ausente{% endif %}</span></div>{% endfor %}<div class="clean-list-item"><strong>Dependências antigas de planilha</strong><span class="clean-pill">{% if auditoria_excel.dependencias_excel %}⚠️ {{ auditoria_excel.dependencias_excel|join:', ' }}{% else %}✅ Ausentes{% endif %}</span></div></div></section>
+<section class="gestao-list-card" style="margin-top:18px;"><h2>Requisitos oficiais</h2><div class="clean-list">{% for req in cobertura.requisitos %}<div class="clean-list-item"><div class="clean-list-main"><strong>{{ req.nome }}</strong><small>{{ req.valor }}</small></div><span class="clean-pill">{% if req.ok %}✅ OK{% else %}⚠️ Ajustar{% endif %}</span></div>{% endfor %}</div></section>
+{% endblock %}

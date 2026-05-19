@@ -1,0 +1,6 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Matriz oficial por turnos{% endblock %}
+{% block subtitulo %}Manhã, tarde e noite com turmas, vínculos, horários e lançamentos • {{ mes_nome }}/{{ ano }}{% endblock %}
+{% block conteudo %}
+{% for linha in linhas %}<section class="panel"><h3>{{ linha.turno }} <span class="pill">{{ linha.turmas_count }} turma(s)</span></h3><p>Vínculos: <strong>{{ linha.vinculos_count }}</strong> • Horários: <strong>{{ linha.horarios_count }}</strong> • Aulas: <strong>{{ linha.aulas_count }}</strong> • Frequência: <strong>P {{ linha.frequencias.presencas }} / F {{ linha.frequencias.faltas }} / FJ {{ linha.frequencias.fj }}</strong></p><div class="grid">{% for turma in linha.turmas %}<article class="card"><span>{{ turma.ano_letivo }}</span><strong>{{ turma.nome }}</strong><p class="pill">{{ turma.turno|default:'Sem turno' }}</p></article>{% empty %}<p>Nenhuma turma ativa neste turno.</p>{% endfor %}</div></section>{% endfor %}
+{% endblock %}

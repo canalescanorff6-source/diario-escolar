@@ -1,0 +1,104 @@
+{% extends "core/base_professor_premium.html" %}
+{% load static %}
+{% block titulo %}Diário Escolar{% endblock %}
+{% block subtitulo %}Tela integrada ao Diário Escolar.{% endblock %}
+{% block conteudo %}
+<div class="premium-only-page visual-1161-1220" data-template="core/diario.html">
+<!-- TURMAS -->
+
+        <section class="turmas-grid">
+
+            {% for turma in turmas %}
+
+            <div class="turma-card">
+
+                <div class="turma-header">
+
+                    <div>
+
+                        <h2>{{ turma.nome }}</h2>
+
+                        <span>
+                            {{ turma.alunos.count }} alunos
+                        </span>
+
+                    </div>
+
+                    <div class="ia-badge">
+                        IA Ativa
+                    </div>
+
+                </div>
+
+                <!-- AÇÕES -->
+
+                <div class="turma-info">
+
+                    <div class="info-item">
+
+                        <strong>Frequência</strong>
+
+                        <p>
+                            Controle de presença
+                        </p>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <strong>Notas</strong>
+
+                        <p>
+                            Lançamento automático
+                        </p>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <strong>Boletim</strong>
+
+                        <p>
+                            IA integrada
+                        </p>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <strong>Relatórios</strong>
+
+                        <p>
+                            PDF inteligente
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="turma-actions">
+
+                    <a href="{% url 'turma_detalhe' turma.id %}"
+                       class="btn-primary">
+
+                        Abrir Diário
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="card premium-card">
+
+                <h2>Nenhuma turma encontrada</h2>
+
+            </div>
+
+            {% endfor %}
+
+        </section>
+</div>
+{% endblock %}

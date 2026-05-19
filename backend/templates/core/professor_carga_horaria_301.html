@@ -1,0 +1,8 @@
+{% extends "core/base_professor_premium.html" %}
+{% block titulo %}Carga horária semanal{% endblock %}
+{% block subtitulo %}Grade semanal criada pela gestão e exibida no painel do professor{% endblock %}
+{% block icone %}🕒{% endblock %}
+{% block conteudo %}
+<section class="cards"><div class="card premium-card"><span>Total semanal</span><h2>{{ carga.horas }}h</h2><small>{{ carga.aulas }} aula(s)</small></div><div class="card premium-card"><span>Referência</span><h2>{{ hoje|date:'d/m' }}</h2><small>semana atual</small></div></section>
+<section class="panel"><h3>Grade semanal</h3><table class="table premium-table"><thead><tr><th>Dia</th><th>Aulas</th><th>Carga</th><th>Detalhes</th></tr></thead><tbody>{% for dia in carga.dias %}<tr><td><strong>{{ dia.dia }}</strong></td><td>{{ dia.total }}</td><td>{{ dia.horas }}h</td><td>{% for aula in dia.aulas %}<span class="pill">{{ aula.hora_inicio|time:'H:i' }} {{ aula.turma.nome }} • {{ aula.disciplina.nome }}</span> {% empty %}<span class="muted">Sem aula</span>{% endfor %}</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

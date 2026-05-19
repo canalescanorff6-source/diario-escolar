@@ -1,0 +1,63 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Meu Diário de Classe{% endblock %}
+{% block subtitulo %}Documento consolidado com frequência P/F/FJ, disciplinas, horários, aulas e fechamento{% endblock %}
+{% block icone %}📘{% endblock %}
+{% block conteudo %}
+<section class="hero painel-unico-hero ia-mega-hero no-print">
+  <div>
+    <span class="hero-badge">Documento oficial do professor</span>
+    <h1>Meu Diário de Classe</h1>
+    <p>A gestão cadastra escola, turmas, disciplinas, vínculos e horários. Você acompanha o documento consolidado e lança aula, frequência e fechamento.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="btn-primary" href="{% url 'professor_aula_rapida_321' %}">⚡ Abrir aula</a>
+    <a class="btn-secondary-premium" href="{% url 'professor_diario_oficial' %}">📘 Diário atual</a>
+    <a class="btn-secondary-premium" href="{% url 'professor_fechamento_mensal_901' %}">📕 Fechamento</a>
+  </div>
+</section>
+
+<section class="ia-official-document official-doc">
+  <div class="ia-document-head">
+    <div>
+      <span class="premium-header-badge">Professor(a)</span>
+      <h2>{{ professor.get_full_name|default:professor.username }}</h2>
+      <p>{% if cobertura.escola %}{{ cobertura.escola.nome }} • {{ cobertura.ano_letivo|default:'Ano letivo' }}{% else %}Escola não cadastrada{% endif %}</p>
+    </div>
+    <div class="ia-document-seal">MEU<br>DIÁRIO</div>
+  </div>
+  <div class="ia-document-meta">
+    <div><span>Turmas</span><strong>{{ cobertura.totais.turmas }}</strong></div>
+    <div><span>Horários</span><strong>{{ cobertura.totais.horarios }}</strong></div>
+    <div><span>Frequências</span><strong>{{ cobertura.totais.frequencias }}</strong></div>
+    <div><span>Aulas</span><strong>{{ cobertura.totais.diarios }}</strong></div>
+    <div><span>Fechamentos</span><strong>{{ cobertura.totais.fechamentos }}</strong></div>
+  </div>
+</section>
+
+<section class="diario-real-grid" style="margin-top:18px;">
+  {% for item in cobertura.linhas %}
+  <article class="ia-official-document diario-real-card official-doc">
+    <div class="diario-real-card-head">
+      <div><span class="premium-header-badge">{{ item.turno }}</span><h3>{{ item.turma.nome }}</h3><p>{{ item.total_alunos }} aluno(s) • {{ item.ano_letivo }}</p></div>
+      <strong class="diario-real-score">{{ item.frequencia_percentual }}%</strong>
+    </div>
+    <div class="ia-document-meta">
+      <div><span>Disciplinas</span><strong>{{ item.total_disciplinas }}</strong></div>
+      <div><span>Horários</span><strong>{{ item.total_horarios }}</strong></div>
+      <div><span>P</span><strong>{{ item.presencas }}</strong></div>
+      <div><span>F</span><strong>{{ item.faltas }}</strong></div>
+      <div><span>FJ</span><strong>{{ item.justificadas }}</strong></div>
+      <div><span>Aulas</span><strong>{{ item.diarios }}</strong></div>
+    </div>
+    <div class="diario-real-list"><strong>Minhas disciplinas</strong><p>{{ item.disciplinas_nomes }}</p></div>
+    <div class="diario-real-actions no-print">
+      <a class="btn-ghost-premium" href="{% url 'professor_aula_rapida_321' %}">⚡ Lançar aula</a>
+      <a class="btn-ghost-premium" href="{% url 'frequencia_mensal_turma' item.turma.id %}">📅 Frequência</a>
+      <a class="btn-ghost-premium" href="{% url 'registro_aulas_mensal_turma' item.turma.id %}">📝 Aulas</a>
+    </div>
+  </article>
+  {% empty %}
+  <section class="panel empty-state-premium"><strong>Você ainda não possui vínculos.</strong><span>Peça para a gestão vincular professor, turma, disciplina e horários.</span></section>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "core/base_professor_premium.html" %}
+{% load static %}
+{% block titulo %}Conferência do Diário do Professor{% endblock %}
+{% block subtitulo %}Professor, diário, fechamento, IA e relatórios conferidos sem misturar com gestão.{% endblock %}
+{% block icone %}🧪{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/premium_base_final.css' %}">{% endblock %}
+{% block conteudo %}
+{% include 'partials/mega_checkup_1001_1080_resumo.html' %}
+<section class="final-1080-grid">
+  {% for card in cards %}<article class="final-1080-card"><span>{{ card.titulo }}</span><strong>{{ card.valor }}</strong><small>{{ card.texto }}</small></article>{% endfor %}
+</section>
+<section class="final-1080-layout">
+  <div class="final-1080-panel">
+    <h3>Checklist do Diário pelo olhar do professor</h3>
+    <p>Mostra se o fluxo de aula, chamada P/F/FJ, conteúdo, fechamento mensal, IA e relatórios estão instalados.</p>
+    <input class="input-premium" data-final-filter="#checks-prof-1080" placeholder="Buscar no checklist..." style="width:100%;margin:8px 0 14px;">
+    <div class="final-1080-scroll" id="checks-prof-1080">
+      {% for item in checks %}
+      <article class="final-1080-check" data-final-row>
+        <div><span class="final-1080-badge">{{ item.grupo }}</span></div>
+        <div><strong>{{ item.pedido }}</strong><p>{{ item.evidencia }}</p><small>Próxima ação: {{ item.acao }}</small></div>
+        <span class="final-1080-chip {{ item.nivel }}">{{ item.status }}</span>
+      </article>
+      {% empty %}<div class="final-1080-empty">Nenhum item encontrado.</div>{% endfor %}
+    </div>
+  </div>
+  <aside class="final-1080-panel">
+    <h3>Acessos do professor</h3>
+    <table class="final-1080-table"><thead><tr><th>Área</th><th>Tela</th><th>Status</th></tr></thead><tbody>{% for r in rotas.linhas %}{% if r.grupo == 'Professor' %}<tr><td>{{ r.grupo }}</td><td>{{ r.titulo }}</td><td><span class="final-1080-chip {{ r.nivel }}">{{ r.status }}</span></td></tr>{% endif %}{% endfor %}</tbody></table>
+    <div class="final-1080-actions no-print"><a href="{% url 'professor_finalizacao_total_1001' %}">Ver rotina do professor</a><button type="button" data-final-print>Imprimir/PDF</button></div>
+  </aside>
+</section>
+{% endblock %}
+{% block extra_js %}<script src="{% static 'js/premium_app_final.js' %}"></script>{% endblock %}

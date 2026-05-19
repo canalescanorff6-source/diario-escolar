@@ -1,0 +1,119 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% load static %}
+
+{% block title %}Conferência do Diário Escolar{% endblock %}
+
+{% block content %}
+<section class="premium-header-card compact-premium-header">
+    <div class="premium-header-title">
+        <span class="premium-header-badge">consolidação técnica</span>
+        <div class="premium-header-row">
+            <div>
+                <h1>Conferência de continuidade do Diário Escolar</h1>
+                <p>Conferência de rotas únicas, painéis limpos, matriz oficial de turnos e pendências operacionais.</p>
+            </div>
+            <span class="premium-header-icon">✅</span>
+        </div>
+    </div>
+</section>
+
+<section class="cards gestao-cards">
+    {% for card in cards %}
+        <div class="card premium-card">
+            <span>{{ card.titulo }}</span>
+            <h2>{{ card.valor }}</h2>
+            <small>{{ card.detalhe }}</small>
+        </div>
+    {% endfor %}
+</section>
+
+<section class="grid-layout gestao-grid-layout">
+    <div class="left-column">
+        <div class="panel">
+            <div class="panel-top"><h3>Fluxo único do professor</h3></div>
+            <div class="gestao-actions-grid">
+                {% for item in fluxo_professor %}
+                    <a href="{% url item.url %}">
+                        <strong>{{ item.ordem }}. {{ item.titulo }}</strong>
+                        <small>{{ item.descricao }} • {{ item.status }}</small>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-top"><h3>Rotas oficiais do professor</h3></div>
+            <div class="alerts">
+                {% for item in rotas.professor %}
+                    <div class="alert success-alert"><strong>{{ item.titulo }}</strong><br>{{ item.descricao }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="right-column">
+        <div class="panel">
+            <div class="panel-top"><h3>Fluxo único da gestão</h3></div>
+            <div class="alerts">
+                {% for item in fluxo_gestao %}
+                    <div class="alert success-alert"><strong>{{ item.ordem }}. {{ item.titulo }}</strong><br>{{ item.descricao }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-top"><h3>Rotas oficiais da gestão</h3></div>
+            <div class="alerts">
+                {% for item in rotas.gestao %}
+                    <div class="alert success-alert"><strong>{{ item.titulo }}</strong><br>{{ item.descricao }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="panel premium-risk-panel">
+    <div class="panel-header">
+        <div>
+            <h3>Matriz oficial de turnos</h3>
+            <span>Manhã: 1º ao 5º • Tarde: 6º ao 9º + Médio • Noite: EJA</span>
+        </div>
+        <div class="panel-badge">{{ matriz_turnos.ok }}/{{ matriz_turnos.total }} OK</div>
+    </div>
+    <div class="alerts">
+        {% for item in matriz_turnos.itens %}
+            <div class="alert {% if item.ok %}success-alert{% else %}warning-alert{% endif %}">
+                <strong>{{ item.turma.nome }} • {{ item.turma.turno|default:"Turno não informado" }}</strong><br>
+                {{ item.motivo }}
+            </div>
+        {% empty %}
+            <div class="alert warning-alert">Nenhuma turma ativa cadastrada para validar.</div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="grid-layout gestao-grid-layout">
+    <div class="left-column">
+        <div class="panel">
+            <div class="panel-top"><h3>Pendências operacionais</h3></div>
+            <div class="alerts">
+                {% for item in pendencias %}
+                    <div class="alert {% if item.prioridade == 'ok' %}success-alert{% elif item.prioridade == 'alta' %}danger-alert{% else %}warning-alert{% endif %}">
+                        <strong>{{ item.item }}</strong><br>Total: {{ item.total }} • prioridade: {{ item.prioridade }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="right-column">
+        <div class="panel">
+            <div class="panel-top"><h3>O que ainda precisa atenção</h3></div>
+            <div class="alerts">
+                {% for item in pendencias_essenciais %}
+                    <div class="alert warning-alert"><strong>{{ item.item }}</strong><br>{{ item.detalhe }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

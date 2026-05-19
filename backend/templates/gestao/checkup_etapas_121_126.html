@@ -1,0 +1,7 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência do Diário Escolar{% endblock %}
+{% block subtitulo %}Conferência da consolidação mensal/anual do Diário Escolar{% endblock %}
+{% block conteudo %}
+<div class="grid">{% for card in cards %}<div class="card"><span>{{ card.titulo }}</span><strong>{{ card.valor }}</strong><p>{% if card.ok %}<span class="pill">OK</span>{% else %}<span class="pill" style="color:#facc15">Pendente</span>{% endif %}</p></div>{% endfor %}</div>
+<section class="panel"><h3>Continuidade segura</h3><p class="muted">As fases concluídas 121–126 adicionam conferência mensal, professores automáticos da gestão, linha do tempo do aluno, consolidado do professor e registro mensal oficial de aula sem remover as telas anteriores.</p></section>
+{% endblock %}

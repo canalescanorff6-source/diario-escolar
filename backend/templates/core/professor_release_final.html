@@ -1,0 +1,11 @@
+{% extends "core/base_professor_premium.html" %}
+{% block content %}
+<section class="prof-final">
+  <div class="prof-hero"><div><span>DIÁRIO ESCOLAR · PROFESSOR</span><h1>{{ titulo }}</h1><p>{{ subtitulo }}</p></div><b>{{ hoje|date:"d/m/Y" }}</b></div>
+  <div class="prof-panel"><h3>Roteiro de uso do Diário</h3><div class="chips">{% for t in tarefas %}<span>{{ t }}</span>{% endfor %}</div></div>
+  <div class="prof-grid">{% for c in cards %}<article><h3>{{ c.turma.nome }}</h3><p>Alunos: {{ c.alunos }} · Frequências: {{ c.frequencias }} · Notas: {{ c.notas }} · Aulas: {{ c.conteudos }}</p><small>{{ c.acao }}</small></article>{% empty %}<article><h3>Nenhuma turma vinculada</h3><p>Quando houver turma ativa vinculada ao professor, ela aparecerá aqui.</p><small>O painel permanece seguro e separado da gestão.</small></article>{% endfor %}</div>
+</section>
+<style>
+body{background:#020617!important}.content{background:radial-gradient(circle at top left,rgba(20,184,166,.15),transparent 34%),#020617;min-height:100vh}.prof-final{color:#e5f7f6;padding:10px}.prof-hero{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:20px;border-radius:24px;background:linear-gradient(135deg,rgba(15,23,42,.94),rgba(20,83,45,.48));border:1px solid rgba(94,234,212,.24);box-shadow:0 0 38px rgba(45,212,191,.13);margin-bottom:15px}.prof-hero span{font-size:.72rem;letter-spacing:.14em;color:#5eead4;font-weight:900}.prof-hero h1{font-size:1.5rem;margin:.25rem 0}.prof-hero p{color:#a7f3d0;margin:0}.prof-hero b{border-radius:999px;padding:9px 12px;border:1px solid rgba(94,234,212,.25);background:rgba(20,184,166,.1)}.prof-panel,.prof-grid article{padding:15px;border-radius:20px;background:rgba(15,23,42,.74);border:1px solid rgba(148,163,184,.16);box-shadow:0 10px 24px rgba(0,0,0,.18);margin-bottom:14px}.chips span{display:inline-block;margin:4px;padding:7px 10px;border-radius:999px;background:rgba(20,184,166,.12);border:1px solid rgba(94,234,212,.2);color:#99f6e4;font-size:.8rem}.prof-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.prof-grid h3{color:#ccfbf1;font-size:1rem}.prof-grid p{color:#cbd5e1}.prof-grid small{color:#5eead4}
+</style>
+{% endblock %}

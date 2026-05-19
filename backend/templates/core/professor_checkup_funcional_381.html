@@ -1,0 +1,26 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Pendências do professor{% endblock %}
+{% block subtitulo %}Turmas, vínculos, horários, carga semanal, aulas e pendências do professor logado{% endblock %}
+{% block icone %}🧪{% endblock %}
+{% block conteudo %}
+<section class="panel">
+  <h3>Resumo do diário</h3>
+  <div class="grid">{% for c in cards %}<article class="card"><span>{{ c.label }}</span><strong>{{ c.valor }}</strong><small>{{ c.detalhe }}</small></article>{% endfor %}</div>
+</section>
+<section class="panel">
+  <h3>Carga horária semanal</h3>
+  <table class="table"><thead><tr><th>Dia</th><th>Aulas</th><th>Horas</th><th>Grade</th></tr></thead><tbody>
+  {% for dia in carga.dias %}<tr><td>{{ dia.dia }}</td><td>{{ dia.total }}</td><td>{{ dia.horas }}h</td><td>{% for aula in dia.aulas %}<span class="pill">{{ aula.hora_inicio|time:'H:i' }} • {{ aula.turma.nome }} • {{ aula.disciplina.nome }}</span> {% empty %}<span class="muted">Sem aula cadastrada</span>{% endfor %}</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+<section class="panel">
+  <h3>Vínculos recebidos da gestão</h3>
+  <table class="table"><thead><tr><th>Turma</th><th>Disciplina</th><th>Ano letivo</th></tr></thead><tbody>
+  {% for v in vinculos %}<tr><td>{{ v.turma.nome }}</td><td>{{ v.disciplina.nome }}</td><td>{{ v.ano_letivo|default:'Ano letivo pendente' }}</td></tr>{% empty %}<tr><td colspan="3">Nenhum vínculo ativo recebido da gestão.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+<section class="panel">
+  <h3>Pendências</h3>
+  <div class="check-list">{% for p in pendencias %}<div class="check-list-row"><strong>{{ p }}</strong><span class="pill status-warn">Ação necessária</span></div>{% empty %}<div class="empty-state-premium"><strong>Professor pronto para operar.</strong><span>Vínculos, horários e rotina estão disponíveis.</span></div>{% endfor %}</div>
+</section>
+{% endblock %}

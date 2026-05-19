@@ -1,0 +1,30 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Mapa de Lançamentos do Diário Escolar{% endblock %}
+{% block subtitulo %}Gestão clica na turma ou no aluno para conferir identificação, ano letivo, professor, disciplinas, horários, frequência e aulas.{% endblock %}
+{% block conteudo %}
+<section class="grid">
+  <article class="card"><span>Escola</span><strong>{{ escola.nome|default:'Não cadastrada' }}</strong></article>
+  <article class="card"><span>Ano letivo</span><strong>{% if escola and escola.ano_letivo_ativo %}{{ escola.ano_letivo_ativo.ano }}{% else %}Pendente{% endif %}</strong></article>
+  <article class="card"><span>Turmas no mapa</span><strong>{{ linhas|length }}</strong></article>
+  <article class="card"><span>Atualização</span><strong>{{ hoje|date:'d/m/Y' }}</strong></article>
+</section>
+<section class="panel">
+  <h3>Diário por turma e aluno</h3>
+  <table class="table">
+    <thead><tr><th>Turma / turno</th><th>Professores automáticos</th><th>Disciplinas</th><th>Horários</th><th>Frequência</th><th>Alunos</th><th>Ações</th></tr></thead>
+    <tbody>
+      {% for item in linhas %}
+      <tr>
+        <td><strong>{{ item.turma.nome }}</strong><br><span class="muted">{{ item.turma.ano_letivo|default:'Ano pendente' }} • {{ item.turma.turno|default:'Turno pendente' }}</span></td>
+        <td>{% for professor in item.professores %}<span class="pill">{{ professor.get_full_name|default:'Não informado' }}</span> {% empty %}<span class="muted">Sem vínculo</span>{% endfor %}</td>
+        <td>{% for disciplina in item.disciplinas %}<span class="pill">{{ disciplina.nome }}</span> {% empty %}<span class="muted">Sem disciplina</span>{% endfor %}</td>
+        <td>{{ item.horarios }} horário(s)</td>
+        <td>{{ item.faltas }} F • {{ item.fj }} FJ<br><span class="muted">{{ item.aulas }} aula(s) registradas</span></td>
+        <td>{% for aluno in item.alunos %}<a class="gestao-base-btn" href="{% url 'gestao_aluno_diario_operacional' aluno.id %}">{{ aluno.nome }}</a> {% empty %}<span class="muted">Sem alunos</span>{% endfor %}<br><span class="muted">Total: {{ item.total_alunos }}</span></td>
+        <td><a class="gestao-base-btn" href="{% url 'diario_oficial_turma_completo' item.turma.id %}">Diário</a> <a class="gestao-base-btn" href="{% url 'frequencia_mensal_turma' item.turma.id %}">Frequência</a></td>
+      </tr>
+      {% empty %}<tr><td colspan="7">Nenhuma turma ativa encontrada.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "core/base_professor_premium.html" %}
+{% block titulo %}Relatórios{% endblock %}
+{% block subtitulo %}Resumo das turmas, alunos, frequência, notas e registros de aula{% endblock %}
+{% block icone %}📊{% endblock %}
+{% block conteudo %}
+<section class="cards gestao-cards">
+  <div class="card premium-card"><span>Turmas</span><h2>{{ total_turmas }}</h2><small>vinculadas</small></div>
+  <div class="card premium-card"><span>Alunos</span><h2>{{ total_alunos }}</h2><small>acompanhados</small></div>
+  <div class="card premium-card"><span>Registros</span><h2>{{ total_conteudos }}</h2><small>aulas lançadas</small></div>
+  <div class="card premium-card"><span>Faltas</span><h2>{{ total_faltas }}</h2><small>registradas</small></div>
+</section>
+<section class="panel table-panel premium-safe-panel"><div class="panel-top"><div><h3>Turmas do professor</h3><p>Atalhos funcionais sem sair da área do professor.</p></div></div><div class="table-scroll"><table class="premium-table"><thead><tr><th>Turma</th><th>Turno</th><th>Alunos</th><th>Ações</th></tr></thead><tbody>{% for turma in turmas %}<tr><td><strong>{{ turma.nome }}</strong></td><td>{{ turma.turno|default:'—' }}</td><td>{{ turma.alunos.count }}</td><td><div class="safe-action-row"><a class="btn-ghost-premium" href="{% url 'turma_detalhe' turma.id %}">Diário</a><a class="btn-ghost-premium" href="{% url 'frequencia_mensal_turma' turma.id %}">Frequência mensal</a><a class="btn-ghost-premium" href="{% url 'notas_turma' turma.id %}">Notas</a></div></td></tr>{% empty %}<tr><td colspan="4">Nenhuma turma vinculada.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

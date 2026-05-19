@@ -1,0 +1,48 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% block titulo %}Alunos{% endblock %}
+{% block subtitulo %}Ficha oficial, boletim, frequência e acompanhamento individual sem telas antigas soltas.{% endblock %}
+{% block icone %}👨‍🎓{% endblock %}
+{% block conteudo %}
+<section class="clean-card">
+  <form method="get" class="clean-filter">
+    <input type="text" name="busca" value="{{ busca }}" placeholder="Buscar aluno pelo nome...">
+    <select name="turma">
+      <option value="">Todas as turmas</option>
+      {% for turma in turmas %}
+        <option value="{{ turma.id }}" {% if turma_id == turma.id|stringformat:'s' %}selected{% endif %}>{{ turma.nome }}</option>
+      {% endfor %}
+    </select>
+    <button class="clean-btn" type="submit">Filtrar</button>
+    <a class="clean-btn" href="{% url 'gestao_cadastros_operacionais_301' %}">Novo aluno</a>
+  </form>
+</section>
+
+<section class="clean-list-card">
+  <div style="display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px;">
+    <div>
+      <h3>Lista oficial de alunos</h3>
+      <p>Os nomes ficam dentro de uma caixa com rolagem para não espalhar tudo na tela.</p>
+    </div>
+    <span class="clean-pill">{{ alunos_dados|length }} alunos</span>
+  </div>
+
+  <div class="clean-scroll clean-list">
+    {% for item in alunos_dados %}
+      <article class="clean-list-item">
+        <div class="clean-list-main">
+          <strong>{{ item.aluno.nome }}</strong>
+          <small>{{ item.aluno.turma.nome|default:"Turma não informada" }} • Matrícula {{ item.aluno.matricula|default:"sem matrícula" }}</small>
+          <small>Frequência {{ item.frequencia }}% • Média {{ item.media }} • Faltas {{ item.faltas }}</small>
+        </div>
+        <div class="clean-actions">
+          <span class="clean-pill">{{ item.status }}</span>
+          <a href="{% url 'gestao_ficha_aluno' item.aluno.id %}">Ficha oficial</a>
+          <a href="{% url 'boletim_aluno' item.aluno.id %}?origem=gestao">Boletim</a>
+        </div>
+      </article>
+    {% empty %}
+      <div class="clean-empty">Nenhum aluno encontrado para os filtros atuais.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

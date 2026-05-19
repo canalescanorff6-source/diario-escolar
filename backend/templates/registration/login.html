@@ -1,0 +1,29 @@
+{% extends "registration/base_auth_premium.html" %}
+{% block title %}Acesso Institucional{% endblock %}
+{% block auth_content %}
+  <div class="auth-access-head auth-access-head-v3">
+    <span>Área restrita</span>
+    <h2>Acesso Institucional</h2>
+    <p>Entre com seu usuário e senha autorizados para acessar o ambiente escolar.</p>
+  </div>
+  {% if form.errors %}
+    <div class="auth-error">Usuário ou senha inválidos. Confira os dados e tente novamente.</div>
+  {% endif %}
+  <form method="post" class="auth-form auth-form-v3" novalidate>
+    {% csrf_token %}
+    <label for="id_username">Usuário</label>
+    {{ form.username }}
+    <label for="id_password">Senha</label>
+    {{ form.password }}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="auth-submit auth-submit-v3">Acessar sistema</button>
+  </form>
+  <div class="auth-access-footer auth-access-footer-v3">
+    <span>Acesso restrito</span>
+    <strong>Uso exclusivo da gestão escolar e professores autorizados.</strong>
+  </div>
+  <div class="auth-public-actions">
+    <a class="auth-secondary-link" href="{% url 'criar_conta_gestao_autorizada' %}">Criar conta da gestão</a>
+    <a class="auth-secondary-link auth-secondary-link-soft" href="{% url 'solicitar_codigo_gestao' %}">Receber código por e-mail</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "registration/base_auth_premium.html" %}
+{% block title %}Receber código da gestão{% endblock %}
+{% block auth_content %}
+  <div class="auth-access-head auth-access-head-v3">
+    <span>E-mail autorizado</span>
+    <h2>Receber código</h2>
+    <p>O código numérico de 6 dígitos para criação da gestão será enviado somente para o e-mail autorizado da escola.</p>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="{% if message.tags == 'success' %}auth-success{% else %}auth-error{% endif %}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" class="auth-form auth-form-v3 auth-locked-email-form" novalidate>
+    {% csrf_token %}
+    <div class="auth-locked-email-card">
+      <span class="auth-locked-email-label">E-mail autorizado para receber o código</span>
+      <strong class="auth-locked-email-value">{{ email_autorizado|default:"thiago01268230@gmail.com" }}</strong>
+      <small>Esse e-mail fica travado por segurança. Para alterar, configure a variável GESTAO_AUTORIZACAO_EMAIL no ambiente do sistema.</small>
+    </div>
+    <button type="submit" class="auth-submit auth-submit-v3">Enviar código para este e-mail</button>
+  </form>
+
+  <a class="auth-secondary-link" href="{% url 'criar_conta_gestao_autorizada' %}">Já tenho o código</a>
+  <a class="auth-secondary-link auth-secondary-link-soft" href="{% url 'login' %}">Voltar ao acesso</a>
+  <div class="auth-help-box">Somente a direção/gestão autorizada recebe o código numérico de 6 dígitos para criar a conta inicial da gestão. O código expira em {{ validade_minutos|default:15 }} minutos.</div>
+{% endblock %}

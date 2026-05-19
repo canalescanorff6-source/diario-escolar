@@ -1,0 +1,62 @@
+{% extends "core/base_professor_premium.html" %}
+{% block titulo %}Registro de aula{% endblock %}
+{% block subtitulo %}Rotina diária com carga horária semanal, aulas de hoje, turmas e lançamentos{% endblock %}
+{% block icone %}🎯{% endblock %}
+{% block conteudo %}
+<section class="hero painel-unico-hero premium-safe-panel">
+  <div>
+    <span class="hero-badge">Rotina do Professor</span>
+    <div class="hero-title"><h1>Minha semana letiva</h1><span class="wave">🕒</span></div>
+    <p>Esta tela transforma o painel do professor em rotina de trabalho: a gestão cadastra vínculos e horários, e o professor recebe automaticamente suas turmas, disciplinas, carga horária e aulas do dia.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="btn-primary" href="{% url 'professor_carga_horaria_301' %}">Ver carga horária</a>
+    <a class="btn-secondary-premium" href="{% url 'professor_diario_oficial' %}">Lançamentos</a>
+  </div>
+</section>
+
+<section class="cards painel-kpis-limpos">
+  <div class="card premium-card"><span>Carga semanal</span><h2>{{ carga.horas }}h</h2><small>{{ carga.aulas }} aula(s) cadastrada(s)</small></div>
+  <div class="card premium-card"><span>Aulas hoje</span><h2>{{ aulas_hoje.count }}</h2><small>{{ hoje|date:'d/m/Y' }}</small></div>
+  <div class="card premium-card"><span>Turmas</span><h2>{{ turmas.count }}</h2><small>vindas da gestão</small></div>
+  <div class="card premium-card"><span>Vínculos</span><h2>{{ vinculos.count }}</h2><small>professor/turma/disciplina</small></div>
+</section>
+
+<section class="grid-layout">
+  <div class="left-column">
+    <div class="panel premium-scroll-panel">
+      <div class="panel-header"><div><h3>Aulas de hoje</h3><span>Clique na turma para abrir o Diário Escolar.</span></div><div class="panel-badge">{{ aulas_hoje.count }}</div></div>
+      <div class="premium-scroll">
+      {% for aula in aulas_hoje %}
+        <div class="feed-card premium-action-card">
+          <strong>{{ aula.hora_inicio|time:'H:i' }}–{{ aula.hora_fim|time:'H:i' }} • {{ aula.turma.nome }}</strong>
+          <span>{{ aula.disciplina.nome }} • {{ aula.get_turno_display|default:aula.turno }}</span>
+          <div class="safe-action-row" style="margin-top:10px">
+            <a class="btn-primary" href="{% url 'diario_classe_turma' aula.turma.id %}">Abrir aula</a>
+            <a class="btn-secondary-premium" href="{% url 'professor_registro_aula_mensal_oficial' %}?turma={{ aula.turma.id }}&disciplina={{ aula.disciplina.id }}">Registrar conteúdo</a>
+          </div>
+        </div>
+      {% empty %}
+        <div class="empty-risk">Nenhuma aula cadastrada para hoje. A gestão deve preencher a grade semanal.</div>
+      {% endfor %}
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header"><div><h3>Minhas turmas e disciplinas</h3><span>Origem: vínculos ativos cadastrados pela gestão.</span></div></div>
+      <table class="table premium-table"><thead><tr><th>Turma</th><th>Disciplina</th><th>Ação</th></tr></thead><tbody>
+      {% for v in vinculos %}<tr><td>{{ v.turma.nome }}<br><small>{{ v.turma.turno|default:'Turno pendente' }}</small></td><td>{{ v.disciplina.nome }}</td><td><a class="btn-secondary-premium" href="{% url 'diario_classe_turma' v.turma.id %}">Abrir diário</a></td></tr>{% empty %}<tr><td colspan="3">Nenhum vínculo ativo.</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+  <div class="right-column">
+    <div class="panel premium-scroll-panel">
+      <div class="panel-header"><div><h3>Carga por dia</h3><span>Resumo semanal da grade.</span></div><div class="panel-badge">{{ carga.horas }}h</div></div>
+      {% for dia in carga.dias %}
+        <div class="feed-card"><strong>{{ dia.dia }}</strong><br><span>{{ dia.total }} aula(s) • {{ dia.horas }}h</span></div>
+      {% endfor %}
+    </div>
+    <div class="panel painel-status-limpo"><h3>Pendências do diário</h3><div class="alerts">{% for p in pendencias %}<div class="alert warning-alert">⚠️ {{ p }}</div>{% empty %}<div class="alert success-alert">✅ Professor pronto para trabalhar no Diário Escolar.</div>{% endfor %}</div></div>
+  </div>
+</section>
+{% endblock %}

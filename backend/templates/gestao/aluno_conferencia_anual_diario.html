@@ -1,0 +1,8 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência anual do aluno{% endblock %}
+{% block subtitulo %}Ficha clicável com frequência P/F/FJ e aulas por disciplina{% endblock %}
+{% block conteudo %}
+<form class="panel no-print" method="get" style="display:flex;gap:10px;align-items:end;flex-wrap:wrap"><label>Ano<br><input name="ano" value="{{ ano }}"></label><button class="btn-primary">Filtrar</button><button class="btn-primary" type="button" onclick="window.print()">Imprimir</button></form>
+<div class="grid"><div class="card"><span>Escola</span><strong>{{ escola.nome|default:'Pendente' }}</strong></div><div class="card"><span>Ano letivo</span><strong>{{ ano_letivo|default:ano }}</strong></div><div class="card"><span>Aluno</span><strong>{{ aluno.nome }}</strong></div><div class="card"><span>Turma/turno</span><strong>{{ turma.nome }} • {{ turma.turno|default:'-' }}</strong></div></div>
+<section class="panel"><h3>Disciplinas do aluno no ano</h3><table class="table"><thead><tr><th>Disciplina</th><th>P</th><th>F</th><th>FJ</th><th>Total</th><th>Aulas</th><th>Últimos registros</th></tr></thead><tbody>{% for l in linhas %}<tr><td>{{ l.disciplina.nome }}</td><td>{{ l.frequencia.presencas }}</td><td>{{ l.frequencia.faltas }}</td><td>{{ l.frequencia.fj }}</td><td>{{ l.frequencia.total }}</td><td>{{ l.aulas }}</td><td>{% for r in l.ultimos_registros %}<span class="pill">{{ r.data|date:'d/m' }} {{ r.observacao|default:'' }}</span> {% empty %}<span class="muted">Sem lançamentos</span>{% endfor %}</td></tr>{% empty %}<tr><td colspan="7">Sem disciplinas vinculadas para a turma.</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

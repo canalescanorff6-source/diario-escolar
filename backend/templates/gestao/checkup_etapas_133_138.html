@@ -1,0 +1,7 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência do Diário Escolar{% endblock %}
+{% block subtitulo %}Continuidade segura do Diário Escolar{% endblock %}
+{% block conteudo %}
+<div class="grid">{% for card in cards %}<div class="card"><span>{{ card.titulo }}</span><strong>{{ card.valor }}</strong><p>{% if card.ok %}<span class="pill">OK</span>{% else %}<span class="pill" style="color:#facc15">Pendente</span>{% endif %}</p></div>{% endfor %}</div>
+<section class="panel"><h3>Continuidade aplicada</h3><p class="muted">As fases concluídas 133–138 fazem conferência real do projeto, conferência anual clicável do aluno, conferência de professor/turma/disciplina/horários, mapa anual do professor e relatório mensal de lançamentos, mantendo o visual glass dark teal e a estrutura /gestao/ e /professor/.</p></section>
+{% endblock %}

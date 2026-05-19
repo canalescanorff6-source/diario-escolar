@@ -1,0 +1,59 @@
+{% extends "core/base_professor_premium.html" %}
+{% block titulo %}Configurações{% endblock %}
+{% block subtitulo %}Imagem do professor, conta e segurança.{% endblock %}
+{% block icone %}⚙️{% endblock %}
+{% block conteudo %}
+<section class="grid-layout">
+  <div class="left-column">
+    <section class="panel premium-safe-panel">
+      <h3>Minha imagem</h3>
+      <p>Escolha a imagem que aparecerá no topo direito do seu painel. Somente você altera sua própria imagem.</p>
+      <form method="post" enctype="multipart/form-data" class="gestao-form-grid">
+        {% csrf_token %}
+        <div class="profile-upload-card">
+          <div class="profile-upload-preview">
+            {% if request.user.foto %}<img src="{{ request.user.foto.url }}" alt="Minha imagem">{% else %}<span>{{ request.user.first_name|default:request.user.username|slice:':1' }}</span>{% endif %}
+          </div>
+          <div>
+            <label class="gestao-field">
+              <span>Escolher minha imagem</span>
+              <input type="file" name="foto" accept="image/*">
+            </label>
+            <div class="safe-action-row">
+              <button class="btn-primary" type="submit">Salvar imagem</button>
+              {% if request.user.foto %}<button class="btn-ghost-premium" type="submit" name="remover_foto" value="1">Remover imagem</button>{% endif %}
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel premium-safe-panel">
+      <h3>Perfil</h3>
+      <p><strong>Usuário:</strong> {{ request.user.username }}</p>
+      <p><strong>Nome:</strong> {{ request.user.get_full_name|default:'—' }}</p>
+      <p><strong>Email:</strong> {{ request.user.email|default:'—' }}</p>
+      <p><strong>Perfil:</strong> {{ request.user.get_tipo_display }}</p>
+    </section>
+  </div>
+
+  <div class="right-column">
+    <section class="panel premium-safe-panel">
+      <h3>Segurança</h3>
+      <p>Use os botões abaixo para encerrar sessão ou alterar sua senha pelo sistema.</p>
+      <div class="safe-action-row vertical">
+        <a class="btn-ghost-premium" href="{% url 'password_change' %}">Alterar senha</a>
+        <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn-primary" type="submit">Sair</button></form>
+      </div>
+    </section>
+    <section class="panel premium-safe-panel">
+      <h3>Rotinas oficiais</h3>
+      <div class="safe-action-row vertical">
+        <a class="btn-ghost-premium" href="{% url 'turmas' %}">Minhas turmas</a>
+        <a class="btn-ghost-premium" href="{% url 'professor_alunos' %}">Meus alunos</a>
+        <a class="btn-ghost-premium" href="{% url 'professor_diario_oficial' %}">Lançamentos</a>
+      </div>
+    </section>
+  </div>
+</section>
+{% endblock %}

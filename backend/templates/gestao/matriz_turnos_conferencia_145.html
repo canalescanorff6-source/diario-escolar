@@ -1,0 +1,7 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Matriz oficial por turno{% endblock %}
+{% block subtitulo %}Manhã 5 turmas, tarde 8 turmas e noite 5 turmas EJA, com horários semanais vinculados{% endblock %}
+{% block conteudo %}
+<div class="grid"><div class="card"><span>Escola</span><strong>{{ escola.nome|default:'Pendente' }}</strong></div><div class="card"><span>Ano letivo</span><strong>{{ ano_letivo.ano|default:'Pendente' }}</strong></div><div class="card"><span>Turmas encontradas</span><strong>{{ total_turmas }}</strong></div><div class="card"><span>Horários semanais</span><strong>{{ total_horarios }}</strong></div></div>
+{% for linha in linhas %}<section class="panel"><h3>{{ linha.regra.nome }} — esperado {{ linha.regra.esperado }} turmas <span class="pill">{{ linha.regra.descricao }}</span></h3><p>{% if linha.ok %}<span class="pill">Quantidade correta</span>{% else %}<span class="pill" style="color:#facc15">Encontradas {{ linha.total_turmas }} de {{ linha.regra.esperado }}</span>{% endif %}</p><table class="table"><thead><tr><th>Turma</th><th>Professor regente</th><th>Horários cadastrados</th></tr></thead><tbody>{% for turma in linha.turmas %}<tr><td>{{ turma.nome }}</td><td>{{ turma.professor.get_full_name|default:'Não informado'|default:'Sem regente' }}</td><td>{{ turma.horarios.count }}</td></tr>{% empty %}<tr><td colspan="3">Nenhuma turma nesse turno.</td></tr>{% endfor %}</tbody></table></section>{% endfor %}
+{% endblock %}

@@ -1,0 +1,10 @@
+{% if messages %}
+<section class="premium-messages no-print" role="status" aria-live="polite">
+  {% for message in messages %}
+    <div class="premium-message premium-message-{{ message.tags|default:'info' }}">
+      <span class="premium-message-dot"></span>
+      <span>{{ message }}</span>
+    </div>
+  {% endfor %}
+</section>
+{% endif %}

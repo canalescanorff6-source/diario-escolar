@@ -1,0 +1,42 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %} completo{% endblock %}
+{% block subtitulo %}Rotas, botões, áreas, carga horária, vínculos e pendências reais do Diário IA{% endblock %}
+{% block conteudo %}
+<section class="panel">
+  <div class="premium-row"><div><h3>Resumo da auditoria 381–400</h3><p class="muted">Varredura segura sem depender do Django Admin. Use esta tela para achar o que ainda falta alimentar ou corrigir.</p></div><a class="gestao-base-btn" href="{% url 'gestao_roteiro_correcao_381' %}">Abrir roteiro de correção</a></div>
+  <div class="grid">
+    {% for c in cards %}<article class="card"><span>{{ c.label }}</span><strong>{{ c.valor }}</strong><small>{{ c.detalhe }}</small></article>{% endfor %}
+  </div>
+</section>
+
+<section class="panel">
+  <h3>Status principal</h3>
+  <div class="check-list">
+    {% for item in linhas %}
+      <div class="check-list-row"><div><strong>{{ item.item }}</strong><br><span class="muted">{{ item.detalhe }}</span></div><span class="pill {% if item.status == 'OK' or item.status == 'Oficial' or item.status == 'Ativa' or item.status == 'Reforçado' %}status-ok{% else %}status-warn{% endif %}">{{ item.status }}</span></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel">
+  <h3>Pendências operacionais reais</h3>
+  <div class="check-list">
+    {% for p in pendencias %}<div class="check-list-row"><div><strong>{{ p.area }}</strong><br><span class="muted">{{ p.texto }}</span></div><span class="pill status-warn">{{ p.acao }}</span></div>{% empty %}<div class="empty-state-premium"><strong>Nenhuma pendência operacional crítica encontrada.</strong><span>Cadastros, vínculos, horários e turnos estão coerentes para continuar o fluxo.</span></div>{% endfor %}
+  </div>
+</section>
+
+<section class="panel">
+  <h3>Acessos principais</h3>
+  <table class="table"><thead><tr><th>Rota</th><th>Status</th><th>URL</th></tr></thead><tbody>
+  {% for r in rotas %}<tr><td>{{ r.nome }}</td><td>{% if r.ok %}<span class="pill status-ok">OK</span>{% else %}<span class="pill status-bad">Erro</span>{% endif %}</td><td>{% if r.ok %}{{ r.url }}{% else %}{{ r.erro }}{% endif %}</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+
+<section class="panel">
+  <h3>Auditoria de templates e botões</h3>
+  <div class="grid"><article class="card"><span>Templates lidos</span><strong>{{ totais_templates.templates }}</strong></article><article class="card"><span>Links para admin</span><strong>{{ totais_templates.links_admin }}</strong></article><article class="card"><span>Links cruzados</span><strong>{{ totais_templates.links_cruzados }}</strong></article><article class="card"><span>Links sem classe explícita</span><strong>{{ totais_templates.links_crus }}</strong></article></div>
+  <table class="table"><thead><tr><th>Tipo</th><th>Arquivo</th><th>Detalhe</th></tr></thead><tbody>
+  {% for p in problemas_templates %}<tr><td>{{ p.tipo }}</td><td>{{ p.arquivo }}</td><td>{{ p.detalhe }}</td></tr>{% empty %}<tr><td colspan="3">Nenhum problema visual crítico localizado na varredura leve.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

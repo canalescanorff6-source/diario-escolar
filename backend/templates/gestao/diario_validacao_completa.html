@@ -1,0 +1,30 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência Completa do Diário Escolar{% endblock %}
+{% block subtitulo %}Confere se cada turma possui identificação, professor, disciplinas, grade, frequência e registro mensal de aulas.{% endblock %}
+{% block conteudo %}
+<section class="grid">
+  <article class="card"><span>Turmas avaliadas</span><strong>{{ total_turmas }}</strong></article>
+  <article class="card"><span>Completas</span><strong>{{ completas }}</strong></article>
+  <article class="card"><span>Pendentes</span><strong>{{ pendentes }}</strong></article>
+  <article class="card"><span>Data</span><strong>{{ hoje|date:'d/m/Y' }}</strong></article>
+</section>
+<section class="panel">
+  <h3>Checklist oficial por turma</h3>
+  <table class="table">
+    <thead><tr><th>Turma</th><th>Identificação</th><th>Professor/disciplinas</th><th>Horários</th><th>Frequência/aulas</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody>
+    {% for item in linhas %}
+      <tr>
+        <td><strong>{{ item.turma.nome }}</strong><br><span class="muted">{{ item.turma.ano_letivo|default:'Ano não informado' }} • {{ item.turma.turno|default:'Turno não informado' }}</span></td>
+        <td>{% if item.escola %}<span class="pill">{{ item.escola.nome }}</span>{% else %}<span class="pill">Escola pendente</span>{% endif %}</td>
+        <td>{{ item.professores.count }} professor(es)<br>{{ item.disciplinas.count }} disciplina(s)</td>
+        <td>{{ item.horarios.count }} horário(s)</td>
+        <td>{{ item.total_frequencias }} frequência(s)<br>{{ item.total_aulas }} aula(s)</td>
+        <td><span class="pill">{{ item.percentual }}% • {{ item.status }}</span><br><span class="muted">{% for p in item.pendencias %}{{ p }}{% if not forloop.last %}, {% endif %}{% empty %}Sem pendências{% endfor %}</span></td>
+        <td><a class="gestao-base-btn" href="{% url 'diario_oficial_turma_completo' item.turma.id %}">Abrir diário</a> <a class="gestao-base-btn" href="{% url 'frequencia_mensal_turma' item.turma.id %}">Frequência</a></td>
+      </tr>
+    {% empty %}<tr><td colspan="7">Nenhuma turma cadastrada.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

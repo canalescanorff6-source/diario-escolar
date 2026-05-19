@@ -1,0 +1,7 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Frequência anual por disciplina{% endblock %}
+{% block subtitulo %}{{ aluno.nome }} • {{ aluno.turma.nome }} • P/F/FJ separados • {{ ano }}{% endblock %}
+{% block conteudo %}
+<section class="panel no-print"><a class="gestao-base-btn" href="{% url 'gestao_painel_aluno_diario_real_151' aluno.id %}">Voltar ao painel do aluno</a></section>
+<section class="panel"><table class="table"><thead><tr><th>Disciplina</th><th>Jan</th><th>Fev</th><th>Mar</th><th>Abr</th><th>Mai</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th><th>Out</th><th>Nov</th><th>Dez</th></tr></thead><tbody>{% for linha in linhas %}<tr><td>{{ linha.disciplina.nome }}</td>{% for mes in linha.meses %}<td>P {{ mes.freq.presencas }}<br>F {{ mes.freq.faltas }}<br>FJ {{ mes.freq.fj }}</td>{% endfor %}</tr>{% empty %}<tr><td colspan="13">Nenhum lançamento de frequência encontrado para este aluno no ano selecionado.</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

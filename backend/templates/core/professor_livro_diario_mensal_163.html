@@ -1,0 +1,12 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Livro mensal do professor{% endblock %}
+{% block subtitulo %}{{ professor_nome }} • {{ mes_nome }}/{{ ano }} • Diário de Classe{% endblock %}
+{% block conteudo %}
+<section class="grid">
+    <article class="card"><span>Escola</span><strong>{% if escola %}{{ escola.nome }}{% else %}Pendente{% endif %}</strong><p class="pill">Identificação</p></article>
+    <article class="card"><span>Ano letivo</span><strong>{% if ano_letivo %}{{ ano_letivo.ano }}{% else %}Pendente{% endif %}</strong><p class="pill">Oficial</p></article>
+    <article class="card"><span>Professor</span><strong>{{ professor_nome }}</strong><p class="pill">Automático</p></article>
+    <article class="card"><span>Mês</span><strong>{{ mes_nome }}/{{ ano }}</strong><p class="pill">Mensal</p></article>
+</section>
+<section class="panel"><table class="table"><thead><tr><th>Turma</th><th>Turno</th><th>Disciplina</th><th>Horários</th><th>Alunos</th><th>Frequência</th><th>Aulas</th><th>Status</th></tr></thead><tbody>{% for linha in linhas %}<tr><td>{{ linha.vinculo.turma.nome }}</td><td>{{ linha.turno }}</td><td>{{ linha.vinculo.disciplina.nome }}</td><td>{{ linha.bloco.horarios_count }}</td><td>{{ linha.bloco.total_alunos }}</td><td>P {{ linha.bloco.frequencia.presencas }} / F {{ linha.bloco.frequencia.faltas }} / FJ {{ linha.bloco.frequencia.fj }}</td><td>{{ linha.bloco.aulas_count }}</td><td>{% if linha.ok %}<span class="pill">OK</span>{% else %}{% for p in linha.pendencias %}<span class="pill">{{ p }}</span> {% endfor %}{% endif %}</td></tr>{% empty %}<tr><td colspan="8">Nenhum vínculo ativo para este professor.</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

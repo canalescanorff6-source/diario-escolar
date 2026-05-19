@@ -1,0 +1,23 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% block titulo %}{{ titulo_modulo }}{% endblock %}
+{% block subtitulo %}Módulo consolidado e compatibilizado no conferência final{% endblock %}
+{% block conteudo %}
+<section class="grid">
+    {% for card in cards %}
+    <article class="card">
+        <span>{{ card.titulo }}</span>
+        <strong>{{ card.valor }}</strong>
+        <p class="muted">{{ card.texto }}</p>
+    </article>
+    {% endfor %}
+</section>
+<section class="panel">
+    <h3>{{ titulo_modulo }}</h3>
+    <p class="muted">Este link existia em uma versão anterior do projeto e agora foi protegido para não quebrar a navegação. O módulo segue integrado ao painel de gestão premium.</p>
+    <div class="gestao-base-actions" style="margin-top:14px">
+        <a class="gestao-base-btn" href="{% url 'dashboard_gestao' %}">Voltar para Gestão</a>
+        <a class="gestao-base-btn" href="{% url 'gestao_relatorios' %}">Relatórios</a>
+        <a class="gestao-base-btn" href="{% url 'gestao_documentos' %}">Documentos</a>
+    </div>
+</section>
+{% endblock %}

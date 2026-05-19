@@ -1,0 +1,28 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% block titulo %}Saúde do sistema produção{% endblock %}
+{% block subtitulo %}Conferência geral antes da publicação do sistema{% endblock %}
+{% block conteudo %}
+{% include "partials/render_1081_resumo.html" %}
+<section class="render1081-grid">
+  {% for item in checks %}
+  <article class="render1081-card status-{{ item.nivel }}">
+    <div class="render1081-card-head"><span>{{ item.grupo }}</span><strong>{{ item.status }}</strong></div>
+    <h3>{{ item.pedido }}</h3>
+    <p>{{ item.detalhe }}</p>
+  </article>
+  {% endfor %}
+</section>
+{% if telas internas_amostra %}
+<section class="render1081-panel">
+  <h2>Legado visual ainda mapeado para remoção segura</h2>
+  <p>Esses arquivos não foram apagados à força para não quebrar URL nem funcionalidade. A camada premium global cobre o visual enquanto a remoção final é feita com uso real de uso.</p>
+  <div class="render1081-scroll">
+    {% for arquivo in telas internas_amostra %}<code>{{ arquivo }}</code>{% endfor %}
+  </div>
+</section>
+{% endif %}
+<div class="render1081-actions no-print">
+  <a class="premium-btn" href="{% url 'gestao_render_ready_1081' %}">Ver publicação do sistema</a>
+  <a class="premium-btn ghost" href="{% url 'gestao_capacidade_render_1081' %}">Capacidade simultânea</a>
+</div>
+{% endblock %}

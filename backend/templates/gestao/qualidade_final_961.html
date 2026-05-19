@@ -1,0 +1,8 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% block titulo %}Conferência final{% endblock %}
+{% block subtitulo %}Roteiro seguro para terminar o Diário IA Escolar{% endblock %}
+{% block conteudo %}
+<section class="mega961-hero"><div><span class="mega961-badge">Blindagem final</span><h2>Roteiro final de conclusão</h2><p>Correção primeiro, consolidação depois: nada de apagar banco, migrations ou lógica viva.</p></div><div class="mega961-score"><strong>{{ prontidao.prontidao|floatformat:1 }}%</strong><span>prontidão operacional</span><div class="mega961-progress" data-pct="{{ prontidao.prontidao }}"><span></span></div></div></section>
+<section class="mega961-roadmap">{% for bloco in blocos %}<article class="mega961-step"><span>{{ bloco.ordem }}</span><div><strong>{{ bloco.titulo }}</strong><p>{{ bloco.descricao }}</p></div><em>{{ bloco.status }}</em></article>{% endfor %}</section>
+<section class="mega961-two"><article class="panel"><h3>Pendências reais</h3><div class="mega961-list">{% for p in prontidao.pendentes %}<div class="mega961-row pending"><div><strong>{{ p.item }}</strong><small>{{ p.acao }}</small></div><span>PENDENTE</span></div>{% empty %}<div class="mega961-row ok"><div><strong>Nenhuma pendência crítica.</strong><small>Continuar uso acompanhado e publicação online.</small></div><span>OK</span></div>{% endfor %}</div></article><article class="panel"><h3>Itens de manutenção</h3><div class="mega961-kpis"><div><strong>{{ auditoria.templates_telas internas }}</strong><span>telas internas</span></div><div><strong>{{ auditoria.css_antigos_total }}</strong><span>estilos internos</span></div><div><strong>{{ auditoria.links_admin_total }}</strong><span>atalhos administrativos</span></div></div></article></section>
+{% endblock %}

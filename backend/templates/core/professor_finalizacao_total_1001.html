@@ -1,0 +1,17 @@
+{% extends "core/base_professor_premium.html" %}
+{% load static %}
+{% block titulo %}Plano do Professor{% endblock %}
+{% block subtitulo %}Organização da aula, chamada, conteúdo, fechamento e relatórios.{% endblock %}
+{% block icone %}✅{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/premium_base_final.css' %}">{% endblock %}
+{% block conteudo %}
+{% include 'partials/mega_checkup_1001_1080_resumo.html' %}
+<section class="final-1080-layout">
+  <div class="final-1080-panel">
+    <h3>Etapas do professor</h3>
+    {% for bloco in blocos %}<article class="final-1080-check"><div><span class="final-1080-badge">{{ bloco.ordem }}</span></div><div><strong>{{ bloco.titulo }}</strong><p>{{ bloco.descricao }}</p></div><span class="final-1080-chip {% if bloco.status == 'OK' %}success{% elif bloco.status == 'PARCIAL' %}warning{% else %}danger{% endif %}">{{ bloco.status }}</span></article>{% endfor %}
+  </div>
+  <aside class="final-1080-panel"><h3>Rotina segura</h3><p>O professor continua separado da gestão. A falta de vínculo/horário no banco é mostrada como pendência do diário, não como erro do sistema.</p><div class="final-1080-actions no-print"><a href="{% url 'professor_checkup_etapas_1001_1080' %}">Voltar à conferência</a><button type="button" data-final-print>Imprimir/PDF</button></div></aside>
+</section>
+{% endblock %}
+{% block extra_js %}<script src="{% static 'js/premium_app_final.js' %}"></script>{% endblock %}

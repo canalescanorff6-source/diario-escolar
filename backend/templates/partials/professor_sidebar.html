@@ -1,0 +1,25 @@
+<aside class="sidebar professor-sidebar-premium">
+  <div class="logo" aria-label="Diário IA Professor">🤖</div>
+  <nav class="professor-nav-clean" aria-label="Menu principal do professor">
+    <div class="sidebar-section-title">Principal</div>
+    <a href="{% url 'dashboard_professor' %}" data-active-paths="/|/professor/">🏠 <span>Painel</span></a>
+    <a href="{% url 'professor_rotina_semanal_361' %}" data-active-paths="/professor/rotina-semanal/">🗓️ <span>Rotina semanal</span></a>
+    <a href="{% url 'professor_centro_operacional_321' %}" data-active-paths="/professor/centro-operacional/|/professor/operacao-real/">🎯 <span>Central do Professor</span></a>
+    <a href="{% url 'professor_aula_rapida_321' %}" data-active-paths="/professor/aula-rapida/">⚡ <span>Aula rápida</span></a>
+    <a href="{% url 'turmas' %}" data-active-paths="/turmas/|/turma/|/professor/horarios-reais/">🏫 <span>Minhas turmas</span></a>
+
+    <div class="sidebar-section-title">Diário de classe</div>
+    <a href="{% url 'professor_diario_oficial' %}" data-active-paths="/professor/diario-oficial/|/professor/registro-rapido-aula/|/professor/frequencia-rapida/|/professor/turma/">📘 <span>Lançamentos</span></a>
+    <a href="{% url 'professor_diario_classe_oficial_1281' %}" data-active-paths="/professor/diario-classe-oficial-completo/">📗 <span>Meu Diário de Classe</span></a>
+    <a href="{% url 'professor_carga_horaria_301' %}" data-active-paths="/professor/carga-horaria/|/professor/horarios-reais/|/professor/agenda-semanal/">🕒 <span>Carga horária</span></a>
+    <a href="{% url 'professor_fechamento_mensal_901' %}" data-active-paths="/professor/fechamento-mensal-final/|/professor/prontidao-lancamentos/|/professor/consolidado-mensal/|/professor/relatorio-lancamentos-mes/|/professor/espelho-mensal/">📕 <span>Fechamento mensal</span></a>
+    <a href="{% url 'professor_relatorios_901' %}" data-active-paths="/professor/relatorios-final/|/professor/relatorios/">📄 <span>Relatórios</span></a>
+
+    <div class="sidebar-section-title">Apoio</div>
+    <a href="{% url 'professor_alunos' %}" data-active-paths="/professor/alunos/|/professor/turma/|/aluno/">👨‍🎓 <span>Alunos</span></a>
+    <a href="{% url 'professor_central_pendencias' %}" data-active-paths="/professor/pendencias/|/professor/checkup-meu-diario/">✅ <span>Pendências</span></a>
+    <a href="{% url 'professor_ia_pedagogica_901' %}" data-active-paths="/professor/ia-pedagogica-final/|/professor/ia-pedagogica/|/professor/alertas-inteligentes/|/professor/plano-intervencao/">🧠 <span>IA Pedagógica</span></a>
+    <a href="{% url 'professor_configuracoes' %}" data-active-paths="/professor/configuracoes/">⚙️ <span>Configurações</span></a>
+    <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">{% csrf_token %}<button type="submit" class="sidebar-logout-btn">🚪 <span>Sair</span></button></form>
+  </nav>
+</aside>

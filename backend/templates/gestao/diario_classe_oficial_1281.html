@@ -1,0 +1,103 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Diário de Classe Oficial{% endblock %}
+{% block subtitulo %}Documento escolar com escola, ano letivo, turmas, turnos, professores, disciplinas, frequência P/F/FJ e registro mensal{% endblock %}
+{% block conteudo %}
+<section class="hero painel-unico-hero ia-mega-hero no-print">
+  <div>
+    <span class="hero-badge">Gestão como fonte oficial dos dados</span>
+    <h1>Diário de Classe Oficial</h1>
+    <p>Todos os dados oficiais vêm dos cadastros da gestão: escola, ano letivo, professores, alunos, turmas, disciplinas, vínculos e horários semanais.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="btn-primary" href="{% url 'gestao_cadastros_operacionais_301' %}">🧩 Cadastros</a>
+    <a class="btn-secondary-premium" href="{% url 'gestao_carga_horaria_professores_301' %}">🔗 Vínculos e carga</a>
+    <a class="btn-secondary-premium" href="{% url 'gestao_horarios' %}">🕒 Horários</a>
+    <button class="btn-secondary-premium" onclick="window.print()" type="button">🖨️ Imprimir</button>
+  </div>
+</section>
+
+<section class="ia-official-document official-doc">
+  <div class="ia-document-head">
+    <div>
+      <span class="premium-header-badge">Identificação da escola</span>
+      <h2>{% if cobertura.escola %}{{ cobertura.escola.nome }}{% else %}Escola não cadastrada{% endif %}</h2>
+      <p>{% if cobertura.escola %}{{ cobertura.escola.municipio|default:'—' }}/{{ cobertura.escola.estado|default:'—' }} • Ano letivo {{ cobertura.ano_letivo|default:'—' }}{% else %}Cadastre a escola em Gestão > Escola e ano letivo.{% endif %}</p>
+    </div>
+    <div class="ia-document-seal">DIÁRIO<br>DE CLASSE</div>
+  </div>
+  <div class="ia-document-meta">
+    <div><span>Turmas</span><strong>{{ cobertura.totais.turmas }}</strong></div>
+    <div><span>Alunos</span><strong>{{ cobertura.totais.alunos }}</strong></div>
+    <div><span>Vínculos</span><strong>{{ cobertura.totais.vinculos }}</strong></div>
+    <div><span>Horários</span><strong>{{ cobertura.totais.horarios }}</strong></div>
+    <div><span>Frequências</span><strong>{{ cobertura.totais.frequencias }}</strong></div>
+    <div><span>Registros</span><strong>{{ cobertura.totais.diarios }}</strong></div>
+    <div><span>Fechamentos</span><strong>{{ cobertura.totais.fechamentos }}</strong></div>
+  </div>
+</section>
+
+<section class="clean-grid-3" style="margin-top:18px;">
+  {% for turno in cobertura.turnos %}
+  <article class="clean-module-card">
+    <span class="clean-pill">{{ turno.label }}</span>
+    <h3>{{ turno.total }}/{{ turno.esperado }} turmas</h3>
+    <p>{{ turno.descricao }}</p>
+    <div class="clean-list" style="margin-top:10px;">
+      {% for turma in turno.turmas %}<div class="clean-list-item"><strong>{{ turma.nome }}</strong><small>{{ turma.turno }}</small></div>{% empty %}<div class="clean-empty">Sem turma cadastrada neste turno.</div>{% endfor %}
+    </div>
+  </article>
+  {% endfor %}
+</section>
+
+<section class="gestao-list-card" style="margin-top:18px;">
+  <div class="panel-header">
+    <div><h2>Requisitos do Diário de Classe</h2><span>Itens obrigatórios do Diário de Classe Oficial.</span></div>
+    <span class="clean-pill">{% if cobertura.ok_total %}Pronto{% else %}Em conferência{% endif %}</span>
+  </div>
+  <div class="clean-list">
+    {% for req in cobertura.requisitos %}
+    <div class="clean-list-item">
+      <div class="clean-list-main"><strong>{{ req.nome }}</strong><small>{{ req.valor }}</small></div>
+      <span class="clean-pill">{% if req.ok %}✅ OK{% else %}⚠️ Ajustar{% endif %}</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="diario-real-grid" style="margin-top:18px;">
+  {% for item in cobertura.linhas %}
+  <article class="ia-official-document diario-real-card official-doc">
+    <div class="diario-real-card-head">
+      <div>
+        <span class="premium-header-badge">{{ item.turno }}</span>
+        <h3>{{ item.turma.nome }}</h3>
+        <p>{{ item.ano_letivo }} • {{ item.total_alunos }} aluno(s)</p>
+      </div>
+      <strong class="diario-real-score">{{ item.frequencia_percentual }}%</strong>
+    </div>
+    <div class="ia-document-meta">
+      <div><span>Professor</span><strong>{{ item.total_professores }}</strong></div>
+      <div><span>Disciplinas</span><strong>{{ item.total_disciplinas }}</strong></div>
+      <div><span>Horários</span><strong>{{ item.total_horarios }}</strong></div>
+      <div><span>P</span><strong>{{ item.presencas }}</strong></div>
+      <div><span>F</span><strong>{{ item.faltas }}</strong></div>
+      <div><span>FJ</span><strong>{{ item.justificadas }}</strong></div>
+      <div><span>Aulas</span><strong>{{ item.diarios }}</strong></div>
+      <div><span>Fech.</span><strong>{{ item.fechados }}/{{ item.fechamentos }}</strong></div>
+    </div>
+    <div class="diario-real-list"><strong>Professor automático da gestão</strong><p>{{ item.professores_nomes }}</p></div>
+    <div class="diario-real-list"><strong>Disciplinas do diário</strong><p>{{ item.disciplinas_nomes }}</p></div>
+    <div class="diario-real-list"><strong>Horários semanais</strong><p>{% for h in item.horarios %}{{ h.get_dia_semana_display }} {{ h.ordem }}º • {{ h.hora_inicio|time:'H:i' }}–{{ h.hora_fim|time:'H:i' }} • {{ h.disciplina.nome }}{% if not forloop.last %}<br>{% endif %}{% empty %}Sem horários cadastrados.{% endfor %}</p></div>
+    {% if item.pendencias %}<div class="premium-empty-state"><strong>Pendências</strong><span>{% for p in item.pendencias %}{{ p }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></div>{% endif %}
+    <div class="diario-real-actions no-print">
+      <a class="btn-ghost-premium" href="{% url 'diario_oficial_turma_completo' item.turma.id %}">📘 Diário completo</a>
+      <a class="btn-ghost-premium" href="{% url 'frequencia_mensal_turma' item.turma.id %}">📅 Frequência mensal</a>
+      <a class="btn-ghost-premium" href="{% url 'registro_aulas_mensal_turma' item.turma.id %}">📝 Registro de aulas</a>
+      <a class="btn-ghost-premium" href="{% url 'diario_classe_turma' item.turma.id %}">📄 Impressão</a>
+    </div>
+  </article>
+  {% empty %}
+  <section class="panel empty-state-premium"><strong>Nenhuma turma cadastrada.</strong><span>Crie turmas pela gestão para montar o Diário de Classe.</span></section>
+  {% endfor %}
+</section>
+{% endblock %}

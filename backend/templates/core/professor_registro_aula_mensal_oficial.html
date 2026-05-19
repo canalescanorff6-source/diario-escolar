@@ -1,0 +1,15 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Registro mensal de aula{% endblock %}
+{% block subtitulo %}A turma e disciplina vêm dos vínculos cadastrados pela gestão{% endblock %}
+{% block conteudo %}
+<section class="panel"><form method="post">{% csrf_token %}
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+    <label>Turma<br><select name="turma" required>{% for v in vinculos %}<option value="{{ v.turma.id }}">{{ v.turma.nome }} • {{ v.turma.turno|default:'-' }}</option>{% endfor %}</select></label>
+    <label>Disciplina<br><select name="disciplina" required>{% for v in vinculos %}<option value="{{ v.disciplina.id }}">{{ v.disciplina.nome }} — {{ v.turma.nome }}</option>{% endfor %}</select></label>
+    <label>Data<br><input type="date" name="data" value="{{ data_padrao|date:'Y-m-d' }}" required></label>
+  </div>
+  <label>Conteúdo da aula<br><textarea name="descricao" rows="6" required placeholder="Descreva o conteúdo trabalhado no mês ou dia da aula"></textarea></label>
+  <label>Observações<br><textarea name="observacoes" rows="3" placeholder="Metodologia, atividade, habilidade, recuperação ou observação"></textarea></label>
+  <button class="btn-primary" type="submit">Salvar no Diário de Classe</button>
+</form></section>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência do Diário Escolar{% endblock %}
+{% block subtitulo %}Escola, ano letivo, vínculos, horários, frequência e aulas • {{ mes_nome }}/{{ ano }}{% endblock %}
+{% block conteudo %}
+<section class="grid">{% for card in cards %}<article class="card"><span>{{ card.titulo }}</span><strong>{{ card.valor }}</strong><p class="pill">{% if card.ok %}OK{% else %}Conferir{% endif %}</p></article>{% endfor %}</section>
+<section class="panel"><h3>Conferência por turno</h3><table class="table"><thead><tr><th>Turno</th><th>Turmas</th><th>Vínculos</th><th>Horários</th><th>Frequência</th><th>Aulas</th><th>Status</th></tr></thead><tbody>{% for linha in turnos %}<tr><td>{{ linha.turno }}</td><td>{{ linha.turmas_count }}</td><td>{{ linha.vinculos_count }}</td><td>{{ linha.horarios_count }}</td><td>P {{ linha.frequencias.presencas }} / F {{ linha.frequencias.faltas }} / FJ {{ linha.frequencias.fj }}</td><td>{{ linha.aulas_count }}</td><td><span class="pill">{% if linha.ok %}OK{% else %}Conferir{% endif %}</span></td></tr>{% endfor %}</tbody></table></section>
+<section class="panel no-print"><h3>Atalhos oficiais</h3><a class="gestao-base-btn" href="{% url 'gestao_matriz_turnos_diario_real_157' %}?mes={{ mes_param }}">Matriz por turnos</a> <a class="gestao-base-btn" href="{% url 'gestao_auditoria_fj_diario_real_157' %}?mes={{ mes_param }}">Auditoria FJ</a> <a class="gestao-base-btn" href="{% url 'gestao_checkup_etapas_157_162' %}?mes={{ mes_param }}">Conferência 157–162</a></section>
+{% endblock %}

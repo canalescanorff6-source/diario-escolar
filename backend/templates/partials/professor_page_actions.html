@@ -1,0 +1,4 @@
+<div class="page-actions-premium page-actions-professor no-print" aria-label="Ações da página">
+  <button type="button" class="page-action-btn" title="Voltar" onclick="if (history.length > 1) { history.back(); } else { window.location.href='{% url 'dashboard_professor' %}'; }"><span class="page-action-icon">←</span><span class="page-action-text">Voltar</span></button>
+  <a class="page-action-btn" title="Início Professor" href="{% url 'dashboard_professor' %}"><span class="page-action-icon">⌂</span><span class="page-action-text">Início</span></a>
+</div>

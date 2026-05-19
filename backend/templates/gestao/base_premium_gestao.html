@@ -1,0 +1,83 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Diário IA • Gestão</title>
+    <link rel="stylesheet" href="{% static 'css/premium_base_final.css' %}">
+    <link rel="stylesheet" href="{% static 'css/premium_responsive_final.css' %}">
+    <link rel="stylesheet" href="{% static 'css/premium_print_final.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<div class="layout ia-clean-shell gestao-shell">
+    {% include 'partials/gestao_sidebar.html' %}
+    <main class="content gestao-content">
+        <header class="gestao-base-header no-print">
+            <div>
+                <span class="gestao-base-badge">Diário IA • Gestão Escolar</span>
+                <h1 class="gestao-base-title">{% block titulo %}{% endblock %}</h1>
+                <p class="gestao-base-sub">{% block subtitulo %}Administração escolar{% endblock %}</p>
+            </div>
+            <div class="gestao-base-actions">
+                {% include 'partials/gestao_page_actions.html' %}
+                <a class="hero-mini-card gestao-mini-user profile-mini-link" href="{% url 'gestao_configuracoes' %}" title="Imagem da gestão">
+                    {% if request.user and request.user.is_authenticated and request.user.foto %}
+                        <img class="profile-mini-photo" src="{{ request.user.foto.url }}" alt="Imagem da gestão">
+                    {% else %}
+                        <strong>{% if request.user and request.user.is_authenticated %}{{ request.user.nome|default:request.user.first_name|default:request.user.username|default:'G'|slice:':1' }}{% else %}G{% endif %}</strong>
+                    {% endif %}
+                    <span>Gestão</span>
+                </a>
+            </div>
+        </header>
+        {% include 'partials/messages_premium.html' %}
+        {% block conteudo %}{% endblock %}
+        {% block gestao_content %}{% endblock %}
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+
+<script>
+(function(){
+  function normalizePath(value){
+    try { return (new URL(value, window.location.origin).pathname || '/').replace(/\/$/, '') || '/'; }
+    catch(e){ return String(value || '').split('?')[0].split('#')[0].replace(/\/$/, '') || '/'; }
+  }
+  function parsePaths(value){
+    return String(value || '').split('|').map(function(x){ return normalizePath(x.trim()).toLowerCase(); }).filter(Boolean);
+  }
+  function matchPath(current, candidate){
+    if(!candidate) return false;
+    if(candidate === '/') return current === '/' || current === '/professor' || current === '/professor/';
+    return current === candidate || current.indexOf(candidate + '/') === 0;
+  }
+  function markSidebarActive(){
+    var current = normalizePath(window.location.pathname).toLowerCase();
+    var links = Array.prototype.slice.call(document.querySelectorAll('.sidebar a[href]'));
+    var best = null, bestScore = -1;
+    links.forEach(function(a){ a.classList.remove('active'); a.removeAttribute('aria-current'); a.removeAttribute('data-active'); });
+    links.forEach(function(a){
+      var paths = parsePaths(a.getAttribute('data-active-paths'));
+      if(!paths.length) paths = [normalizePath(a.getAttribute('href')).toLowerCase()];
+      paths.forEach(function(p){
+        if(matchPath(current, p)){
+          var exactBonus = current === p ? 1000 : 0;
+          var score = p.length + exactBonus;
+          if(score > bestScore){ best = a; bestScore = score; }
+        }
+      });
+    });
+    if(best){ best.classList.add('active'); best.setAttribute('aria-current','page'); best.setAttribute('data-active','true'); }
+  }
+  window.diarioIAMarkSidebarActive = markSidebarActive;
+  if(document.readyState !== 'loading') markSidebarActive(); else document.addEventListener('DOMContentLoaded', markSidebarActive);
+})();
+</script>
+
+<script src="{% static 'js/premium_app_final.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

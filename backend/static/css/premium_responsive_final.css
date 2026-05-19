@@ -1,0 +1,34 @@
+/* Responsividade final 1221-1280 */
+@media (max-width: 1100px){.e33-grid,.premium-grid,.grid,.cards-grid{grid-template-columns:1fr!important}.premium-shell,.layout-shell{padding:16px!important}.premium-card,.glass-card,.card{min-width:0!important;overflow-wrap:anywhere}}
+@media (max-width: 760px){.premium-header,.page-header,.e33-hero{flex-direction:column!important;align-items:flex-start!important;gap:12px!important}.premium-actions,.actions,.top-actions{width:100%!important;display:flex!important;flex-wrap:wrap!important}.premium-actions a,.premium-actions button,.btn,.e33-btn{width:auto!important}.premium-table-wrapper,.scroll-box,.table-wrap{overflow-x:auto!important}.premium-table,table{min-width:720px}.sidebar,.premium-sidebar{position:relative!important;width:100%!important}.content,.main,.premium-content{margin-left:0!important}}
+
+
+/* E-mail autorizado travado na solicitação do código da gestão */
+.auth-locked-email-form{gap:18px;}
+.auth-locked-email-card{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:16px 18px;
+  border:1px solid rgba(82,255,235,.26);
+  background:linear-gradient(135deg, rgba(4,18,32,.92), rgba(7,45,50,.72));
+  border-radius:18px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.auth-locked-email-label{
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#67f7e8;
+  font-weight:900;
+}
+.auth-locked-email-value{
+  color:#eaffff;
+  font-size:1rem;
+  font-weight:900;
+  word-break:break-word;
+}
+.auth-locked-email-card small{
+  color:rgba(214,236,245,.74);
+  line-height:1.4;
+}

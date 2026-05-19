@@ -1,0 +1,7 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Prontidão do meu Diário{% endblock %}
+{% block subtitulo %}O que falta lançar por turma, disciplina e mês{% endblock %}
+{% block conteudo %}
+<form class="panel" method="get" style="display:flex;gap:10px;align-items:end;flex-wrap:wrap"><label>Mês<br><input type="month" name="mes" value="{{ mes_param }}"></label><button class="btn-primary">Abrir</button><a class="btn-primary" href="{% url 'professor_fechamento_mensal_diario_139' %}?mes={{ mes_param }}">Fechamento mensal</a></form>
+<section class="panel"><h3>{{ mes_nome }} / {{ ano }}</h3><div class="grid">{% for item in cards %}<div class="card"><span>{{ item.vinculo.turma.nome }} • {{ item.vinculo.disciplina.nome }}</span><strong>{% if item.bloco.ok %}Pronto{% else %}Pendente{% endif %}</strong><p><span class="pill">Horários {{ item.bloco.horarios_count }}</span> <span class="pill">Aulas {{ item.bloco.aulas_count }}</span> <span class="pill">Freq. {{ item.bloco.frequencia.total }}</span></p>{% if item.bloco.pendencias %}<p>{% for p in item.bloco.pendencias %}<span class="pill" style="color:#facc15">{{ p }}</span> {% endfor %}</p>{% endif %}</div>{% empty %}<div class="card"><span>Sem vínculos</span><strong>Nenhum registro</strong><p class="muted">Peça à gestão para vincular professor, turma e disciplina.</p></div>{% endfor %}</div></section>
+{% endblock %}

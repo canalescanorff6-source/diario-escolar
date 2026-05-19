@@ -1,0 +1,13 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% load static %}
+{% block titulo %}Mapa Recuperacao{% endblock %}
+{% block subtitulo %}Tela integrada ao Diário Escolar.{% endblock %}
+{% block conteudo %}
+<div class="premium-only-page visual-1161-1220" data-template="gestao/mapa_recuperacao.html">
+{% if messages %}<div class="official-box">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
+
+<div class="print-actions"><form method="get"><select name="turma">{% for turma in turmas %}<option value="{{ turma.id }}" {% if turma_selecionada.id == turma.id %}selected{% endif %}>{{ turma.nome }}</option>{% endfor %}</select><button class="btn-primary" type="submit">Filtrar</button></form>{% if turma_selecionada %}<form method="post">{% csrf_token %}<button class="btn-primary" type="submit">📄 Registrar documento</button></form>{% endif %}</div>
+<section class="cards gestao-cards"><div class="card premium-card"><span>Turma</span><h2>{{ turma_selecionada.nome|default:'—' }}</h2><small>selecionada</small></div><div class="card premium-card"><span>Alunos</span><h2>{{ total_alunos }}</h2><small>ativos</small></div><div class="card premium-card"><span>Recuperação/Atenção</span><h2>{{ total_recuperacao }}</h2><small>com plano sugerido</small></div></section>
+<section class="official-box"><h2>Mapa oficial de recuperação</h2><table class="premium-table"><thead><tr><th>Aluno</th><th>Média</th><th>Faltas</th><th>Nível</th><th>Componentes</th><th>Ações</th></tr></thead><tbody>{% for item in linhas %}<tr><td>{{ item.aluno.nome }}</td><td>{{ item.media }}</td><td>{{ item.faltas }}</td><td>{% if item.nivel == 'CRÍTICO' %}<span class="tag-danger">{{ item.nivel }}</span>{% else %}<span class="tag-warn">{{ item.nivel }}</span>{% endif %}</td><td>{% for d in item.disciplinas %}{{ d }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</td><td>{% for acao in item.acoes %}• {{ acao }}<br>{% endfor %}</td></tr>{% empty %}<tr><td colspan="6">Nenhum aluno em recuperação no filtro atual.</td></tr>{% endfor %}</tbody></table></section>
+</div>
+{% endblock %}

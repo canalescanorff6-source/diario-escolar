@@ -1,0 +1,19 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}IA Pedagógica Final{% endblock %}
+{% block subtitulo %}Risco escolar, faltas, FJ, turmas críticas e professores pendentes{% endblock %}
+{% block conteudo %}
+<section class="ia-final-hero">
+  <div><span class="ia-final-badge">IA operacional final</span><h2>Análise pedagógica com dados reais</h2><p>{{ subtitulo }}</p><div class="ia-actions"><a href="{% url 'gestao_fechamento_mensal_901' %}">📕 Fechamento</a><a class="secondary" href="{% url 'gestao_alunos' %}">👨‍🎓 Alunos</a></div></div>
+  <div class="ia-final-score"><strong>{{ ia_901_960.alunos_risco|length }}</strong><span>alunos em atenção</span></div>
+</section>
+<section class="ia-final-grid">
+  <div class="ia-final-card"><span>Alunos analisados</span><strong>{{ ia_901_960.alunos_analisados }}</strong><small>ativos</small></div>
+  <div class="ia-final-card"><span>Turmas críticas</span><strong>{{ ia_901_960.turmas_criticas|length }}</strong><small>revisar</small></div>
+  <div class="ia-final-card"><span>Faltas</span><strong>{{ ia_901_960.faltas_total }}</strong><small>sem FJ</small></div>
+  <div class="ia-final-card"><span>FJ</span><strong>{{ ia_901_960.fj_total }}</strong><small>justificadas</small></div>
+</section>
+<section class="ia-final-two">
+  <div class="ia-final-panel"><h3>Alunos em atenção</h3><input data-filter-target=".aluno-risco-final" placeholder="Buscar aluno, turma ou motivo"><div class="ia-final-list" style="margin-top:12px;">{% for item in ia_901_960.alunos_risco %}<div class="ia-final-item aluno-risco-final"><div><strong>{{ item.aluno.nome }}</strong><small>{{ item.turma.nome }} • {{ item.motivos }} • faltas {{ item.faltas }} + FJ {{ item.fj }}{% if item.media %} • média {{ item.media }}{% endif %}</small></div><span class="ia-status {{ item.nivel|lower }}">{{ item.nivel }}</span></div>{% empty %}<div class="ia-empty">Nenhum aluno em risco encontrado.</div>{% endfor %}</div></div>
+  <div class="ia-final-panel"><h3>Recomendações úteis</h3><div class="ia-final-list">{% for rec in ia_901_960.recomendacoes %}<div class="ia-final-item"><strong>✨ {{ rec }}</strong></div>{% endfor %}</div><h3 style="margin-top:18px;">Professores pendentes</h3><div class="ia-final-list">{% for item in ia_901_960.professores_pendentes %}<div class="ia-final-item"><strong>{{ item.nome }}</strong><span class="ia-status pendente">{{ item.pendencias|join:', ' }}</span></div>{% empty %}<div class="ia-empty">Nenhuma pendência crítica de professor.</div>{% endfor %}</div></div>
+</section>
+{% endblock %}

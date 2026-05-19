@@ -1,0 +1,12 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Meu resumo mensal{% endblock %}
+{% block subtitulo %}Turmas e disciplinas atribuídas pela gestão{% endblock %}
+{% block conteudo %}
+<div class="dashboard-grid cards-resumo">
+  <div class="card"><span>Professor</span><strong>{{ professor.get_full_name|default:'Não informado' }}</strong></div>
+  <div class="card"><span>Mês</span><strong>{{ mes_nome }} / {{ ano }}</strong></div>
+  <div class="card"><span>Turmas</span><strong>{{ linhas|length }}</strong></div>
+</div>
+<div class="panel no-print"><form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end"><label>Mês<br><input type="month" name="mes" value="{{ mes_param }}"></label><button class="btn-primary" type="submit">Filtrar</button><a class="btn-primary" href="{% url 'professor_registro_aula_mensal_oficial' %}">Registrar aula</a></form></div>
+{% for item in linhas %}<section class="panel"><h3>{{ item.turma.nome }} • {{ item.turma.turno|default:'Turno não informado' }}</h3><p>Alunos: {{ item.total_alunos }}</p><table class="table"><thead><tr><th>Disciplina</th><th>Frequência</th><th>Aulas</th><th>Atalho</th></tr></thead><tbody>{% for bloco in item.disciplinas %}<tr><td>{{ bloco.disciplina.nome }}</td><td>P {{ bloco.frequencia.presencas }} • F {{ bloco.frequencia.faltas }} • FJ {{ bloco.frequencia.fj }}</td><td>{{ bloco.total_aulas }}</td><td><a class="btn-primary" href="{% url 'professor_registro_aula_mensal_oficial' %}?turma={{ item.turma.id }}&disciplina={{ bloco.disciplina.id }}">Registrar aula</a></td></tr>{% empty %}<tr><td colspan="4">Sem disciplina vinculada.</td></tr>{% endfor %}</tbody></table></section>{% empty %}<section class="panel">Nenhuma turma vinculada ao professor.</section>{% endfor %}
+{% endblock %}

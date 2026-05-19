@@ -1,0 +1,32 @@
+<section class="ia-mega-panel no-print">
+  <div class="panel-header">
+    <div>
+      <span class="premium-header-badge">Gestão escolar</span>
+      <h3>Painel de Prontidão Escolar</h3>
+      <span>Acompanhe o que já está configurado e o que falta para liberar o Diário Escolar.</span>
+    </div>
+    <div class="ia-readiness">
+      <div class="ia-readiness-ring" style="--p:{{ resumo_861_900_gestao.prontidao }}">{{ resumo_861_900_gestao.prontidao }}%</div>
+    </div>
+  </div>
+  <div class="ia-kpi-grid">
+    {% for card in resumo_861_900_gestao.cards %}
+      <div class="ia-kpi-card"><span>{{ card.label }}</span><strong>{{ card.valor }}</strong><small>{{ card.detalhe }}</small></div>
+    {% endfor %}
+  </div>
+  <div class="ia-two-grid">
+    <div class="ia-check-list">
+      {% for item in resumo_861_900_gestao.requisitos|slice:':6' %}
+        <div class="ia-check-item {% if item.ok %}ok{% else %}pending{% endif %}">
+          <div><strong>{{ item.item }}</strong><br><span>{{ item.grupo }}</span></div>
+          <span class="ia-status-dot"></span>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="ia-check-list">
+      {% for p in resumo_861_900_gestao.pendencias|slice:':6' %}
+        <div class="alert {% if p.nivel == 'OK' %}success-alert{% elif p.nivel == 'ALTO' %}danger-alert{% else %}warning-alert{% endif %}"><strong>{{ p.area }}:</strong> {{ p.texto }}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,116 @@
+{% extends "core/base_professor_premium.html" %}
+{% load static %}
+
+{% block titulo %}Painel do Professor{% endblock %}
+{% block subtitulo %}Painel do Diário Escolar • {{ hoje|date:"d/m/Y" }}{% endblock %}
+{% block icone %}📘{% endblock %}
+
+
+{% block conteudo %}
+<section class="hero compact-premium-header painel-unico-hero">
+    <div>
+        <span class="hero-badge">Rotina do Professor</span>
+        <div class="hero-title">
+            <h1>{{ request.user.nome|default:request.user.get_full_name|default:request.user.username|default:'Professor' }}</h1>
+            <span class="wave">👋</span>
+        </div>
+        <p>
+            Aqui ficam suas turmas, horários, chamada, conteúdos e fechamento mensal em um caminho simples de Diário de Classe.
+        </p>
+    </div>
+    <div class="hero-actions painel-unico-actions">
+        <a href="{% url 'professor_centro_operacional_321' %}" class="btn-primary">🎯 Central do Professor</a>
+        <a href="{% url 'professor_carga_horaria_301' %}" class="btn-secondary-premium">🕒 Carga horária</a>
+        <a href="{% url 'professor_prontidao_lancamentos_163' %}" class="btn-secondary-premium">✅ Ver pendências</a>
+    </div>
+</section>
+
+{% include 'partials/resumo_861_900_professor.html' %}
+{% with prontidao=finalizacao_901_960_professor.prontidao requisitos_ok=finalizacao_901_960_professor.requisitos_ok requisitos_total=finalizacao_901_960_professor.requisitos_total cards=finalizacao_901_960_professor.cards %}
+{% include 'partials/finalizacao_901_960_resumo.html' %}
+{% endwith %}
+{% with mega=mega_checkup_961_1000_professor %}
+{% include 'partials/mega_checkup_961_1000_resumo.html' %}
+{% endwith %}
+{% with titulo=mega_checkup_1001_1080_professor.titulo subtitulo=mega_checkup_1001_1080_professor.subtitulo auditoria=mega_checkup_1001_1080_professor.auditoria %}
+{% include 'partials/mega_checkup_1001_1080_resumo.html' %}
+{% endwith %}
+
+<section class="cards gestao-cards painel-kpis-limpos">
+    <div class="card premium-card"><span>Turmas</span><h2>{{ total_turmas }}</h2><small>vinculadas pela gestão</small></div>
+    <div class="card premium-card"><span>Disciplinas</span><h2>{{ total_disciplinas }}</h2><small>por vínculo ativo</small></div>
+    <div class="card premium-card"><span>Carga semanal</span><h2>{{ carga_horaria_semana.horas }}h</h2><small>{{ carga_horaria_semana.aulas }} horário(s)</small></div>
+    <div class="card premium-card"><span>Aulas hoje</span><h2>{{ aulas_hoje.count }}</h2><small>rotina diária</small></div>
+</section>
+
+<section class="dashboard-focus-grid painel-comando-grid painel-211-fluxo">
+    {% for passo in fluxo_operacional %}
+        <a class="dashboard-focus-card painel-comando-card {% if forloop.first %}primary-flow{% endif %}" href="{% url passo.url %}">
+            <small class="fluxo-status">{{ passo.status }}</small>
+            <strong>{{ passo.ordem }}. {{ passo.titulo }}</strong>
+            <span>{{ passo.descricao }}</span>
+        </a>
+    {% endfor %}
+</section>
+
+<section class="grid-layout gestao-grid-layout">
+    <div class="left-column">
+        <div class="panel premium-scroll-panel">
+            <div class="panel-header">
+                <div><h3>Minhas turmas</h3><span>Turmas e disciplinas atribuídas pela gestão.</span></div>
+                <div class="panel-badge">{{ total_vinculos }} vínculo(s)</div>
+            </div>
+            <div class="premium-scroll">
+                {% for item in dados_turmas %}
+                    <div class="gestao-list-card painel-lista-limpa">
+                        <div>
+                            <strong>{{ item.turma.nome }}</strong>
+                            <span>{{ item.resumo.total_alunos|default:0 }} alunos • {{ item.disciplinas }} disciplina(s) • {{ item.horarios }} horário(s)</span>
+                        </div>
+                        <a href="{% url 'diario_classe_turma' item.turma.id %}">Abrir</a>
+                    </div>
+                {% empty %}
+                    <div class="empty-risk">Nenhuma turma vinculada pela gestão.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="panel painel-status-limpo">
+            <div class="panel-top"><h3>Conferência do meu Diário de Classe</h3></div>
+            <div class="alerts">
+                <div class="alert success-alert">✅ Chamada, frequência P/F/FJ e conteúdos ficam em Lançamentos.</div>
+                <div class="alert success-alert">✅ FJ fica separado para auditoria: {{ total_fj }} registro(s).</div>
+                <div class="alert warning-alert">📌 Faltas do período: {{ total_faltas_oficiais }}.</div>
+                {% for pendencia in pendencias_professor %}
+                    <div class="alert danger-alert">⚠️ {{ pendencia }}</div>
+                {% empty %}
+                    <div class="alert success-alert">✅ Nenhuma pendência básica encontrada.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="right-column">
+        <div class="panel premium-scroll-panel">
+            <div class="panel-header"><div><h3>Agenda da semana</h3><span>Horários cadastrados pela gestão</span></div><div class="panel-badge">{{ total_horarios }}</div></div>
+            <div class="premium-scroll">
+                {% for item in agenda %}
+                    <div class="feed-card"><strong style="display:block;margin-bottom:6px;color:#5eead4;">{{ item.horario }}</strong><span style="color:#fff;">{{ item.titulo }}</span><br><small>{{ item.turno }}</small></div>
+                {% empty %}
+                    <div class="feed-card">Nenhum horário semanal cadastrado.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="panel painel-status-limpo">
+            <div class="panel-top"><h3>Organização dos lançamentos</h3></div>
+            <div class="alerts">
+                <div class="alert success-alert">1️⃣ A turma continua sendo a porta de entrada.</div>
+                <div class="alert success-alert">2️⃣ A frequência P/F/FJ fica junto do lançamento da aula.</div>
+                <div class="alert success-alert">3️⃣ O conteúdo da aula acompanha a mesma turma e disciplina.</div>
+                <div class="alert warning-alert">4️⃣ O fechamento apenas confere o que já foi registrado.</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

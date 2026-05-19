@@ -1,0 +1,42 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Meu Fechamento Mensal{% endblock %}
+{% block subtitulo %}Conferência das minhas turmas, frequência P/F/FJ e conteúdos registrados{% endblock %}
+{% block icone %}📕{% endblock %}
+{% block conteudo %}
+<section class="ia-final-hero">
+  <div>
+    <span class="ia-final-badge">Fechamento do professor</span>
+    <h2>{{ fechamento.mes_nome }} de {{ fechamento.ano }}</h2>
+    <p>Confira chamada, conteúdo e fechamento por turma/disciplina antes de entregar o diário.</p>
+    <div class="ia-actions">
+      <a href="{% url 'professor_aula_rapida_321' %}">⚡ Abrir aula rápida</a>
+      <a class="secondary" href="{% url 'professor_diario_oficial' %}">📘 Lançamentos oficiais</a>
+      <button data-print-page>🖨️ Imprimir/PDF</button>
+    </div>
+  </div>
+  <div class="ia-final-score"><strong>{{ fechamento.prontidao|floatformat:1 }}%</strong><span>minha prontidão</span><div class="ia-progress" data-pct="{{ fechamento.prontidao }}"><span></span></div></div>
+</section>
+<div class="ia-actions">
+  {% for mes in fechamento.meses %}<a class="{% if not mes.ativo %}secondary{% endif %}" href="?mes={{ mes.valor }}">{{ mes.nome }}</a>{% endfor %}
+</div>
+<section class="ia-final-panel" style="margin-top:16px;">
+  <h3>Checklist das minhas turmas</h3>
+  <div class="table-responsive">
+    <table>
+      <thead><tr><th>Turma</th><th>Disciplina</th><th>Freq.</th><th>P/F/FJ</th><th>Conteúdos</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for linha in fechamento.linhas %}
+        <tr>
+          <td><strong>{{ linha.turma.nome }}</strong></td>
+          <td>{{ linha.disciplina.nome }}</td>
+          <td>{{ linha.frequencias }}</td>
+          <td>{{ linha.presencas }}/{{ linha.faltas }}/{{ linha.fj }}</td>
+          <td>{{ linha.conteudos }}</td>
+          <td><span class="ia-status {% if linha.status == 'Completo' %}ok{% else %}pendente{% endif %}">{{ linha.status }} • {{ linha.percentual|floatformat:0 }}%</span></td>
+        </tr>
+      {% empty %}<tr><td colspan="6">A gestão ainda precisa criar seus vínculos de turma/disciplina.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

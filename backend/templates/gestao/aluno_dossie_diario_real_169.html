@@ -1,0 +1,12 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Dossiê Escolar do Aluno{% endblock %}
+{% block subtitulo %}{{ aluno.nome }} • {{ turma.nome }} • {{ mes_nome }}/{{ ano }}{% endblock %}
+{% block conteudo %}
+<section class="grid">
+    <article class="card"><span>Aluno</span><strong>{{ aluno.nome }}</strong><p class="pill">{{ aluno.matricula }}</p></article>
+    <article class="card"><span>Turma/turno</span><strong>{{ turma.nome }}</strong><p class="pill">{{ turma.turno }}</p></article>
+    <article class="card"><span>Escola</span><strong>{% if escola %}{{ escola.nome }}{% else %}Pendente{% endif %}</strong><p class="pill">Oficial</p></article>
+    <article class="card"><span>Ano letivo</span><strong>{% if ano_letivo %}{{ ano_letivo.ano }}{% else %}{{ turma.ano_letivo.ano }}{% endif %}</strong><p class="pill">Gestão</p></article>
+</section>
+<section class="panel"><table class="table"><thead><tr><th>Disciplina</th><th>Frequência</th><th>Registros</th><th>Aulas do mês</th></tr></thead><tbody>{% for linha in linhas %}<tr><td><strong>{{ linha.disciplina.nome }}</strong></td><td>P {{ linha.frequencia.presencas }} / F {{ linha.frequencia.faltas }} / FJ {{ linha.frequencia.fj }}</td><td>{% for f in linha.registros %}<span class="pill">{{ f.data|date:'d/m' }} • {% if f.presente %}P{% elif f.observacao %}FJ{% else %}F{% endif %}</span> {% empty %}<span class="pill">Sem frequência</span>{% endfor %}</td><td>{% for aula in linha.aulas %}<p>{{ aula.data|date:'d/m' }} • {{ aula.descricao|truncatechars:90 }}</p>{% empty %}<span class="pill">Sem aula</span>{% endfor %}</td></tr>{% empty %}<tr><td colspan="4">Nenhuma disciplina vinculada para a turma.</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

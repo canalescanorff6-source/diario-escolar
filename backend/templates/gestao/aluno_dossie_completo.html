@@ -1,0 +1,18 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% block titulo %}{{ aluno.nome }}{% endblock %}
+{% block subtitulo %}Ficha oficial única do aluno • {{ aluno.matricula }} • {{ turma.nome }} • {{ turma.turno|default:'Turno não informado' }}{% endblock %}
+{% block conteudo %}
+<section class="grid">
+  <div class="card"><span>Responsável</span><strong>{{ aluno.responsavel|default:'-' }}</strong><small>{{ aluno.telefone|default:'sem telefone' }}</small></div>
+  <div class="card"><span>Nascimento</span><strong>{{ aluno.data_nascimento|date:'d/m/Y'|default:'-' }}</strong><small>cadastro escolar</small></div>
+  <div class="card"><span>Turma</span><strong>{{ turma.nome }}</strong><small>{{ turma.ano_letivo }}</small></div>
+  <div class="card"><span>Status</span><strong>{% if aluno.ativo %}Ativo{% else %}Inativo{% endif %}</strong><small>situação atual</small></div>
+</section>
+{% for bloco in blocos %}
+<section class="panel oficial-disciplina">
+  <div class="panel-header oficial-disciplina-head"><div><h3>{{ bloco.disciplina.nome }}</h3><span class="muted">Notas, frequência e aulas</span></div><div class="oficial-kpis"><span class="pill">Média {{ bloco.media|default:'-' }}</span><span class="pill">{{ bloco.frequencia_percentual }}% freq.</span><span class="pill">{{ bloco.faltas }} faltas</span></div></div>
+  <div class="oficial-grid-2"><div class="diario-real-list card"><strong>Notas</strong>{% for n in bloco.notas %}<p>{{ n.get_bimestre_display }}: T1 {{ n.nota1|default:'-' }} • T2 {{ n.nota2|default:'-' }} • T3 {{ n.nota3|default:'-' }} • Média {{ n.valor|default:'-' }}</p>{% empty %}<p class="empty-state">Sem notas.</p>{% endfor %}</div><div class="diario-real-list card"><strong>Últimas frequências</strong>{% for fr in bloco.frequencias %}<p>{{ fr.data|date:'d/m' }} • <span class="pill">{{ fr.status|default:'P' }}</span> {{ fr.observacao|default:'' }}</p>{% empty %}<p class="empty-state">Sem frequência.</p>{% endfor %}</div></div>
+  <div class="card"><h4>Aulas registradas</h4>{% for aula in bloco.aulas %}<p>{{ aula.data|date:'d/m' }} • {{ aula.descricao }}</p>{% empty %}<p class="empty-state">Sem aulas registradas.</p>{% endfor %}</div>
+</section>
+{% empty %}<section class="empty-state">Nenhum bloco pedagógico encontrado para este aluno.</section>{% endfor %}
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Painel da Gestão{% endblock %}
+{% block subtitulo %}{% if escola %}{{ escola.nome }}{% else %}Configure a escola{% endif %} • ano letivo {{ ano_letivo.ano|default:'—' }} • {{ hoje|date:'d/m/Y' }}{% endblock %}
+{% block conteudo %}
+<section class="hero painel-unico-hero ia-mega-hero">
+  <div>
+    <span class="hero-badge">Gestão escolar</span>
+    <h1>Gestão do Diário Escolar em uma central única</h1>
+    <p>Escola, professores, alunos, vínculos, horários, diário oficial, frequência P/F/FJ e fechamento agora aparecem como uma rotina única, sem tela solta e sem atalho duplicado.</p>
+  </div>
+  <div class="hero-actions">
+    <a href="{% url 'gestao_centro_operacional_321' %}" class="btn-primary">🎯 Central escolar</a>
+    <a href="{% url 'gestao_diario_oficial' %}" class="btn-secondary-premium">📘 Diário oficial</a>
+    <a href="{% url 'gestao_checkup_etapas_861_900' %}" class="btn-secondary-premium">✅ Conferência do Diário Escolar</a>
+  </div>
+</section>
+
+{% include 'partials/resumo_861_900_gestao.html' %}
+{% with prontidao=finalizacao_901_960_gestao.prontidao requisitos_ok=finalizacao_901_960_gestao.requisitos_ok requisitos_total=finalizacao_901_960_gestao.requisitos_total cards=finalizacao_901_960_gestao.cards %}
+{% include 'partials/finalizacao_901_960_resumo.html' %}
+{% endwith %}
+
+<section class="cards painel-kpis-limpos">
+  <a href="{% url 'gestao_cadastros_operacionais_301' %}" class="metric-link-card"><div class="card premium-card"><span>Turmas</span><h2>{{ total_turmas }}</h2><small>ativas</small></div></a>
+  <a href="{% url 'gestao_professores' %}" class="metric-link-card"><div class="card premium-card"><span>Professores</span><h2>{{ total_professores }}</h2><small>cadastrados</small></div></a>
+  <a href="{% url 'gestao_alunos' %}" class="metric-link-card"><div class="card premium-card"><span>Alunos</span><h2>{{ total_alunos }}</h2><small>matrículas ativas</small></div></a>
+  <a href="{% url 'gestao_vinculos' %}" class="metric-link-card"><div class="card premium-card"><span>Vínculos</span><h2>{{ total_vinculos }}</h2><small>professor/turma/disciplina</small></div></a>
+  <a href="{% url 'gestao_horarios' %}" class="metric-link-card"><div class="card premium-card"><span>Horários</span><h2>{{ total_horarios }}</h2><small>grade semanal</small></div></a>
+</section>
+
+<section class="ia-ops-grid">
+  <div class="left-column">
+    <section class="ia-official-document">
+      <div class="ia-document-head">
+        <div>
+          <span class="premium-header-badge">Identificação institucional</span>
+          <h2>{% if escola %}{{ escola.nome }}{% else %}Escola não cadastrada{% endif %}</h2>
+          <p>{% if escola %}{{ escola.aldeia|default:'—' }} • {{ escola.terra_indigena|default:'—' }} • {{ escola.municipio|default:'—' }}/{{ escola.estado|default:'—' }}{% else %}Cadastre escola e ano letivo para liberar o Diário Oficial documental.{% endif %}</p>
+        </div>
+        <div class="ia-document-seal">DIÁRIO<br>IA</div>
+      </div>
+      <div class="ia-document-meta">
+        <div><span>Ano letivo</span><strong>{{ ano_letivo.ano|default:'—' }}</strong></div>
+        <div><span>Frequência geral</span><strong>{{ frequencia_geral }}%</strong></div>
+        <div><span>Média escolar</span><strong>{{ media_escola }}</strong></div>
+        <div><span>FJ auditável</span><strong>{{ total_fj }}</strong></div>
+      </div>
+    </section>
+
+    <section class="panel premium-scroll-panel">
+      <div class="panel-header">
+        <div><h3>Turmas e estrutura pedagógica</h3><span>Alunos, vínculos e horários por turma.</span></div>
+        <span class="panel-badge">{{ total_turmas }} turmas</span>
+      </div>
+      <div class="premium-scroll">
+        <table class="table premium-table">
+          <thead><tr><th>Turma</th><th>Alunos</th><th>Vínculos</th><th>Horários</th><th>Ação</th></tr></thead>
+          <tbody>
+          {% for item in dados_turmas %}
+            <tr>
+              <td><strong>{{ item.turma.nome }}</strong><br><small>{{ item.turma.turno|default:'Turno não definido' }}</small></td>
+              <td>{{ item.total_alunos }}</td>
+              <td>{{ item.vinculos }}</td>
+              <td>{{ item.horarios }}</td>
+              <td><a class="btn-secondary-premium btn-mini" href="{% url 'diario_oficial_turma_completo' item.turma.id %}">Diário</a></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5">Nenhuma turma cadastrada.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel premium-risk-panel">
+      <div class="panel-header"><div><h3>Professores e carga pedagógica</h3><span>Controle de vínculos e horários semanais.</span></div><span class="panel-badge">Gestão</span></div>
+      <div class="risk-scroll">
+        {% for item in professores_dados %}
+          <div class="risk-card">
+            <div class="risk-student"><div class="risk-avatar">{{ item.professor.username|slice:':1' }}</div><div class="risk-info"><strong>{{ item.professor.get_full_name|default:item.professor.username }}</strong><small>{{ item.turmas }} turmas • {{ item.vinculos }} vínculos • {{ item.horarios }} horários</small></div></div>
+            <div class="risk-metrics"><div class="metric-box"><span>Turmas</span><strong>{{ item.turmas }}</strong></div><div class="metric-box"><span>Vínculos</span><strong>{{ item.vinculos }}</strong></div><div class="metric-box"><span>Horários</span><strong>{{ item.horarios }}</strong></div></div>
+          </div>
+        {% empty %}
+          <div class="empty-state-premium"><strong>Nenhum professor cadastrado.</strong><span>Crie professores e vínculos para iniciar a rotina escolar.</span></div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <div class="right-column">
+    <section class="panel">
+      <div class="panel-header"><div><h3>Fluxo único da gestão</h3><span>Ordem correta para alimentar o professor automaticamente.</span></div></div>
+      <div class="ia-check-list">
+        {% for passo in fluxo_gestao %}
+          <a class="painel-comando-card {% if forloop.first %}primary-flow{% endif %}" href="{% url passo.url %}"><strong>{{ passo.ordem }}. {{ passo.titulo }}</strong><span>{{ passo.descricao }}</span></a>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="panel painel-status-limpo">
+      <div class="panel-header"><div><h3>Resumo do Diário Escolar</h3><span>Indicadores oficiais principais.</span></div></div>
+      <div class="alerts">
+        <div class="alert success-alert">📚 {{ total_disciplinas }} disciplinas cadastradas.</div>
+        <div class="alert warning-alert">🔗 {{ total_vinculos }} vínculos ativos.</div>
+        <div class="alert success-alert">🕒 {{ total_horarios }} horários semanais cadastrados.</div>
+        <div class="alert danger-alert">📅 {{ total_faltas }} faltas + {{ total_fj }} FJ auditável.</div>
+        {% for pendencia in pendencias_gestao %}<div class="alert danger-alert">⚠️ {{ pendencia }}</div>{% empty %}<div class="alert success-alert">✅ Base mínima do Diário Escolar está pronta.</div>{% endfor %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header"><div><h3>Alunos em risco</h3><span>Monitoramento pedagógico e frequência.</span></div><span class="panel-badge">{{ total_risco }}</span></div>
+      <div class="ia-check-list">
+        {% for item in alunos_risco_admin %}
+          <div class="ia-check-item pending"><div><strong>{{ item.aluno.nome }}</strong><br><span>{{ item.turma.nome }}</span></div><span class="warn-pill">atenção</span></div>
+        {% empty %}
+          <div class="empty-state-premium"><strong>Nenhum aluno em risco encontrado.</strong><span>Continue acompanhando frequência e notas.</span></div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</section>
+{% endblock %}

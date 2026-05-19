@@ -1,0 +1,8 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência do Diário Escolar{% endblock %}
+{% block subtitulo %}Conferência final, livro da turma, mapa anual do aluno e prontidão do professor • {{ mes_nome }}/{{ ano }}{% endblock %}
+{% block conteudo %}
+<section class="grid">{% for card in cards %}<article class="card"><span>{{ card.titulo }}</span><strong>{{ card.valor }}</strong><p class="pill">{% if card.ok %}OK{% else %}Conferir{% endif %}</p></article>{% endfor %}</section>
+<section class="panel no-print"><h3>Rotas novas</h3><a class="gestao-base-btn" href="{% url 'gestao_conferencia_final_diario_real_163' %}?mes={{ mes_param }}">Conferência final</a> <a class="gestao-base-btn" href="{% url 'gestao_prontidao_diario_real_139' %}?mes={{ mes_param }}">Prontidão professor</a> <a class="gestao-base-btn" href="{% url 'gestao_livro_diario_turma_163' 0 %}?mes={{ mes_param }}">Livro professor</a></section>
+<section class="panel"><h3>Resumo operacional</h3><p>Sequência adicionada sem alterar banco: usa escola, ano letivo, turma, turno, vínculos professor/disciplina, horários semanais, frequência P/F/FJ e registros mensais de aula já existentes.</p></section>
+{% endblock %}

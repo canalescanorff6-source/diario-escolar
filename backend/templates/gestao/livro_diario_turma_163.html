@@ -1,0 +1,13 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Livro oficial da turma{% endblock %}
+{% block subtitulo %}{{ turma.nome }} • {{ turma.turno }} • {{ mes_nome }}/{{ ano }}{% endblock %}
+{% block conteudo %}
+<section class="grid">
+    <article class="card"><span>Escola</span><strong>{% if escola %}{{ escola.nome }}{% else %}Escola não cadastrada{% endif %}</strong><p class="pill">Identificação</p></article>
+    <article class="card"><span>Ano letivo</span><strong>{% if ano_letivo %}{{ ano_letivo.ano }}{% else %}Pendente{% endif %}</strong><p class="pill">Oficial</p></article>
+    <article class="card"><span>Série/turma/turno</span><strong>{{ turma.nome }}</strong><p class="pill">{{ turma.turno }}</p></article>
+    <article class="card"><span>Alunos</span><strong>{{ alunos.count }}</strong><p class="pill">Clique no aluno</p></article>
+</section>
+<section class="panel"><h3>Disciplinas e professores automáticos</h3><table class="table"><thead><tr><th>Disciplina</th><th>Professor</th><th>Horários</th><th>Frequência</th><th>Aulas</th><th>Status</th></tr></thead><tbody>{% for linha in linhas %}<tr><td>{{ linha.vinculo.disciplina.nome }}</td><td>{{ linha.professor_nome }}</td><td>{{ linha.bloco.horarios_count }}</td><td>P {{ linha.bloco.frequencia.presencas }} / F {{ linha.bloco.frequencia.faltas }} / FJ {{ linha.bloco.frequencia.fj }}</td><td>{{ linha.bloco.aulas_count }}</td><td>{% if linha.ok %}<span class="pill">OK</span>{% else %}{% for p in linha.bloco.pendencias %}<span class="pill">{{ p }}</span> {% endfor %}{% endif %}</td></tr>{% empty %}<tr><td colspan="6">Nenhum professor/disciplina vinculado a esta turma.</td></tr>{% endfor %}</tbody></table></section>
+<section class="panel"><h3>Alunos da turma</h3><table class="table"><thead><tr><th>Aluno</th><th>Ficha</th><th>Frequência anual</th></tr></thead><tbody>{% for aluno in alunos %}<tr><td>{{ aluno.nome }}</td><td><a class="gestao-base-btn" href="{% url 'gestao_painel_aluno_diario_real_151' aluno.id %}">Abrir painel</a></td><td><a class="gestao-base-btn" href="{% url 'gestao_aluno_frequencia_anual_disciplina_163' aluno.id %}?ano={{ ano }}">Ver P/F/FJ</a></td></tr>{% empty %}<tr><td colspan="3">Nenhum aluno ativo nesta turma.</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

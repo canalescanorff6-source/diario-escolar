@@ -1,0 +1,8 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência do Diário Escolar{% endblock %}
+{% block subtitulo %}Homologação, trilha mensal, painel do aluno e resumo anual do Diário Escolar • {{ mes_nome }}/{{ ano }}{% endblock %}
+{% block conteudo %}
+<section class="grid">{% for card in cards %}<article class="card"><span>{{ card.titulo }}</span><strong>{{ card.valor }}</strong><p class="pill">{% if card.ok %}OK{% else %}Conferir{% endif %}</p></article>{% endfor %}</section>
+<section class="panel"><h3>Pendências encontradas</h3>{% if saude.pendencias %}<ul>{% for p in saude.pendencias %}<li>{{ p }}</li>{% endfor %}</ul>{% else %}<p class="pill">Sem pendências críticas.</p>{% endif %}</section>
+<section class="panel no-print"><h3>Rotas novas</h3><a class="gestao-base-btn" href="{% url 'gestao_homologacao_diario_real_151' %}?mes={{ mes_param }}">Homologação</a> <a class="gestao-base-btn" href="{% url 'gestao_trilha_lancamentos_diario_151' %}?mes={{ mes_param }}">Trilha de lançamentos</a> <a class="gestao-base-btn" href="{% url 'gestao_fechamento_oficial_diario_145' %}?mes={{ mes_param }}">Fechamento oficial</a></section>
+{% endblock %}

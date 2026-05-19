@@ -1,0 +1,34 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% load static %}
+{% block titulo %}Saúde do sistema final{% endblock %}
+{% block subtitulo %}Confere tudo que foi pedido, separa erro técnico de falta de dados e mantém o projeto sem quebrar.{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/premium_base_final.css' %}">{% endblock %}
+{% block gestao_content %}
+{% include 'partials/mega_checkup_1001_1080_resumo.html' %}
+<section class="final-1080-grid">
+  {% for card in cards %}<article class="final-1080-card"><span>{{ card.titulo }}</span><strong>{{ card.valor }}</strong><small>{{ card.texto }}</small></article>{% endfor %}
+</section>
+<section class="final-1080-layout">
+  <div class="final-1080-panel">
+    <h3>Checklist completo dos pedidos</h3>
+    <p>Itens parciais não são erro de sistema: normalmente dependem de cadastro, vínculo, horário, frequência ou conteúdo lançado no banco atual.</p>
+    <input class="input-premium" data-final-filter="#checks-1080" placeholder="Buscar por gestão, professor, diário, IA, relatórios..." style="width:100%;margin:8px 0 14px;">
+    <div class="final-1080-scroll" id="checks-1080">
+      {% for item in checks %}
+      <article class="final-1080-check" data-final-row>
+        <div><span class="final-1080-badge">{{ item.grupo }}</span></div>
+        <div><strong>{{ item.pedido }}</strong><p>{{ item.evidencia }}</p><small>Próxima ação: {{ item.acao }}</small></div>
+        <span class="final-1080-chip {{ item.nivel }}">{{ item.status }}</span>
+      </article>
+      {% empty %}<div class="final-1080-empty">Nenhum item de conferência encontrado.</div>{% endfor %}
+    </div>
+  </div>
+  <aside class="final-1080-panel">
+    <h3>Acessos principais</h3>
+    <table class="final-1080-table"><thead><tr><th>Área</th><th>Tela</th><th>Status</th></tr></thead><tbody>{% for r in rotas.linhas %}<tr><td>{{ r.grupo }}</td><td>{{ r.titulo }}</td><td><span class="final-1080-chip {{ r.nivel }}">{{ r.status }}</span></td></tr>{% endfor %}</tbody></table>
+    <div class="final-1080-note">Standalone mapeados: {{ auditoria.telas internas_total }}. Eles não foram apagados em massa para evitar quebrar URLs antigas ainda vivas.</div>
+    <div class="final-1080-actions no-print"><a href="{% url 'gestao_finalizacao_total_1001' %}">Ver plano de conclusão</a><button type="button" data-final-print>Imprimir/PDF</button></div>
+  </aside>
+</section>
+{% endblock %}
+{% block extra_js %}<script src="{% static 'js/premium_app_final.js' %}"></script>{% endblock %}

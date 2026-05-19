@@ -1,0 +1,22 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% block titulo %}Capacidade do sistema{% endblock %}
+{% block subtitulo %}Estimativa conservadora de acessos simultâneos para uso escolar{% endblock %}
+{% block conteudo %}
+<section class="render1081-panel destaque">
+  <h2>{{ recomendacao }}</h2>
+  <p>{{ regra_pratica }}</p>
+</section>
+<section class="render1081-grid capacidade-grid">
+  {% for c in cenarios %}
+  <article class="render1081-card">
+    <div class="render1081-card-head"><span>{{ c.plano }}</span><strong>{{ c.usuarios_simultaneos }}</strong></div>
+    <h3>{{ c.uso }}</h3>
+    <p>{{ c.observacao }}</p>
+  </article>
+  {% endfor %}
+</section>
+<section class="render1081-panel">
+  <h2>Alertas honestos</h2>
+  {% for alerta in alertas %}<p>• {{ alerta }}</p>{% endfor %}
+</section>
+{% endblock %}

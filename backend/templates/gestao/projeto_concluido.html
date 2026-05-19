@@ -1,0 +1,21 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% block content %}
+<section class="final-wrap">
+  <div class="final-hero">
+    <div><span>PROJETO CONCLUÍDO · DIÁRIO ESCOLAR</span><h1>{{ titulo }}</h1><p>{{ subtitulo }}</p></div>
+    <div class="final-seal">{{ hoje|date:"d/m/Y" }}</div>
+  </div>
+  <div class="final-grid metrics">
+    <article><small>Alunos</small><strong>{{ totais.alunos }}</strong></article>
+    <article><small>Turmas</small><strong>{{ totais.turmas }}</strong></article>
+    <article><small>Frequências</small><strong>{{ totais.frequencias }}</strong></article>
+    <article><small>Documentos</small><strong>{{ totais.documentos }}</strong></article>
+  </div>
+  {% if cards %}<div class="final-grid">{% for c in cards %}<article class="final-card"><span class="pill">{{ c.titulo }}</span><h2>{{ c.valor }}</h2><p>{{ c.texto }}</p></article>{% endfor %}</div>{% endif %}
+  <div class="final-panel"><h3>Checklist seguro</h3><div class="final-list">{% for item in checklist %}<div><b>{{ item.nome }}</b><span>{{ item.status }}</span><p>{{ item.detalhe }}</p></div>{% endfor %}</div></div>
+  <div class="final-panel"><h3>Próximas ações</h3><div class="chips">{% for p in proximos %}<span>{{ p }}</span>{% endfor %}</div></div>
+</section>
+<style>
+body{background:#020617!important}.content{background:radial-gradient(circle at top right,rgba(20,184,166,.14),transparent 35%),#020617;min-height:100vh}.final-wrap{color:#e5f7f6;padding:10px}.final-hero{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:20px;border-radius:24px;background:linear-gradient(135deg,rgba(15,23,42,.92),rgba(8,47,73,.7));border:1px solid rgba(94,234,212,.22);box-shadow:0 0 42px rgba(45,212,191,.12);margin-bottom:16px}.final-hero span,.pill{font-size:.72rem;letter-spacing:.14em;color:#5eead4;font-weight:900}.final-hero h1{font-size:1.55rem;margin:.25rem 0}.final-hero p{color:#a7f3d0;margin:0;font-size:.92rem}.final-seal{border:1px solid rgba(94,234,212,.25);background:rgba(20,184,166,.12);border-radius:999px;padding:10px 14px;color:#ccfbf1;font-weight:800}.final-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:14px}.final-card,.metrics article,.final-panel{background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.16);border-radius:20px;padding:16px;box-shadow:0 10px 28px rgba(0,0,0,.2)}.metrics strong,.final-card h2{display:block;color:#67e8f9;font-size:1.8rem}.metrics small{color:#94a3b8;text-transform:uppercase;letter-spacing:.1em}.final-card p,.final-list p{color:#cbd5e1;font-size:.88rem}.final-panel{margin-bottom:14px}.final-panel h3{font-size:1.05rem;color:#ccfbf1}.final-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}.final-list div{border-radius:16px;background:rgba(2,6,23,.45);border:1px solid rgba(94,234,212,.12);padding:12px}.final-list b{color:#f8fafc;display:block}.final-list span{color:#5eead4;font-size:.78rem;font-weight:800}.chips span{display:inline-block;margin:4px;padding:7px 10px;border-radius:999px;border:1px solid rgba(94,234,212,.2);background:rgba(20,184,166,.1);color:#99f6e4;font-size:.8rem}
+</style>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Diário IA Admin{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/premium_base_final.css' %}?v=admin-premium-base">
+{% endblock %}
+
+{% block branding %}
+<div class="diario-admin-brand">
+    <span class="diario-admin-logo">🏫</span>
+    <div>
+        <h1 id="site-name"><a href="{% url 'admin:index' %}">Diário IA Escolar</a></h1>
+        <small>Gestão administrativa • usuários • escolas • diário escolar</small>
+    </div>
+</div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

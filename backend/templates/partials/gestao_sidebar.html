@@ -1,0 +1,27 @@
+<aside class="sidebar admin-sidebar gestao-sidebar-premium">
+  <div class="logo" aria-label="Diário IA Gestão">🏫</div>
+  <nav class="gestao-nav-clean" aria-label="Menu principal da gestão">
+    <div class="sidebar-section-title">Principal</div>
+    <a href="{% url 'dashboard_gestao' %}" data-active-paths="/gestao/">🏫 <span>Painel</span></a>
+    <a href="{% url 'gestao_centro_operacional_321' %}" data-active-paths="/gestao/centro-operacional/|/gestao/turnos/normalizar/">🎯 <span>Central da gestão</span></a>
+    <a href="{% url 'gestao_escola' %}" data-active-paths="/gestao/escola/">🏛️ <span>Escola e ano letivo</span></a>
+
+    <div class="sidebar-section-title">Cadastros oficiais</div>
+    <a href="{% url 'gestao_professores' %}" data-active-paths="/gestao/professores/|/gestao/professor/">👨‍🏫 <span>Professores</span></a>
+    <a href="{% url 'gestao_alunos' %}" data-active-paths="/gestao/alunos/|/gestao/aluno/|/aluno/">👨‍🎓 <span>Alunos</span></a>
+    <a href="{% url 'gestao_cadastros_operacionais_301' %}" data-active-paths="/gestao/cadastros-operacionais/|/gestao/turmas/|/gestao/disciplinas/|/turma/">🧩 <span>Turmas e disciplinas</span></a>
+    <a href="{% url 'gestao_carga_horaria_professores_301' %}" data-active-paths="/gestao/carga-horaria-professores/|/gestao/vinculos/|/gestao/horarios/|/gestao/diario-oficial/conferencia-vinculos-horarios/|/gestao/diario-oficial/matriz-turnos/|/gestao/diario-oficial/matriz-turnos-oficial/|/gestao/diario-oficial/estrutura-turnos-reais/">🔗 <span>Vínculos e carga</span></a>
+
+    <div class="sidebar-section-title">Diário escolar</div>
+    <a href="{% url 'gestao_diario_oficial' %}" data-active-paths="/gestao/diario-oficial/|/gestao/diario-classe-oficial-completo/|/gestao/frequencia/conferencia-mensal/">📘 <span>Diário oficial</span></a>
+    <a href="{% url 'gestao_fechamento_mensal_901' %}" data-active-paths="/gestao/fechamento-mensal-final/|/gestao/fechamentos/|/gestao/fechamentos/checklist/|/gestao/fechamento-anual/|/gestao/diario-oficial/consolidado-mensal-real/">📕 <span>Fechamento mensal</span></a>
+    <a href="{% url 'gestao_relatorios_901' %}" data-active-paths="/gestao/relatorios-final/|/gestao/relatorios/|/gestao/relatorios/avancado/|/gestao/relatorios/executivo/oficial/|/gestao/documentos/">📄 <span>Relatórios</span></a>
+    <a href="{% url 'gestao_auditoria' %}" data-active-paths="/gestao/auditoria/|/gestao/auditoria/exportacao/|/gestao/assinaturas/|/gestao/calendario/validacao/">🛡️ <span>Auditoria</span></a>
+
+    <div class="sidebar-section-title">Apoio</div>
+    <a href="{% url 'gestao_ia_pedagogica_901' %}" data-active-paths="/gestao/ia-pedagogica-final/|/gestao/ia-pedagogica/|/gestao/inteligencia/|/gestao/ranking-pedagogico/|/gestao/analytics/avancado/">🧠 <span>IA Pedagógica</span></a>
+    <a href="{% url 'gestao_pendencias_professores' %}" data-active-paths="/gestao/pendencias/professores/|/gestao/diario-oficial/lacunas/|/gestao/diario-oficial/checkup-geral/">✅ <span>Pendências</span></a>
+    <a href="{% url 'gestao_configuracoes' %}" data-active-paths="/gestao/configuracoes/|/gestao/permissoes/centro/|/gestao/notificacoes/|/gestao/saude-sistema/">⚙️ <span>Configurações</span></a>
+    <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">{% csrf_token %}<button type="submit" class="sidebar-logout-btn">🚪 <span>Sair</span></button></form>
+  </nav>
+</aside>

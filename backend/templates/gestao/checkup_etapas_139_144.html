@@ -1,0 +1,8 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência do Diário Escolar{% endblock %}
+{% block subtitulo %}Prontidão mensal, extrato do aluno e fechamento do professor{% endblock %}
+{% block conteudo %}
+<form class="panel no-print" method="get" style="display:flex;gap:10px;align-items:end"><label>Mês<br><input type="month" name="mes" value="{{ mes_param }}"></label><button class="gestao-base-btn">Recalcular</button><a class="gestao-base-btn" href="{% url 'gestao_prontidao_diario_real_139' %}?mes={{ mes_param }}">Abrir prontidão</a></form>
+<div class="grid">{% for card in cards %}<div class="card"><span>{{ card.titulo }}</span><strong>{{ card.valor }}</strong><p>{% if card.ok %}<span class="pill">OK</span>{% else %}<span class="pill" style="color:#facc15">Atenção</span>{% endif %}</p></div>{% endfor %}</div>
+<section class="panel"><h3>O que foi validado</h3><p class="muted">As fases concluídas 139–144 não recriam o Diário Oficial: elas conferem se o que já existe está pronto para uso mensal. A gestão vê pendências por turma/disciplina, o gestor abre o extrato mensal do aluno, e o professor confere seus lançamentos antes de entregar o mês.</p></section>
+{% endblock %}

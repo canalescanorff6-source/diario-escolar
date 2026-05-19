@@ -1,0 +1,6 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Validador de vínculos e horários{% endblock %}
+{% block subtitulo %}Professor automático da gestão, turma, disciplina e grade semanal{% endblock %}
+{% block conteudo %}
+<section class="panel"><table class="table"><thead><tr><th>Professor</th><th>Escola</th><th>Vínculos oficiais</th><th>Status</th></tr></thead><tbody>{% for linha in linhas %}<tr><td>{{ linha.professor.get_full_name|default:'Não informado' }}</td><td>{{ linha.perfil.escola.nome|default:'-' }}</td><td>{% for b in linha.blocos %}<div><strong>{{ b.vinculo.turma.nome }}</strong> • {{ b.vinculo.disciplina.nome }}<br>{% for h in b.horarios %}<span class="pill">{{ h.get_dia_semana_display }} {{ h.ordem }}º {{ h.hora_inicio|time:'H:i' }}</span> {% empty %}<span class="muted">sem horário</span>{% endfor %}</div>{% empty %}<span class="muted">Sem vínculo</span>{% endfor %}</td><td>{% if linha.sem_horario %}<span class="pill" style="color:#facc15">Ajustar</span>{% else %}<span class="pill">OK</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="4">Nenhum professor cadastrado.</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

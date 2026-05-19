@@ -1,0 +1,7 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Mapa anual de frequência{% endblock %}
+{% block subtitulo %}Suas turmas e disciplinas com P/F/FJ separado{% endblock %}
+{% block conteudo %}
+<form class="panel" method="get" style="display:flex;gap:10px;align-items:end"><label>Ano<br><input name="ano" value="{{ ano }}"></label><button class="btn-primary">Filtrar</button></form>
+<section class="panel"><table class="table"><thead><tr><th>Turma</th><th>Disciplina</th><th>Alunos</th><th>P</th><th>F</th><th>FJ</th><th>Aulas</th><th>Horários</th></tr></thead><tbody>{% for l in linhas %}<tr><td>{{ l.vinculo.turma.nome }}<br><span class="muted">{{ l.vinculo.turma.turno|default:'turno pendente' }}</span></td><td>{{ l.vinculo.disciplina.nome }}</td><td>{{ l.alunos }}</td><td>{{ l.frequencia.presencas }}</td><td>{{ l.frequencia.faltas }}</td><td>{{ l.frequencia.fj }}</td><td>{{ l.aulas }}</td><td>{% for h in l.horarios %}<span class="pill">{{ h.get_dia_semana_display }} {{ h.ordem }}º</span> {% empty %}<span class="muted">Sem horário</span>{% endfor %}</td></tr>{% empty %}<tr><td colspan="8">Nenhum vínculo ativo encontrado.</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

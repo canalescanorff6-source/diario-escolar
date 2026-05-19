@@ -1,0 +1,43 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência do Diário Escolar{% endblock %}
+{% block subtitulo %}Conferência das configurações já aplicadas: escola, ano letivo, turmas, professores, disciplinas, horários, frequência e aulas.{% endblock %}
+{% block conteudo %}
+<section class="grid">
+  <article class="card"><span>Escola oficial</span><strong>{{ resumo.escola.nome|default:'Pendente' }}</strong></article>
+  <article class="card"><span>Ano letivo ativo</span><strong>{% if resumo.escola and resumo.escola.ano_letivo_ativo %}{{ resumo.escola.ano_letivo_ativo.ano }}{% else %}Pendente{% endif %}</strong></article>
+  <article class="card"><span>Turmas</span><strong>{{ resumo.turmas }}</strong></article>
+  <article class="card"><span>Professores</span><strong>{{ resumo.professores }}</strong></article>
+  <article class="card"><span>Vínculos</span><strong>{{ resumo.vinculos }}</strong></article>
+  <article class="card"><span>Horários</span><strong>{{ resumo.horarios }}</strong></article>
+  <article class="card"><span>Frequências</span><strong>{{ resumo.frequencias }}</strong></article>
+  <article class="card"><span>Aulas registradas</span><strong>{{ resumo.aulas }}</strong></article>
+</section>
+<section class="panel">
+  <h3>Status geral</h3>
+  {% if resumo.pendencias %}
+    {% for pendencia in resumo.pendencias %}<span class="pill">{{ pendencia }}</span> {% endfor %}
+  {% else %}
+    <span class="pill">Base pronta para continuidade operacional.</span>
+  {% endif %}
+</section>
+<section class="panel">
+  <h3>Turmas conferidas</h3>
+  <table class="table">
+    <thead><tr><th>Turma</th><th>Turno/meta</th><th>Professores</th><th>Disciplinas</th><th>Alunos</th><th>Horários</th><th>Frequência</th><th>Aulas</th><th>Status</th></tr></thead>
+    <tbody>{% for item in linhas %}<tr>
+      <td><strong>{{ item.turma.nome }}</strong><br><span class="muted">{{ item.turma.ano_letivo|default:'Ano letivo pendente' }}</span></td>
+      <td>{{ item.turno_real }}<br><span class="muted">{{ item.meta_turno }}</span></td>
+      <td>{% for professor in item.professores %}<span class="pill">{{ professor.get_full_name|default:'Não informado' }}</span> {% empty %}<span class="muted">Sem professor</span>{% endfor %}</td>
+      <td>{% for disciplina in item.disciplinas %}<span class="pill">{{ disciplina.nome }}</span> {% empty %}<span class="muted">Sem disciplina</span>{% endfor %}</td>
+      <td>{{ item.alunos }}</td><td>{{ item.horarios }}</td><td>{{ item.frequencias }} lançamentos<br>{{ item.faltas }} F • {{ item.fj }} FJ</td><td>{{ item.aulas }}</td>
+      <td>{% if item.ok %}<span class="pill">OK</span>{% else %}<span class="muted">Ajustar</span>{% endif %}</td>
+    </tr>{% empty %}<tr><td colspan="9">Nenhuma turma ativa encontrada.</td></tr>{% endfor %}</tbody>
+  </table>
+</section>
+<section class="panel no-print">
+  <h3>Continuidade</h3>
+  <a class="gestao-base-btn" href="{% url 'gestao_matriz_turnos_oficial' %}">Matriz por turno</a>
+  <a class="gestao-base-btn" href="{% url 'gestao_lacunas_diario_real' %}">Ver lacunas</a>
+  <a class="gestao-base-btn" href="{% url 'gestao_diario_mapa_operacional' %}">Mapa operacional</a>
+</section>
+{% endblock %}

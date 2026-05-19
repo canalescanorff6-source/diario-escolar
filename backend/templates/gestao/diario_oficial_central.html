@@ -1,0 +1,96 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Diário Oficial{% endblock %}
+{% block subtitulo %}Conferência organizada por turma, frequência, aulas e componentes curriculares{% endblock %}
+{% block conteudo %}
+<div class="diario-oficial-clean-page">
+  <section class="diario-clean-cover no-print">
+    <div class="diario-clean-cover-main">
+      <span class="diario-clean-badge">Documento escolar oficial</span>
+      <h1>Diário Oficial da Escola</h1>
+      <p>Visão organizada das turmas, componentes curriculares, frequência, registros de aula e conferência mensal.</p>
+    </div>
+    <div class="diario-clean-cover-actions">
+      <a class="btn-primary" href="{% url 'gestao_centro_operacional_321' %}">🎯 Central escolar</a>
+      <a class="btn-secondary-premium" href="{% url 'gestao_diario_validacao_completa' %}">✅ Conferência</a>
+      <a class="btn-secondary-premium" href="{% url 'gestao_conferencia_frequencia_mensal' %}">📅 Frequência</a>
+      <button onclick="window.print()" class="btn-secondary-premium" type="button">🖨️ Imprimir</button>
+    </div>
+  </section>
+
+  <section class="diario-clean-identificacao">
+    <div class="diario-clean-school">
+      <span>Identificação escolar</span>
+      <h2>{% if escola %}{{ escola.nome }}{% else %}Escola não cadastrada{% endif %}</h2>
+      <p>{% if escola %}{{ escola.municipio|default:'Município não informado' }}/{{ escola.estado|default:'UF' }}{% else %}Cadastre a escola em Gestão > Escola e ano letivo.{% endif %}</p>
+    </div>
+    <div class="diario-clean-meta">
+      <div><span>Emissão</span><strong>{{ hoje|date:'d/m/Y' }}</strong></div>
+      <div><span>Ano letivo</span><strong>{{ ano_letivo|default:'—' }}</strong></div>
+      <div><span>Turmas</span><strong>{{ dados|length }}</strong></div>
+      <div><span>Turno</span><strong>{{ turno|default:'Todos' }}</strong></div>
+    </div>
+    <form method="get" class="diario-clean-filter no-print">
+      <label>Filtrar por turno</label>
+      <select name="turno" onchange="this.form.submit()">
+        <option value="">Todos os turnos</option>
+        {% for item in turnos %}<option value="{{ item }}" {% if turno == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
+      </select>
+    </form>
+  </section>
+
+  <section class="diario-clean-section-head">
+    <div>
+      <span>Turmas do diário</span>
+      <h2>Resumo oficial por turma</h2>
+    </div>
+    <p>Cada cartão mostra somente o essencial. A impressão completa fica no Diário completo ou na versão de impressão.</p>
+  </section>
+
+  <section class="diario-clean-grid">
+    {% for item in dados %}
+    <article class="diario-clean-card">
+      <header class="diario-clean-card-head">
+        <div>
+          <span class="diario-clean-turno">{{ item.turma.turno|default:'Turno não definido' }}</span>
+          <h3>{{ item.turma.nome }}</h3>
+          <p>{{ item.turma.ano_letivo|default:'Ano letivo não informado' }} • {{ item.total_alunos }} aluno(s)</p>
+        </div>
+        <div class="diario-clean-freq">
+          <strong>{{ item.frequencia_percentual }}%</strong>
+          <span>frequência</span>
+        </div>
+      </header>
+
+      <div class="diario-clean-kpis">
+        <div><span>Disciplinas</span><strong>{{ item.total_disciplinas }}</strong></div>
+        <div><span>Horários</span><strong>{{ item.total_horarios }}</strong></div>
+        <div><span>Aulas</span><strong>{{ item.registros_aulas }}</strong></div>
+        <div><span>Faltas</span><strong>{{ item.total_faltas }}</strong></div>
+      </div>
+
+      <div class="diario-clean-components">
+        <span>Componentes curriculares</span>
+        <p>{% for disciplina in item.disciplinas %}{{ disciplina.nome }}{% if not forloop.last %}, {% endif %}{% empty %}Cadastre vínculos professor/turma/disciplina.{% endfor %}</p>
+      </div>
+
+      <div class="diario-clean-status-row">
+        {% if item.total_disciplinas %}<span class="ok">Vínculos cadastrados</span>{% else %}<span class="warn">Faltam vínculos</span>{% endif %}
+        {% if item.total_horarios %}<span class="ok">Horários lançados</span>{% else %}<span class="warn">Sem horários</span>{% endif %}
+      </div>
+
+      <div class="diario-clean-actions no-print">
+        <a href="{% url 'diario_oficial_turma_completo' item.turma.id %}" class="btn-primary">📘 Diário completo</a>
+        <a href="{% url 'diario_classe_turma' item.turma.id %}" class="btn-ghost-premium">📄 Impressão</a>
+        <a href="{% url 'frequencia_mensal_turma' item.turma.id %}" class="btn-ghost-premium">📅 Frequência</a>
+        <a href="{% url 'registro_aulas_mensal_turma' item.turma.id %}" class="btn-ghost-premium">📝 Aulas</a>
+      </div>
+    </article>
+    {% empty %}
+    <section class="panel empty-state-premium">
+      <strong>Nenhuma turma cadastrada.</strong>
+      <span>Cadastre turmas, professores, vínculos e horários no painel da gestão.</span>
+    </section>
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}

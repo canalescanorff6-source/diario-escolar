@@ -1,0 +1,10 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Mapa de Lançamentos do Diário Escolar{% endblock %}
+{% block subtitulo %}Turmas e disciplinas vinculadas pela gestão • {{ mes_nome }}/{{ ano }}{% endblock %}
+{% block conteudo %}
+<section class="grid">
+    <article class="card"><span>Mês</span><strong>{{ mes_nome }}/{{ ano }}</strong><p class="pill">Lançamentos</p></article>
+    <article class="card"><span>Vínculos</span><strong>{{ linhas|length }}</strong><p class="pill">Professor</p></article>
+</section>
+<section class="panel"><table class="table"><thead><tr><th>Turma</th><th>Turno</th><th>Disciplina</th><th>Frequência</th><th>Aulas</th><th>Dias lançados</th><th>Abrir</th></tr></thead><tbody>{% for linha in linhas %}<tr><td>{{ linha.vinculo.turma.nome }}</td><td>{{ linha.turno }}</td><td>{{ linha.vinculo.disciplina.nome }}</td><td>P {{ linha.espelho.bloco.frequencia.presencas }} / F {{ linha.espelho.bloco.frequencia.faltas }} / FJ {{ linha.espelho.bloco.frequencia.fj }}</td><td>{{ linha.espelho.bloco.aulas_count }}</td><td>{{ linha.espelho.bloco.dias_lancados }}</td><td><a href="{% url 'professor_espelho_mensal_disciplina_169' linha.vinculo.turma.id linha.vinculo.disciplina.id %}?mes={{ mes_param }}">espelho</a></td></tr>{% empty %}<tr><td colspan="7">Nenhum vínculo ativo para este professor.</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

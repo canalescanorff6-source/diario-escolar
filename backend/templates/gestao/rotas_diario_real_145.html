@@ -1,0 +1,6 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Acessos do Diário Escolar{% endblock %}
+{% block subtitulo %}Mapa dos botões principais de gestão e professor para evitar caminhos quebrados{% endblock %}
+{% block conteudo %}
+<section class="panel"><table class="table"><thead><tr><th>Grupo</th><th>Botão</th><th>Rota</th><th>Uso</th></tr></thead><tbody>{% for rota in rotas %}<tr><td>{{ rota.grupo }}</td><td><span class="pill">{{ rota.nome }}</span></td><td><code>{{ rota.url_name }}</code></td><td>{{ rota.descricao }}</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

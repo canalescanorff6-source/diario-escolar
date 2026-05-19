@@ -1,0 +1,36 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% block titulo %}Vínculos e carga horária{% endblock %}
+{% block subtitulo %}Controle semanal oficial por professor, turma, disciplina e horário cadastrado pela gestão.{% endblock %}
+{% block conteudo %}
+<section class="cards">
+  <article class="card"><span>Total de aulas</span><strong>{{ total_aulas }}</strong><small>na semana</small></article>
+  <article class="card"><span>Carga total</span><strong>{{ total_horas }}h</strong><small>somando professores</small></article>
+  <article class="card"><span>Professores</span><strong>{{ linhas|length }}</strong><small>cadastrados</small></article>
+</section>
+
+<section class="clean-list-card">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px;">
+    <div><h3>Professores e carga semanal</h3><p>O professor só recebe turmas e carga depois que o vínculo e horário forem cadastrados.</p></div>
+    <a class="clean-btn" href="{% url 'gestao_cadastros_operacionais_301' %}">Turmas e disciplinas</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Professor</th><th>Turmas</th><th>Disciplinas</th><th>Aulas</th><th>Carga</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for l in linhas %}
+          <tr>
+            <td><strong>{{ l.nome }}</strong></td>
+            <td>{{ l.turmas }}</td>
+            <td>{{ l.disciplinas }}</td>
+            <td>{{ l.aulas }}</td>
+            <td><strong>{{ l.horas }}h</strong></td>
+            <td>{% if l.aulas %}<span class="pill">OK</span>{% else %}<span class="warn-pill">Sem horário</span>{% endif %}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6"><div class="clean-empty">Nenhum professor cadastrado.</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

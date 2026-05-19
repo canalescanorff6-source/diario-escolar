@@ -1,0 +1,40 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Central da Gestão Escolar{% endblock %}
+{% block subtitulo %}Pendências reais, cadastros essenciais, turnos, vínculos, horários e carga horária semanal{% endblock %}
+{% block conteudo %}
+<section class="hero painel-unico-hero">
+  <div><span class="hero-badge">Gestão • rotina escolar</span><h1>Rotina diária da escola</h1><p>Veja o que falta para o Diário Escolar funcionar: professores, alunos, turmas, vínculos, horários, turnos e carga horária semanal.</p></div>
+  <div class="hero-actions"><a class="btn-primary" href="{% url 'gestao_cadastros_operacionais_301' %}">Turmas e disciplinas</a><a class="btn-secondary-premium" href="{% url 'gestao_turnos_normalizar_321' %}">Normalizar turnos</a></div>
+</section>
+{% include 'partials/resumo_861_900_gestao.html' %}
+<section class="cards painel-kpis-limpos">
+  {% for c in cards %}<a class="metric-link-card" href="{% url c.url %}"><div class="card premium-card"><span>{{ c.label }}</span><h2>{{ c.valor }}</h2><small>{{ c.detalhe }}</small></div></a>{% endfor %}
+</section>
+<section class="grid-layout gestao-grid-layout">
+  <div class="left-column">
+    <div class="panel painel-status-limpo">
+      <div class="panel-header"><div><h3>Pendências operacionais</h3><span>Itens que impedem o projeto de ficar 100% funcional.</span></div><span class="panel-badge">{{ pendencias_total }}</span></div>
+      {% for p in pendencias %}<div class="alert"><strong>{{ p.area }}:</strong> {{ p.texto }}</div>{% empty %}<div class="empty-state-premium"><strong>Nenhuma pendência crítica.</strong><span>Vínculos, horários e turnos estão completos.</span></div>{% endfor %}
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div><h3>Carga horária dos professores</h3><span>Resumo semanal calculado pela grade de horários.</span></div><a class="btn-secondary-premium btn-mini" href="{% url 'gestao_carga_horaria_professores_301' %}">Ver completo</a></div>
+      <table class="table premium-table"><thead><tr><th>Professor</th><th>Aulas</th><th>Carga</th><th>Status</th></tr></thead><tbody>
+        {% for l in carga|slice:':8' %}<tr><td>{{ l.nome }}</td><td>{{ l.aulas }}</td><td><strong>{{ l.horas }}h</strong></td><td>{% if l.aulas %}<span class="pill">OK</span>{% else %}<span class="pill warn-pill">Sem horário</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="4">Nenhum professor cadastrado.</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+  <div class="right-column">
+    <div class="panel">
+      <div class="panel-header"><div><h3>Matriz de Turnos      </h3><span>Manhã, tarde e noite/EJA.</span></div></div>
+      <div class="premium-row"><strong>Manhã / Matutino        </strong><span>{{ turnos.matutino }} turma(s)</span></div>
+      <div class="premium-row"><strong>Tarde / Vespertino      </strong><span>{{ turnos.vespertino }} turma(s)</span></div>
+      <div class="premium-row"><strong>Noite / EJA     </strong><span>{{ turnos.noturno }} turma(s)</span></div>
+      <div class="premium-row"><strong>Sem Turno     </strong><span>{{ turnos.sem_turno }} turma(s)</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div><h3>Fluxo oficial</h3><span>Ordem correta para o professor receber tudo automaticamente.</span></div></div>
+      <div class="timeline-premium"><div>1. Escola e ano letivo</div><div>2. Turmas e turnos</div><div>3. Professores e disciplinas</div><div>4. Vínculos professor/turma/disciplina</div><div>5. Grade semanal e carga horária</div><div>6. Aula rápida, frequência e conteúdo</div></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

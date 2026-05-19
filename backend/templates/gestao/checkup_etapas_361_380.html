@@ -1,0 +1,8 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência 361–380{% endblock %}
+{% block subtitulo %}Publicação, visual escolar, conferência e carga horária{% endblock %}
+{% block conteudo %}
+<section class="panel"><h3>Itens aplicados</h3><table class="table"><thead><tr><th>Item</th><th>Status</th><th>Detalhe</th></tr></thead><tbody>{% for l in linhas %}<tr><td><strong>{{ l.item }}</strong></td><td><span class="pill">{{ l.status }}</span></td><td>{{ l.detalhe }}</td></tr>{% endfor %}</tbody></table></section>
+<section class="panel"><h3>Arquivos de publicação</h3><table class="table"><thead><tr><th>Arquivo</th><th>Descrição</th><th>Status</th></tr></thead><tbody>{% for a in arquivos %}<tr><td>{{ a.arquivo }}</td><td>{{ a.descricao }}</td><td><span class="pill">{{ a.status }}</span></td></tr>{% endfor %}</tbody></table></section>
+<section class="panel"><h3>Pendências operacionais</h3>{% if pendencias %}<div class="compact-list">{% for p in pendencias %}<div class="premium-row"><div><strong>{{ p.area }}</strong><br><span class="muted">{{ p.texto }}</span></div><a href="{% url p.url %}">{{ p.acao }}</a></div>{% endfor %}</div>{% else %}<div class="empty-state-premium"><strong>Sem pendências críticas.</strong><span>O projeto está mais pronto para uso acompanhados online.</span></div>{% endif %}</section>
+{% endblock %}

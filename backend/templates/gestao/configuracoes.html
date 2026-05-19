@@ -1,0 +1,58 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% block titulo %}Configurações da Gestão{% endblock %}
+{% block subtitulo %}Imagem da gestão, segurança e separação dos painéis.{% endblock %}
+{% block conteudo %}
+<section class="grid-layout">
+  <div class="left-column">
+    <section class="panel premium-safe-panel">
+      <h3>Imagem da gestão</h3>
+      <p>Esta imagem aparece no topo direito das telas da gestão. Pode ser foto da direção, marca interna ou símbolo administrativo.</p>
+      <form method="post" enctype="multipart/form-data" class="gestao-form-grid">
+        {% csrf_token %}
+        <div class="profile-upload-card">
+          <div class="profile-upload-preview">
+            {% if request.user.foto %}<img src="{{ request.user.foto.url }}" alt="Imagem atual da gestão">{% else %}<span>{{ request.user.first_name|default:request.user.username|slice:':1' }}</span>{% endif %}
+          </div>
+          <div>
+            <label class="gestao-field">
+              <span>Escolher imagem da gestão</span>
+              <input type="file" name="foto" accept="image/*">
+            </label>
+            <div class="safe-action-row">
+              <button class="btn-primary" type="submit">Salvar imagem</button>
+              {% if request.user.foto %}<button class="btn-ghost-premium" type="submit" name="remover_foto" value="1">Remover imagem</button>{% endif %}
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel premium-safe-panel">
+      <h3>Perfil da conta</h3>
+      <p><strong>Usuário:</strong> {{ request.user.username }}</p>
+      <p><strong>Nome:</strong> {{ request.user.get_full_name|default:'—' }}</p>
+      <p><strong>Email:</strong> {{ request.user.email|default:'—' }}</p>
+      <p><strong>Perfil:</strong> {{ request.user.get_tipo_display }}</p>
+    </section>
+  </div>
+
+  <div class="right-column">
+    <section class="panel premium-safe-panel">
+      <h3>Segurança</h3>
+      <p>Altere sua senha ou encerre a sessão com segurança.</p>
+      <div class="safe-action-row vertical">
+        <a class="btn-ghost-premium" href="{% url 'password_change' %}">Alterar senha</a>
+        <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn-primary" type="submit">Sair</button></form>
+      </div>
+    </section>
+    <section class="panel premium-safe-panel">
+      <h3>Separação dos painéis</h3>
+      <p>Gestão administra escola, cadastros, vínculos, relatórios e auditoria. Professor trabalha com aulas, frequência, conteúdo e fechamento.</p>
+      <div class="gestao-list">
+        <div class="gestao-item">Gestão: <strong>/gestao/</strong></div>
+        <div class="gestao-item">Professor: <strong>/professor/</strong></div>
+      </div>
+    </section>
+  </div>
+</section>
+{% endblock %}

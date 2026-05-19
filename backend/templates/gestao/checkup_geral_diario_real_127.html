@@ -1,0 +1,23 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência Geral do Diário Escolar{% endblock %}
+{% block subtitulo %}Conferência das configurações já aplicadas no Diário Escolar{% endblock %}
+{% block conteudo %}
+<div class="grid">
+  {% for card in cards %}
+  <div class="card"><span>{{ card.titulo }}</span><strong>{{ card.valor }}</strong><p>{% if card.ok %}<span class="pill">OK</span>{% else %}<span class="pill" style="color:#facc15">Pendente</span>{% endif %}</p></div>
+  {% endfor %}
+</div>
+<section class="panel">
+  <h3>Leitura geral</h3>
+  <p class="muted">O conferência confirma escola, ano letivo, professores vindos da gestão/admin, vínculos por turma/disciplina, horários, frequência P/F/FJ e registros mensais de aula.</p>
+  <p><a class="gestao-base-btn" href="{% url 'gestao_pendencias_diario_oficial' %}">Ver pendências oficiais</a> <a class="gestao-base-btn" href="{% url 'gestao_checkup_etapas_127_132' %}">Conferência 127–132</a></p>
+</section>
+<section class="panel">
+  <h3>Pendências mais importantes</h3>
+  <table class="table"><thead><tr><th>Turma</th><th>Turno</th><th>Pendências</th><th>Ação</th></tr></thead><tbody>
+  {% for item in pendencias %}
+  <tr><td>{{ item.turma.nome }}</td><td>{{ item.turno_oficial }}</td><td>{{ item.total_pendencias }}</td><td><a class="gestao-base-btn" href="{% url 'gestao_auditoria_diario_turma' item.turma.id %}">Auditar turma</a></td></tr>
+  {% empty %}<tr><td colspan="4">Nenhuma pendência crítica encontrada no conferência geral.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% load static %}
+{% block titulo %}Conferência do calendário escolar{% endblock %}
+{% block subtitulo %}Tela integrada ao Diário Escolar.{% endblock %}
+{% block conteudo %}
+<div class="premium-only-page visual-1161-1220" data-template="gestao/calendario_validacao.html">
+<form method="post" class="form-premium">{% csrf_token %}<button class="print-btn">Gerar notificações de pendências</button><a class="btn-primary" href="{% url 'gestao_calendario_impressao' %}">🖨 Versão impressão</a></form>
+<section class="etapa14-kpis"><div class="etapa14-card"><span>Eventos</span><strong>{{ total_eventos }}</strong></div><div class="etapa14-card"><span>Dias letivos</span><strong>{{ dias_letivos }}</strong></div><div class="etapa14-card"><span>Avaliações</span><strong>{{ avaliacoes }}</strong></div><div class="etapa14-card"><span>Reuniões</span><strong>{{ reunioes }}</strong></div></section>
+<div class="etapa14-panel"><h3 style="color:#fff">Pendências encontradas</h3>{% for p in pendencias %}<p><span class="badge14 badge-warn">Atenção</span> {{ p }}</p>{% empty %}<p><span class="badge14">OK</span> Calendário sem pendências críticas nesta conferência.</p>{% endfor %}
+</div>
+{% endblock %}

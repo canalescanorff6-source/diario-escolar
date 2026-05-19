@@ -1,0 +1,31 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Conferência do Diário do Professor{% endblock %}
+{% block subtitulo %}Rotina do professor pronta para aula, chamada, conteúdo e fechamento{% endblock %}
+{% block icone %}✅{% endblock %}
+{% block conteudo %}
+{% include 'partials/finalizacao_901_960_resumo.html' %}
+<section class="ia-final-two">
+  <div class="ia-final-panel">
+    <h3>Minha rotina de conclusão</h3>
+    <p>Verifica se suas turmas, disciplinas, horários, frequência e conteúdo estão preparados.</p>
+    <div class="ia-final-list">
+      {% for item in requisitos %}
+        <div class="ia-final-item">
+          <div><strong>{{ item.grupo }} • {{ item.item }}</strong><small>rotina do professor</small></div>
+          <span class="ia-status {% if item.ok %}ok{% else %}pendente{% endif %}">{% if item.ok %}OK{% else %}Pendente{% endif %}</span>
+          {% if item.rota_ok %}<a class="ia-mini-link" href="{% url item.rota %}">Abrir</a>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="ia-final-panel">
+    <h3>IA das minhas turmas</h3>
+    <p>Foco em risco escolar, FJ, frequência e conteúdo pendente.</p>
+    <div class="ia-final-list">
+      {% for item in ia.alunos_risco %}
+        <div class="ia-final-item"><div><strong>{{ item.aluno.nome }}</strong><small>{{ item.turma.nome }} • {{ item.motivos }}</small></div><span class="ia-status {{ item.nivel|lower }}">{{ item.nivel }}</span></div>
+      {% empty %}<div class="ia-empty">Nenhum aluno em risco nas suas turmas com os dados atuais.</div>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

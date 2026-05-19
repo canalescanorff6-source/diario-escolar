@@ -1,0 +1,49 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Fechamento Mensal Final{% endblock %}
+{% block subtitulo %}Mapa oficial por turma, disciplina, frequência, conteúdo, notas e fechamento{% endblock %}
+{% block conteudo %}
+<section class="ia-final-hero">
+  <div>
+    <span class="ia-final-badge">Fechamento final</span>
+    <h2>{{ fechamento.mes_nome }} de {{ fechamento.ano }}</h2>
+    <p>Período {{ fechamento.periodo }} • {{ fechamento.total_itens }} vínculo(s) avaliados • {{ fechamento.pendentes }} pendência(s).</p>
+    <div class="ia-actions">
+      <a href="{% url 'gestao_checkup_etapas_901_960' %}">✅ Saúde do sistema</a>
+      <a class="secondary" href="{% url 'gestao_diario_oficial' %}">📘 Diário Oficial</a>
+      <button data-print-page>🖨️ Imprimir/PDF</button>
+    </div>
+  </div>
+  <div class="ia-final-score"><strong>{{ fechamento.prontidao|floatformat:1 }}%</strong><span>prontidão mensal</span><div class="ia-progress" data-pct="{{ fechamento.prontidao }}"><span></span></div></div>
+</section>
+
+<div class="ia-actions">
+  {% for mes in fechamento.meses %}<a class="{% if not mes.ativo %}secondary{% endif %}" href="?mes={{ mes.valor }}">{{ mes.nome }}</a>{% endfor %}
+</div>
+
+<section class="ia-document-panel" style="margin-top:16px;">
+  <div class="ia-print-actions no-print"><button data-print-page>Gerar impressão/PDF</button></div>
+  <h3>Quadro oficial de fechamento mensal</h3>
+  <p>Conferência institucional para secretaria, coordenação e gestão escolar.</p>
+  <div class="table-responsive">
+    <table>
+      <thead><tr><th>Turma</th><th>Disciplina</th><th>Professor</th><th>Freq.</th><th>P/F/FJ</th><th>Conteúdos</th><th>Notas</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for linha in fechamento.linhas %}
+        <tr>
+          <td><strong>{{ linha.turma.nome }}</strong><br><small>{{ linha.turma.turno|default:'turno não informado' }}</small></td>
+          <td>{{ linha.disciplina.nome }}</td>
+          <td>{{ linha.professor.get_full_name|default:linha.professor.username }}</td>
+          <td>{{ linha.frequencias }}</td>
+          <td>{{ linha.presencas }}/{{ linha.faltas }}/{{ linha.fj }}</td>
+          <td>{{ linha.conteudos }}</td>
+          <td>{{ linha.notas }}</td>
+          <td><span class="ia-status {% if linha.status == 'Completo' %}ok{% else %}pendente{% endif %}">{{ linha.status }} • {{ linha.percentual|floatformat:0 }}%</span></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="8">Nenhum vínculo professor/turma/disciplina encontrado para fechar.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

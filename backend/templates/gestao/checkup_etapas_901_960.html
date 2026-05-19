@@ -1,0 +1,60 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Saúde do sistema final{% endblock %}
+{% block subtitulo %}Conferência final para liberar o Diário IA Escolar{% endblock %}
+{% block conteudo %}
+{% include 'partials/finalizacao_901_960_resumo.html' %}
+
+<section class="ia-final-two">
+  <div class="ia-final-panel">
+    <h3>Checklist de conclusão</h3>
+    <p>Itens que definem se o sistema está pronto para uso escolar.</p>
+    <div class="ia-final-list">
+      {% for item in requisitos %}
+        <div class="ia-final-item">
+          <div><strong>{{ item.grupo }} • {{ item.item }}</strong><small>{% if item.rota_ok %}acesso disponível{% else %}acesso monitorado{% endif %}</small></div>
+          <span class="ia-status {% if item.ok %}ok{% else %}pendente{% endif %}">{% if item.ok %}OK{% else %}Pendente{% endif %}</span>
+          {% if item.rota_ok %}<a class="ia-mini-link" href="{% url item.rota %}">Abrir</a>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="ia-final-panel">
+    <h3>Legado visual monitorado</h3>
+    <p>Mapeamento seguro para matar telas antigas sem apagar arquivos importantes.</p>
+    <div class="ia-final-grid">
+      <div class="ia-final-card"><span>Templates</span><strong>{{ auditoria_visual.templates_total }}</strong><small>{{ auditoria_visual.templates_premium }} premium</small></div>
+      <div class="ia-final-card"><span>Standalone</span><strong>{{ auditoria_visual.telas internas_total }}</strong><small>para converter</small></div>
+      <div class="ia-final-card"><span>CSS</span><strong>{{ auditoria_visual.css_total }}</strong><small>{{ auditoria_visual.css_legado_total }} legados</small></div>
+      <div class="ia-final-card"><span>Inline style</span><strong>{{ auditoria_visual.inline_style_total }}</strong><small>reduzir depois</small></div>
+    </div>
+    <div class="ia-final-list">
+      {% for nome in auditoria_visual.telas internas_amostra %}<div class="ia-final-item"><strong>{{ nome }}</strong><span class="ia-status medio">telas internas</span></div>{% empty %}<div class="ia-empty">Nenhum telas internas crítico encontrado.</div>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="ia-final-two" style="margin-top:18px;">
+  <div class="ia-final-panel">
+    <h3>IA pedagógica real</h3>
+    <p>Alunos, turmas e professores que precisam de ação antes do fechamento.</p>
+    <div class="ia-final-grid">
+      <div class="ia-final-card"><span>Alunos risco</span><strong>{{ ia.alunos_risco|length }}</strong><small>priorizar</small></div>
+      <div class="ia-final-card"><span>Turmas críticas</span><strong>{{ ia.turmas_criticas|length }}</strong><small>revisar</small></div>
+      <div class="ia-final-card"><span>Prof. pendentes</span><strong>{{ ia.professores_pendentes|length }}</strong><small>corrigir vínculo</small></div>
+    </div>
+    <div class="ia-final-list">
+      {% for rec in ia.recomendacoes %}<div class="ia-final-item"><strong>✨ {{ rec }}</strong></div>{% endfor %}
+    </div>
+  </div>
+  <div class="ia-final-panel">
+    <h3>Próximo foco técnico</h3>
+    <p>O projeto ficou pronto para conferência. O que ainda fica para publicação é validação, banco PostgreSQL e deploy.</p>
+    <div class="ia-final-list">
+      <div class="ia-final-item"><strong>Não apagar SQLite agora</strong><span class="ia-status ok">mantido</span></div>
+      <div class="ia-final-item"><strong>Não apagar migrations</strong><span class="ia-status ok">mantido</span></div>
+      <div class="ia-final-item"><strong>Publicação/Banco de dados</strong><span class="ia-status medio">publicação</span></div>
+      <div class="ia-final-item"><strong>Executável futuro</strong><span class="ia-status medio">publicação externa</span></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

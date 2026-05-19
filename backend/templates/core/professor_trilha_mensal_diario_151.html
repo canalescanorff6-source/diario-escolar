@@ -1,0 +1,8 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Linha do tempo mensal do Diário{% endblock %}
+{% block subtitulo %}Datas lançadas por turma, disciplina, frequência e aula • {{ mes_nome }}/{{ ano }}{% endblock %}
+{% block conteudo %}
+<section class="grid">
+  {% for linha in linhas %}<article class="card"><span>{{ linha.vinculo.turma.nome }} • {{ linha.turno }}</span><strong>{{ linha.vinculo.disciplina.nome }}</strong><p>P {{ linha.bloco.frequencia.presencas }} / F {{ linha.bloco.frequencia.faltas }} / FJ {{ linha.bloco.frequencia.fj }} • Aulas {{ linha.bloco.aulas_count }}</p>{% for dia in linha.dias %}<span class="pill">{{ dia.data|date:'d/m' }} {% if dia.tem_frequencia %}Freq{% endif %} {% if dia.tem_aula %}Aula{% endif %}</span> {% empty %}<p class="muted">Sem lançamentos neste mês.</p>{% endfor %}</article>{% endfor %}
+</section>
+{% endblock %}

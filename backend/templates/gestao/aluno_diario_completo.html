@@ -1,0 +1,20 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Diário Completo do Aluno{% endblock %}
+{% block subtitulo %}Ficha integrada com frequência por disciplina/mês, notas, aulas, histórico, pareceres e documentos.{% endblock %}
+{% block conteudo %}
+<section class="grid">
+  <article class="card"><span>Aluno</span><strong>{{ aluno.nome }}</strong></article>
+  <article class="card"><span>Matrícula</span><strong>{{ aluno.matricula }}</strong></article>
+  <article class="card"><span>Turma</span><strong>{{ turma.nome }}</strong></article>
+  <article class="card"><span>Ano letivo</span><strong>{{ turma.ano_letivo }}</strong></article>
+</section>
+{% for item in linhas %}
+<section class="panel">
+  <h3>{{ item.disciplina.nome }} — frequência mensal, avaliações e aulas</h3>
+  <table class="table"><thead><tr><th>Mês</th><th>Registros</th><th>Presenças</th><th>Faltas</th><th>FJ</th></tr></thead><tbody>{% for mes in item.por_mes %}<tr><td>{{ mes.mes }}</td><td>{{ mes.total }}</td><td>{{ mes.presencas }}</td><td>{{ mes.faltas }}</td><td>{{ mes.fj }}</td></tr>{% endfor %}</tbody></table>
+  <h3 style="margin-top:18px">Notas T1/T2/T3</h3>
+  <table class="table"><thead><tr><th>Período</th><th>T1</th><th>T2</th><th>T3</th><th>Média</th></tr></thead><tbody>{% for n in item.notas %}<tr><td>{{ n.get_bimestre_display }}</td><td>{{ n.nota1|default:'-' }}</td><td>{{ n.nota2|default:'-' }}</td><td>{{ n.nota3|default:'-' }}</td><td>{{ n.valor|default:'-' }}</td></tr>{% empty %}<tr><td colspan="5">Sem notas registradas.</td></tr>{% endfor %}</tbody></table>
+</section>
+{% empty %}<section class="panel">Sem disciplinas vinculadas para este aluno/turma.</section>{% endfor %}
+<section class="panel"><h3>Histórico, pareceres e documentos</h3><p class="muted">Histórico: {{ historicos|length }} • Pareceres: {{ pareceres|length }} • Documentos: {{ documentos|length }}</p></section>
+{% endblock %}

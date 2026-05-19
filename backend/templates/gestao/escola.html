@@ -1,0 +1,111 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% load static %}
+{% block titulo %}Escola{% endblock %}
+{% block subtitulo %}Configuração institucional gerenciada pela gestão.{% endblock %}
+{% block conteudo %}
+<div class="premium-only-page visual-1161-1220" data-template="gestao/escola.html">
+{% if messages %}<div class="gestao-messages">{% for message in messages %}<div class="gestao-message">{{ message }}</div>{% endfor %}</div>{% endif %}
+<section class="gestao-page-grid">
+  <form method="POST" class="gestao-form-card">
+    {% csrf_token %}
+    <h2>Identidade institucional da escola</h2>
+    <p>Esses dados são cadastrados pela gestão e aparecem na tela de login institucional, nos diários e nos documentos oficiais.</p>
+
+    <div class="gestao-form-grid">
+      <div class="institutional-fixed-logo-note">
+        <div class="institutional-fixed-logo-card">
+          <img src="{% static 'img/logo_escola_login.png' %}" alt="Logo fixa do login">
+        </div>
+        <div>
+          <strong>Imagem fixa do login</strong>
+          <span>A foto/logo/brasão do portal já está dentro do projeto para funcionar no servidor. Para trocar, substitua o arquivo <b>static/img/logo_escola_login.png</b>.</span>
+        </div>
+      </div>
+
+      <label class="gestao-field">
+        <span>Nome da escola</span>
+        <input name="nome" value="{{ escola.nome|default:'' }}" required>
+      </label>
+
+      <div class="gestao-form-grid two">
+        <label class="gestao-field">
+          <span>Aldeia</span>
+          <input name="aldeia" value="{{ escola.aldeia|default:'' }}">
+        </label>
+        <label class="gestao-field">
+          <span>Terra indígena</span>
+          <input name="terra_indigena" value="{{ escola.terra_indigena|default:'' }}">
+        </label>
+      </div>
+
+      <div class="gestao-form-grid two">
+        <label class="gestao-field">
+          <span>Estado / órgão superior</span>
+          <input name="estado_nome" value="{{ escola.estado_nome|default:'ESTADO DO MARANHÃO' }}">
+        </label>
+        <label class="gestao-field">
+          <span>Secretaria / órgão responsável</span>
+          <input name="secretaria" value="{{ escola.secretaria|default:'SECRETARIA DE ESTADO DA EDUCAÇÃO' }}">
+        </label>
+      </div>
+
+      <div class="gestao-form-grid two">
+        <label class="gestao-field">
+          <span>Diretor(a) ou gestor(a)</span>
+          <input name="gestor_nome" value="{{ escola.gestor_nome|default:'' }}" placeholder="Nome completo da direção escolar">
+        </label>
+        <label class="gestao-field">
+          <span>Cargo da gestão</span>
+          <input name="gestor_cargo" value="{{ escola.gestor_cargo|default:'Direção escolar' }}">
+        </label>
+      </div>
+
+      <label class="gestao-field">
+        <span>Texto institucional do login</span>
+        <textarea name="texto_institucional" rows="4" placeholder="Mensagem curta de apresentação da escola">{{ escola.texto_institucional|default:'' }}</textarea>
+      </label>
+
+      <div class="gestao-form-grid two">
+        <label class="gestao-field">
+          <span>Município</span>
+          <input name="municipio" value="{{ escola.municipio|default:'' }}">
+        </label>
+        <label class="gestao-field">
+          <span>UF</span>
+          <input name="estado" value="{{ escola.estado|default:'MA' }}" maxlength="2">
+        </label>
+      </div>
+
+      <label class="gestao-field">
+        <span>Ano letivo ativo</span>
+        <select name="ano_letivo_ativo">
+          <option value="">Selecione...</option>
+          {% for ano in anos %}<option value="{{ ano.id }}" {% if escola and escola.ano_letivo_ativo_id == ano.id %}selected{% endif %}>{{ ano.ano }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="gestao-check"><input type="checkbox" name="ativa" {% if not escola or escola.ativa %}checked{% endif %}> Escola ativa</label>
+    </div>
+
+    <div class="gestao-actions">
+      <button class="btn-primary" type="submit">💾 Salvar identidade institucional</button>
+      <a class="btn-primary" href="/accounts/login/" target="_blank" rel="noopener">👁️ Ver login</a>
+    </div>
+  </form>
+
+  <section class="gestao-list-card">
+    <h2>Prévia institucional</h2>
+    <p>A tela de login mostra somente informações da escola. Não exibe série, turma, turno, ano letivo, usuário de teste nem cards de recursos.</p>
+    <div class="institutional-preview-box">
+      <img src="{% static 'img/logo_escola_login.png' %}" alt="Logo fixa da escola" class="institutional-preview-logo">
+      <strong>{{ escola.estado_nome|default:'ESTADO DO MARANHÃO' }}</strong>
+      <strong>{{ escola.secretaria|default:'SECRETARIA DE ESTADO DA EDUCAÇÃO' }}</strong>
+      <hr>
+      <span>Escola</span><b>{{ escola.nome|default:'Nome da escola' }}</b>
+      <span>Aldeia</span><b>{{ escola.aldeia|default:'Não informada' }}</b>
+      <span>Terra indígena</span><b>{{ escola.terra_indigena|default:'Não informada' }}</b>
+      <span>Gestão escolar</span><b>{{ escola.gestor_nome|default:'Nome da direção' }}</b>
+    </div>
+  </section>
+</section>
+</div>
+{% endblock %}

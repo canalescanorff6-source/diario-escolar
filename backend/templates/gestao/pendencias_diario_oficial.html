@@ -1,0 +1,8 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Pendências do Diário Escolar{% endblock %}
+{% block subtitulo %}Mapa mensal para corrigir vínculo, horário, frequência e registro de aula{% endblock %}
+{% block conteudo %}
+<div class="grid"><div class="card"><span>Mês</span><strong>{{ mes_nome }} / {{ ano }}</strong></div><div class="card"><span>Turmas com pendência</span><strong>{{ linhas|length }}</strong></div><div class="card"><span>Total de pendências</span><strong>{{ total_pendencias }}</strong></div></div>
+<form class="panel no-print" method="get" style="display:flex;gap:10px;align-items:end;flex-wrap:wrap"><label>Mês<br><input type="month" name="mes" value="{{ mes_param }}"></label><button class="gestao-base-btn" type="submit">Filtrar</button></form>
+{% for item in linhas %}<section class="panel"><h3>{{ item.turma.nome }} <span class="pill">{{ item.turno_oficial }}</span></h3><p class="muted">Pendências encontradas: {{ item.total_pendencias }}</p><table class="table"><thead><tr><th>Disciplina</th><th>Pendências</th><th>Ação</th></tr></thead><tbody>{% for bloco in item.disciplinas %}{% if bloco.pendencias %}<tr><td>{{ bloco.disciplina.nome }}</td><td>{% for p in bloco.pendencias %}<span class="pill" style="color:#facc15">{{ p }}</span> {% endfor %}</td><td><a class="gestao-base-btn" href="{% url 'gestao_auditoria_diario_turma' item.turma.id %}?mes={{ mes_param }}">Auditar</a></td></tr>{% endif %}{% empty %}<tr><td colspan="3">Sem disciplinas vinculadas.</td></tr>{% endfor %}</tbody></table></section>{% empty %}<section class="panel"><h3>Sem pendências críticas</h3><p class="muted">Nenhuma lacuna encontrada para o período filtrado.</p></section>{% endfor %}
+{% endblock %}

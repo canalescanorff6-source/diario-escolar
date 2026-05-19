@@ -1,0 +1,24 @@
+<section class="ia-mega-panel no-print">
+  <div class="panel-header">
+    <div>
+      <span class="premium-header-badge">Registro de aula</span>
+      <h3>Status de fechamento da aula</h3>
+      <span>Mostra se a aula já pode entrar no Diário Oficial sem pendência.</span>
+    </div>
+    <div class="ia-readiness-ring" style="--p:{{ aula_861_900.percentual }}">{{ aula_861_900.percentual }}%</div>
+  </div>
+  <div class="ia-check-list">
+    {% for item in aula_861_900.checklist %}
+      <div class="ia-check-item {% if item.ok %}ok{% else %}pending{% endif %}">
+        <strong>{{ item.item }}</strong>
+        <span class="ia-status-dot"></span>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="ia-sticky-actions">
+    <button class="btn-secondary-premium" type="button" data-set-presenca="P">Marcar todos P</button>
+    <button class="btn-secondary-premium" type="button" data-set-presenca="F">Marcar todos F</button>
+    <button class="btn-secondary-premium" type="button" data-set-presenca="FJ">Marcar todos FJ</button>
+    <a class="btn-secondary-premium" href="#conteudo-aula" data-scroll-to="#conteudo-aula">Ir para conteúdo</a>
+  </div>
+</section>

@@ -1,0 +1,33 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Rotina semanal{% endblock %}
+{% block subtitulo %}Carga horária, aulas de hoje e pendências da semana{% endblock %}
+{% block icone %}🕒{% endblock %}
+{% block conteudo %}
+<section class="panel painel-unico-hero">
+  <div><span class="pill">Professor em sala</span><h1>{{ request.user.get_full_name|default:request.user.username|default:'Professor' }}</h1><p class="muted">A gestão cadastra vínculos e horários; o professor recebe aqui sua semana pronta.</p></div>
+  <div class="hero-actions"><a href="{% url 'professor_aula_rapida_321' %}">⚡ Abrir aula rápida</a><a href="{% url 'professor_carga_horaria_301' %}">🕒 Carga horária</a></div>
+</section>
+
+<div class="grid">
+  <div class="card"><span>Aulas na semana</span><strong>{{ carga.aulas }}</strong><small class="muted">grade semanal</small></div>
+  <div class="card"><span>Horas semanais</span><strong>{{ carga.horas }}</strong><small class="muted">calculadas pelos horários</small></div>
+  <div class="card"><span>Aulas hoje</span><strong>{{ aulas_hoje.count }}</strong><small class="muted">{{ hoje|date:'d/m/Y' }}</small></div>
+  <div class="card"><span>Pendências</span><strong>{{ pendencias|length }}</strong><small class="muted">lançamentos e vínculos</small></div>
+</div>
+
+<section class="panel">
+  <h3>Aulas de hoje</h3>
+  <table class="table"><thead><tr><th>Horário</th><th>Turma</th><th>Disciplina</th><th>Turno</th><th>Ação</th></tr></thead><tbody>
+  {% for aula in aulas_hoje %}<tr><td>{{ aula.hora_inicio }} às {{ aula.hora_fim }}</td><td>{{ aula.turma.nome }}</td><td>{{ aula.disciplina.nome }}</td><td>{{ aula.turno|default:aula.turma.turno|default:'—' }}</td><td><a href="{% url 'professor_aula_rapida_321_horario' aula.id %}">Abrir aula</a></td></tr>{% empty %}<tr><td colspan="5">Nenhuma aula cadastrada para hoje.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+
+<section class="panel">
+  <h3>Semana do professor</h3>
+  <div class="grid">
+  {% for dia in carga.dias %}
+    <div class="card"><span>{{ dia.dia }}</span><strong>{{ dia.total }}</strong><small class="muted">{{ dia.horas }}h neste dia da semana</small></div>
+  {% endfor %}
+  </div>
+</section>
+{% endblock %}

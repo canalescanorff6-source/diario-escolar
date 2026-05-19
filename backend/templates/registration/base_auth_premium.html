@@ -1,0 +1,58 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Acesso Institucional{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/premium_base_final.css' %}">
+</head>
+<body class="auth-premium-body auth-portal-body auth-executive-body">
+  <main class="auth-portal-shell auth-executive-shell">
+    <section class="auth-institutional-card auth-executive-card" aria-label="Informações institucionais da escola">
+      <div class="auth-orbit auth-orbit-one"></div>
+      <div class="auth-orbit auth-orbit-two"></div>
+      <div class="auth-official-border"></div>
+
+      <header class="auth-executive-header">
+        <div class="auth-school-logo-box auth-executive-logo">
+          <img src="{% static 'img/logo_escola_login.png' %}" alt="Brasão institucional" class="auth-school-logo-img auth-school-logo-fixed">
+        </div>
+        <div class="auth-government-block auth-executive-government">
+          <span>{{ escola_login_estado|default:'ESTADO DO MARANHÃO' }}</span>
+          <strong>{{ escola_login_secretaria|default:'SECRETARIA DE ESTADO DA EDUCAÇÃO' }}</strong>
+        </div>
+      </header>
+
+      <section class="auth-executive-intro">
+        <span class="auth-system-label auth-executive-label">Identificação institucional</span>
+        <p>{{ escola_login_texto|default:'Portal oficial de acesso ao diário escolar da instituição.' }}</p>
+      </section>
+
+      <section class="auth-institutional-table auth-executive-record" aria-label="Dados institucionais">
+        <div class="auth-table-row auth-table-row-main auth-school-name-row">
+          <small>Escola</small>
+          <strong>{{ escola_login_nome_info|default:'Configurar no painel da gestão' }}</strong>
+        </div>
+        <div class="auth-table-row">
+          <small>Aldeia</small>
+          <strong>{{ escola_login_aldeia|default:'Configurar no painel da gestão' }}</strong>
+        </div>
+        <div class="auth-table-row">
+          <small>Terra indígena</small>
+          <strong>{{ escola_login_terra|default:'Configurar no painel da gestão' }}</strong>
+        </div>
+        <div class="auth-table-row auth-table-row-main">
+          <small>Gestão escolar</small>
+          <strong>{{ gestor_login_nome|default:'Direção escolar' }}</strong>
+          <em>{{ gestor_login_cargo|default:'Gestão responsável' }}</em>
+        </div>
+      </section>
+    </section>
+
+    <section class="auth-access-card auth-access-card-v3" aria-label="Acesso ao sistema">
+      {% block auth_content %}{% endblock %}
+    </section>
+  </main>
+</body>
+</html>

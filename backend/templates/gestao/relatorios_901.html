@@ -1,0 +1,72 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Relatórios{% endblock %}
+{% block subtitulo %}Documentos oficiais, dados da gestão e acompanhamento escolar{% endblock %}
+{% block conteudo %}
+<section class="ia-final-hero relatorios-hero-clean">
+  <div>
+    <span class="ia-final-badge">Central de documentos</span>
+    <h2>Relatórios e exportações da gestão</h2>
+    <p>Baixe os dados cadastrados pela gestão em Excel ou PDF. Se ainda não houver cadastros, o arquivo sai vazio e pronto para acompanhar o preenchimento manual pelo sistema.</p>
+    <div class="ia-actions">
+      <a href="{% url 'gestao_exportar_geral_excel' %}">📊 Exportar Excel</a>
+      <a class="secondary" href="{% url 'gestao_exportar_geral_pdf' %}">📄 Exportar PDF</a>
+      <button type="button" class="secondary" data-print-page>🖨️ Imprimir página</button>
+    </div>
+  </div>
+  <div class="ia-final-score">
+    <strong>{{ relatorios.cards|length|default:0 }}</strong>
+    <span>relatórios</span>
+  </div>
+</section>
+
+<section class="ia-final-panel export-actions-final relatorios-export-clean">
+  <div>
+    <h3>Exportação geral</h3>
+    <p>Arquivo único com escola, gestores, professores, alunos, turmas, disciplinas, vínculos, horários, frequência, aulas e fechamento mensal.</p>
+  </div>
+  <div class="ia-actions">
+    <a href="{% url 'gestao_exportar_geral_excel' %}">📊 Excel</a>
+    <a class="secondary" href="{% url 'gestao_exportar_geral_pdf' %}">📄 PDF</a>
+  </div>
+</section>
+
+<section class="ia-report-grid relatorios-card-grid">
+  {% for item in relatorios.cards %}
+    <a class="ia-report-card" href="{% url item.rota %}">
+      <em>{{ item.icone }}</em>
+      <strong>{{ item.titulo }}</strong>
+      <span>{{ item.descricao }}</span>
+    </a>
+  {% empty %}
+    <div class="ia-empty">Nenhum relatório cadastrado para exibição.</div>
+  {% endfor %}
+</section>
+
+<section class="ia-final-two relatorios-bottom-grid" style="margin-top:18px;">
+  <div class="ia-final-panel">
+    <h3>Carga horária consolidada</h3>
+    <p>Resumo da carga cadastrada por professor. A tabela permanece vazia até a gestão criar vínculos e horários.</p>
+    <div class="table-responsive relatorios-table-scroll">
+      <table>
+        <thead><tr><th>Professor</th><th>Turmas</th><th>Disciplinas</th><th>Aulas/Semana</th><th>Turnos</th></tr></thead>
+        <tbody>
+          {% for item in carga.linhas %}
+            <tr><td>{{ item.nome }}</td><td>{{ item.turmas }}</td><td>{{ item.disciplinas }}</td><td>{{ item.aulas }}</td><td>{{ item.turnos }}</td></tr>
+          {% empty %}
+            <tr><td colspan="5">Nenhuma carga horária cadastrada.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="ia-final-panel">
+    <h3>Fechamento mensal</h3>
+    <p>Acompanhamento do fechamento atual conforme as turmas e disciplinas forem cadastradas.</p>
+    <div class="ia-final-grid">
+      <div class="ia-final-card"><span>Prontidão</span><strong>{{ fechamento.prontidao|default:0|floatformat:1 }}%</strong><small>{{ fechamento.mes_nome|default:'Mês atual' }}</small></div>
+      <div class="ia-final-card"><span>Pendentes</span><strong>{{ fechamento.pendentes|default:0 }}</strong><small>turma/disciplina</small></div>
+    </div>
+    <div class="ia-actions"><a href="{% url 'gestao_fechamento_mensal_901' %}">Abrir fechamento</a></div>
+  </div>
+</section>
+{% endblock %}

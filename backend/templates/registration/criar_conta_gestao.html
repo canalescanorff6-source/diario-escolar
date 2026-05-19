@@ -1,0 +1,42 @@
+{% extends "registration/base_auth_premium.html" %}
+{% block title %}Criar gestão autorizada{% endblock %}
+{% block auth_content %}
+  <div class="auth-access-head auth-access-head-v2">
+    <span>Autorização obrigatória</span>
+    <h2>Criar conta da gestão</h2>
+    <p>Use esta opção somente com autorização da direção/gestão escolar.</p>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="{% if message.tags == 'success' %}auth-success{% else %}auth-error{% endif %}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" class="auth-form auth-form-v2" novalidate>
+    {% csrf_token %}
+    <label for="id_nome">Nome da gestão responsável</label>
+    <input id="id_nome" name="nome" autocomplete="name" required>
+
+    <label for="id_username">Usuário</label>
+    <input id="id_username" name="username" autocomplete="username" required>
+
+    <label for="id_email">E-mail</label>
+    <input id="id_email" name="email" type="email" autocomplete="email">
+
+    <label for="id_senha">Senha</label>
+    <input id="id_senha" name="senha" type="password" autocomplete="new-password" required>
+
+    <label for="id_confirmar_senha">Confirmar senha</label>
+    <input id="id_confirmar_senha" name="confirmar_senha" type="password" autocomplete="new-password" required>
+
+    <label for="id_codigo_autorizacao">Código de autorização</label>
+    <input id="id_codigo_autorizacao" name="codigo_autorizacao" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="000000" required>
+
+    <button type="submit" class="auth-submit auth-submit-v2">Criar acesso da gestão</button>
+  </form>
+
+  <a class="auth-secondary-link" href="{% url 'solicitar_codigo_gestao' %}">Receber código por e-mail</a>
+  <a class="auth-secondary-link auth-secondary-link-soft" href="{% url 'login' %}">Voltar ao acesso</a>
+  <div class="auth-help-box">Use o código numérico de 6 dígitos recebido no e-mail autorizado da direção. Professores continuam sendo cadastrados pela gestão.</div>
+{% endblock %}

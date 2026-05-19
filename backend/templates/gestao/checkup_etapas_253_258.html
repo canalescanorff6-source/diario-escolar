@@ -1,0 +1,132 @@
+{% extends "gestao/base_premium_gestao.html" %}
+
+{% block title %}Conferência do Diário Escolar{% endblock %}
+
+{% block content %}
+<section class="premium-header-card compact-premium-header">
+    <span class="premium-header-badge">higienização sem duplicidade</span>
+    <div class="premium-header-row">
+        <div>
+            <h1>Conferência geral do projeto</h1>
+            <p>Mapa mestre para manter o Diário Escolar limpo: professor, gestão, frequência P/F/FJ, horários e ficha do aluno sem atalhos repetidos.</p>
+        </div>
+        <span class="premium-header-icon">🧭</span>
+    </div>
+</section>
+
+<section class="cards gestao-cards">
+    {% for card in cards %}
+        <div class="card premium-card">
+            <span>{{ card.titulo }}</span>
+            <h2>{{ card.valor }}</h2>
+            <small>{{ card.detalhe }}</small>
+        </div>
+    {% endfor %}
+</section>
+
+<section class="grid-layout gestao-grid-layout">
+    <div class="left-column">
+        <div class="panel premium-scroll-panel">
+            <div class="panel-header">
+                <div>
+                    <h3>Fluxo oficial do professor</h3>
+                    <span>Entradas únicas, sem repetir Diário/Frequência/Aulas.</span>
+                </div>
+                <div class="panel-badge">PROFESSOR</div>
+            </div>
+            <div class="premium-scroll">
+                {% for item in manifesto.professor %}
+                    <div class="gestao-list-card">
+                        <div>
+                            <strong>{{ item.grupo }}</strong>
+                            <span>{{ item.regra }}</span>
+                        </div>
+                        <a href="{% url item.rota %}">Abrir</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="panel premium-scroll-panel">
+            <div class="panel-header">
+                <div>
+                    <h3>Fluxo oficial da gestão</h3>
+                    <span>Cadastro, vínculo, horários, aluno e Diário Escolar no caminho principal.</span>
+                </div>
+                <div class="panel-badge">GESTÃO</div>
+            </div>
+            <div class="premium-scroll">
+                {% for item in manifesto.gestao %}
+                    <div class="gestao-list-card">
+                        <div>
+                            <strong>{{ item.grupo }}</strong>
+                            <span>{{ item.regra }}</span>
+                        </div>
+                        <a href="{% url item.rota %}">Abrir</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="right-column">
+        <div class="panel">
+            <div class="panel-top"><h3>Checklist desta etapa</h3></div>
+            <div class="alerts">
+                {% for item in checklist %}
+                    <div class="alert {% if item.status == 'OK' %}success-alert{% else %}warning-alert{% endif %}">
+                        <strong>{{ item.status }}</strong> • {{ item.item }}<br>
+                        <small>{{ item.detalhe }}</small>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-top"><h3>Legado monitorado</h3></div>
+            <div class="alerts">
+                <div class="alert success-alert">📄 Templates totais: {{ legado.total }}</div>
+                <div class="alert warning-alert">🧩 Conferências antigos preservados: {{ legado.gestao_conferências }}</div>
+                <div class="alert warning-alert">🧭 Templates de fases concluídas: {{ legado.templates_fases_concluidas|default:0 }}</div>
+                <div class="alert success-alert">✅ {{ legado.observacao }}</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-top"><h3>Pendências operacionais</h3></div>
+            <div class="alerts">
+                {% for item in pendencias %}
+                    <div class="alert {% if item.prioridade == 'ok' %}success-alert{% elif item.prioridade == 'alta' %}danger-alert{% else %}warning-alert{% endif %}">
+                        {{ item.item }}: <strong>{{ item.total }}</strong>
+                    </div>
+                {% empty %}
+                    <div class="alert success-alert">✅ Nenhuma pendência operacional encontrada.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="panel premium-risk-panel">
+    <div class="panel-header">
+        <div>
+            <h3>Próximo ponto técnico</h3>
+            <span>{{ tecnico.recomendacao }}</span>
+        </div>
+        <div class="panel-badge">{{ tecnico.views_linhas }} linhas em views.py</div>
+    </div>
+    <div class="risk-scroll">
+        <div class="risk-card">
+            <div class="risk-info">
+                <strong>Modularização segura</strong>
+                <small>O projeto está funcional, mas o ganho real agora é separar views.py por módulos sem mudar as URLs públicas.</small>
+            </div>
+            <div class="risk-metrics">
+                <div class="metric-box"><span>Views</span><strong>{{ tecnico.defs_views }}</strong></div>
+                <div class="metric-box"><span>Rotas</span><strong>{{ tecnico.rotas_path }}</strong></div>
+                <div class="metric-box"><span>Templates</span><strong>{{ auditoria.templates_total }}</strong></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

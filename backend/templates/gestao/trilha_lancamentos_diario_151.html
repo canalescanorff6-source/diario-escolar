@@ -1,0 +1,10 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Trilha de lançamentos do Diário{% endblock %}
+{% block subtitulo %}Gestão acompanha por professor, turma, disciplina, dia, frequência e aula • {{ mes_nome }}/{{ ano }}{% endblock %}
+{% block conteudo %}
+<section class="panel">
+  <table class="table"><thead><tr><th>Professor</th><th>Turma/turno</th><th>Disciplina</th><th>Dias lançados</th><th>Status</th></tr></thead><tbody>
+  {% for linha in linhas %}<tr><td>{{ linha.vinculo.professor.get_full_name|default:'Não informado' }}</td><td>{{ linha.vinculo.turma.nome }}<br><span class="muted">{{ linha.turno }}</span></td><td>{{ linha.vinculo.disciplina.nome }}</td><td>{% for dia in linha.dias %}<span class="pill">{{ dia.data|date:'d/m' }} • {% if dia.tem_frequencia %}Freq{% endif %}{% if dia.tem_aula %} Aula{% endif %}</span> {% empty %}<span class="muted">Sem dias lançados</span>{% endfor %}</td><td>{% if linha.bloco.ok %}<span class="pill">OK</span>{% else %}{% for p in linha.bloco.pendencias %}<span class="pill">{{ p }}</span> {% endfor %}{% endif %}</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

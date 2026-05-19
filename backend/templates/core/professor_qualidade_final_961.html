@@ -1,0 +1,9 @@
+{% extends "core/base_professor_premium.html" %}
+{% block titulo %}Conferência final{% endblock %}
+{% block subtitulo %}Roteiro seguro do professor para finalizar diário, frequência e fechamento{% endblock %}
+{% block icone %}🛡️{% endblock %}
+{% block conteudo %}
+<section class="mega961-hero"><div><span class="mega961-badge">Professor • conferência final</span><h2>Roteiro do professor</h2><p>Rotina do diário: abrir aula, chamada P/F/FJ, conteúdo, observação, salvar e fechar mês.</p></div><div class="mega961-score"><strong>{{ prontidao.prontidao|floatformat:1 }}%</strong><span>prontidão do fluxo</span><div class="mega961-progress" data-pct="{{ prontidao.prontidao }}"><span></span></div></div></section>
+<section class="mega961-roadmap">{% for bloco in blocos %}<article class="mega961-step"><span>{{ bloco.ordem }}</span><div><strong>{{ bloco.titulo }}</strong><p>{{ bloco.descricao }}</p></div><em>{{ bloco.status }}</em></article>{% endfor %}</section>
+<section class="panel"><h3>O que ainda impede o fechamento do diário</h3><div class="mega961-list">{% for p in prontidao.pendentes %}<div class="mega961-row pending"><div><strong>{{ p.item }}</strong><small>{{ p.acao }}</small></div><span>PENDENTE</span></div>{% empty %}<div class="mega961-row ok"><div><strong>Fluxo pronto.</strong><small>Continuar o uso da Aula rápida e Fechamento mensal.</small></div><span>OK</span></div>{% endfor %}</div></section>
+{% endblock %}

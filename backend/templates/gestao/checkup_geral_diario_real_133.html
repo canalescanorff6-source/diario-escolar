@@ -1,0 +1,17 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Conferência Geral do Diário Escolar{% endblock %}
+{% block subtitulo %}Conferência atual antes da continuidade 133–138{% endblock %}
+{% block conteudo %}
+<div class="grid">
+  <div class="card"><span>Escola</span><strong>{{ resumo.escola.nome|default:'Pendente' }}</strong></div>
+  <div class="card"><span>Ano letivo</span><strong>{{ resumo.ano_letivo|default:'Pendente' }}</strong></div>
+  <div class="card"><span>Turmas</span><strong>{{ resumo.turmas }}</strong></div>
+  <div class="card"><span>Professores</span><strong>{{ resumo.professores }}</strong></div>
+  <div class="card"><span>Vínculos</span><strong>{{ resumo.vinculos }}</strong></div>
+  <div class="card"><span>Horários</span><strong>{{ resumo.horarios }}</strong></div>
+  <div class="card"><span>Frequências</span><strong>{{ resumo.frequencias }}</strong></div>
+  <div class="card"><span>Aulas</span><strong>{{ resumo.aulas }}</strong></div>
+</div>
+<section class="panel"><h3>Pontos de atenção</h3><p class="muted">Turmas sem turno: {{ resumo.turmas_sem_turno }} • Turmas sem professor regente: {{ resumo.turmas_sem_professor }} • Vínculos sem horário: {{ resumo.vinculos_sem_horario }}</p></section>
+<section class="panel"><h3>Pendências oficiais recentes</h3><table class="table"><thead><tr><th>Tipo</th><th>Turma</th><th>Disciplina</th><th>Ação</th></tr></thead><tbody>{% for p in pendencias %}<tr><td>{{ p.tipo }}</td><td>{{ p.turma.nome }}</td><td>{{ p.disciplina.nome|default:'-' }}</td><td>{{ p.acao }}</td></tr>{% empty %}<tr><td colspan="4">Nenhuma pendência crítica encontrada.</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

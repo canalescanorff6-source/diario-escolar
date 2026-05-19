@@ -1,0 +1,34 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% load static %}
+{% block titulo %}Ficha Oficial do Aluno •{% endblock %}
+{% block subtitulo %}Tela integrada ao Diário Escolar.{% endblock %}
+{% block conteudo %}
+<div class="premium-only-page visual-1161-1220" data-template="gestao/ficha_aluno_oficial.html">
+<section class="topbar premium-header-card compact-premium-header">
+      
+
+      
+
+    </section>
+    <section class="panel ficha-oficial-head">
+      <div><span>Escola</span><strong>{% if escola %}{{ escola.nome }}{% else %}Não cadastrada{% endif %}</strong></div>
+      <div><span>Matrícula</span><strong>{{ aluno.matricula }}</strong></div>
+      <div><span>Nascimento</span><strong>{{ aluno.data_nascimento|date:'d/m/Y'|default:'-' }}</strong></div>
+      <div><span>Responsável</span><strong>{{ aluno.responsavel|default:'-' }}</strong></div>
+    </section>
+    <section class="ficha-disciplinas-grid">
+      {% for item in resumo_disciplinas %}
+      <article class="panel ficha-disciplina-card">
+        <div class="ficha-disciplina-top"><div><span>Componente curricular</span><h3>{{ item.disciplina.nome }}</h3></div><strong>{{ item.frequencia_percentual }}%</strong></div>
+        <div class="ficha-mini-metrics"><div><strong>{{ item.faltas }}</strong><span>faltas</span></div><div><strong>{% if item.media %}{{ item.media }}{% else %}-{% endif %}</strong><span>média</span></div><div><strong>{{ item.conteudos|length }}</strong><span>aulas</span></div></div>
+        <h4>Notas por período</h4><div class="ficha-pills">{% for nota in item.notas %}<span>{{ nota.bimestre }}º: {{ nota.valor|default:'-' }}</span>{% empty %}<span>Sem notas</span>{% endfor %}</div>
+        <h4>Frequências recentes</h4><div class="ficha-lista-mini">{% for freq in item.frequencias %}<p>{{ freq.data|date:'d/m/Y' }} • {% if freq.presente %}Presente{% else %}Falta{% endif %} {% if freq.observacao %}• {{ freq.observacao }}{% endif %}</p>{% empty %}<p>Sem frequência registrada.</p>{% endfor %}</div>
+      </article>
+      {% empty %}<section class="panel empty-risk">Sem disciplinas vinculadas ao aluno/turma.</section>{% endfor %}
+    </section>
+    <section class="grid-layout">
+      <section class="panel"><div class="panel-header"><h3>Histórico escolar</h3></div>{% for h in historicos %}<div class="linha-card"><div class="linha-info"><strong>{{ h.titulo }}</strong><small>{{ h.criado_em|date:'d/m/Y' }}</small><p>{{ h.descricao|default:'' }}</p></div></div>{% empty %}<p class="empty-risk">Sem histórico.</p>{% endfor %}</section>
+      <section class="panel"><div class="panel-header"><h3>Pareceres e documentos</h3></div>{% for p in pareceres %}<div class="linha-card"><div class="linha-info"><strong>Parecer</strong><small>{{ p.criado_em|date:'d/m/Y' }}</small><p>{{ p.texto|truncatechars:150 }}</p></div></div>{% endfor %}{% for d in documentos %}<div class="linha-card"><div class="linha-info"><strong>{{ d.titulo }}</strong><small>{{ d.criado_em|date:'d/m/Y' }}</small></div></div>{% empty %}{% if not pareceres %}<p class="empty-risk">Sem documentos.</p>{% endif %}{% endfor %}</section>
+    </section>
+</div>
+{% endblock %}

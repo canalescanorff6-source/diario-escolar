@@ -1,0 +1,12 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% load static %}
+{% block titulo %}Checklist Fechamento{% endblock %}
+{% block subtitulo %}Tela integrada ao Diário Escolar.{% endblock %}
+{% block conteudo %}
+<div class="premium-only-page visual-1161-1220" data-template="gestao/checklist_fechamento.html">
+{% if messages %}<div class="official-box">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
+
+<section class="cards gestao-cards"><div class="card premium-card"><span>Turmas</span><h2>{{ total_turmas }}</h2><small>avaliadas</small></div><div class="card premium-card"><span>Prontas</span><h2>{{ total_prontas }}</h2><small>sem pendências críticas</small></div><div class="card premium-card"><span>Pendentes</span><h2>{{ total_pendentes }}</h2><small>precisam revisão</small></div></section>
+<section class="official-box"><h2>Checklist premium de fechamento</h2><table class="premium-table"><thead><tr><th>Turma</th><th>Alunos</th><th>Notas incompletas</th><th>Conteúdos</th><th>Frequências</th><th>Documentos/Assinaturas</th><th>Status</th><th>Pendências</th></tr></thead><tbody>{% for item in turmas_status %}<tr><td><a href="{% url 'gestao_dossie_turma' item.turma.id %}">{{ item.turma.nome }}</a></td><td>{{ item.alunos }}</td><td>{{ item.notas_incompletas }}</td><td>{{ item.conteudos }}</td><td>{{ item.frequencias }}</td><td>{{ item.documentos }}/{{ item.assinaturas }}</td><td>{% if item.status == 'PRONTO' %}<span class="tag-ok">PRONTO</span>{% else %}<span class="tag-warn">PENDENTE</span>{% endif %}</td><td>{% for p in item.pendencias %}• {{ p }}<br>{% empty %}Sem pendências{% endfor %}</td></tr>{% empty %}<tr><td colspan="8">Nenhuma turma encontrada.</td></tr>{% endfor %}</tbody></table></section>
+</div>
+{% endblock %}

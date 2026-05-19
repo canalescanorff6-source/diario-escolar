@@ -1,0 +1,14 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Espelho mensal turma/disciplina{% endblock %}
+{% block subtitulo %}{{ turma.nome }} • {{ turma.turno }} • {{ disciplina.nome }} • {{ mes_nome }}/{{ ano }}{% endblock %}
+{% block conteudo %}
+<section class="grid">
+    <article class="card"><span>Escola</span><strong>{% if escola %}{{ escola.nome }}{% else %}Pendente{% endif %}</strong><p class="pill">Identificação</p></article>
+    <article class="card"><span>Ano letivo</span><strong>{% if ano_letivo %}{{ ano_letivo.ano }}{% else %}{{ turma.ano_letivo.ano }}{% endif %}</strong><p class="pill">Oficial</p></article>
+    <article class="card"><span>Frequência</span><strong>P {{ espelho.bloco.frequencia.presencas }} / F {{ espelho.bloco.frequencia.faltas }} / FJ {{ espelho.bloco.frequencia.fj }}</strong><p class="pill">{{ espelho.bloco.frequencia.total }} registros</p></article>
+    <article class="card"><span>Aulas</span><strong>{{ espelho.bloco.aulas_count }}</strong><p class="pill">Mensal</p></article>
+</section>
+<section class="panel"><h3>Professor automático da gestão</h3>{% for item in professores %}<span class="pill">{{ item.professor.get_full_name|default:'Não informado' }}</span> {% empty %}<span class="pill">Sem professor vinculado</span>{% endfor %}</section>
+<section class="panel"><h3>Alunos</h3><table class="table"><thead><tr><th>Aluno</th><th>Matrícula</th><th>P</th><th>F</th><th>FJ</th><th>Últimos lançamentos</th><th>Abrir</th></tr></thead><tbody>{% for linha in espelho.alunos %}<tr><td>{{ linha.aluno.nome }}</td><td>{{ linha.aluno.matricula }}</td><td>{{ linha.frequencia.presencas }}</td><td>{{ linha.frequencia.faltas }}</td><td>{{ linha.frequencia.fj }}</td><td>{% for f in linha.ultimos %}<span class="pill">{{ f.data|date:'d/m' }}</span> {% empty %}<span class="pill">Sem lançamento</span>{% endfor %}</td><td><a href="{% url 'gestao_aluno_dossie_diario_real_169' linha.aluno.id %}?mes={{ mes_param }}">dossiê</a></td></tr>{% empty %}<tr><td colspan="7">Nenhum aluno ativo.</td></tr>{% endfor %}</tbody></table></section>
+<section class="panel"><h3>Dias do mês</h3><table class="table"><thead><tr><th>Data</th><th>Frequência</th><th>Aulas</th><th>Status</th></tr></thead><tbody>{% for dia in espelho.dias %}<tr><td>{{ dia.data|date:'d/m/Y' }}</td><td>P {{ dia.frequencia.presencas }} / F {{ dia.frequencia.faltas }} / FJ {{ dia.frequencia.fj }}</td><td>{{ dia.aulas_count }}</td><td>{% if dia.ok %}<span class="pill">OK</span>{% elif dia.tem_lancamento %}<span class="pill">Parcial</span>{% else %}<span class="pill">Sem lançamento</span>{% endif %}</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

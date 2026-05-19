@@ -1,0 +1,31 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Consolidado Mensal do Diário Escolar{% endblock %}
+{% block subtitulo %}Escola, ano letivo, turmas, disciplinas, professores, frequência P/F/FJ e aulas do mês{% endblock %}
+{% block conteudo %}
+<div class="grid no-print">
+  <div class="card"><span>Escola</span><strong>{{ escola.nome|default:'Pendente' }}</strong></div>
+  <div class="card"><span>Ano letivo</span><strong>{{ ano_letivo|default:'Pendente' }}</strong></div>
+  <div class="card"><span>Mês oficial</span><strong>{{ mes_nome }} / {{ ano }}</strong></div>
+  <div class="card"><span>Turmas acompanhadas</span><strong>{{ linhas|length }}</strong></div>
+</div>
+<form class="panel no-print" method="get" style="display:flex;gap:10px;align-items:end;flex-wrap:wrap">
+  <label><span class="muted">Mês</span><br><input type="month" name="mes" value="{{ mes_param }}" style="padding:10px;border-radius:12px;border:1px solid var(--line);background:#071014;color:#e7fffb"></label>
+  <button class="gestao-base-btn" type="submit">Filtrar</button>
+</form>
+{% for item in linhas %}
+<section class="panel">
+  <h3>{{ item.turma.nome }} <span class="pill">{{ item.turno_oficial }}</span> {% if item.pendente %}<span class="pill" style="color:#facc15">Com pendências</span>{% else %}<span class="pill">OK</span>{% endif %}</h3>
+  <p class="muted">Ano/série/turma: {{ item.turma.nome }} • Turno: {{ item.turma.turno|default:item.turno_oficial }} • Alunos: {{ item.total_alunos }} • Regente: {{ item.professor_regente.get_full_name|default:'Não informado'|default:'Não informado' }}</p>
+  <table class="table"><thead><tr><th>Disciplina</th><th>Frequência</th><th>Aulas registradas</th><th>Professor/horários</th></tr></thead><tbody>
+  {% for bloco in item.disciplinas %}
+    <tr>
+      <td><strong>{{ bloco.disciplina.nome }}</strong></td>
+      <td>P: {{ bloco.frequencia.presencas }} • F: {{ bloco.frequencia.faltas }} • FJ: {{ bloco.frequencia.fj }}<br><span class="muted">Total: {{ bloco.frequencia.total }}</span></td>
+      <td>{{ bloco.total_aulas }} {% if bloco.sem_aula %}<span class="pill" style="color:#facc15">sem registro</span>{% endif %}</td>
+      <td>{% for h in bloco.horarios %}<span class="pill">{{ h.get_dia_semana_display }} {{ h.ordem }}º • {{ h.hora_inicio|time:'H:i' }}-{{ h.hora_fim|time:'H:i' }}</span> {% empty %}<span class="muted">Sem horário</span>{% endfor %}</td>
+    </tr>
+  {% empty %}<tr><td colspan="4">Sem disciplina vinculada nesta turma.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% empty %}<div class="panel">Nenhuma turma ativa encontrada para o ano letivo.</div>{% endfor %}
+{% endblock %}

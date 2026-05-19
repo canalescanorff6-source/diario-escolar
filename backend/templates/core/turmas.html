@@ -1,0 +1,77 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Minhas Turmas{% endblock %}
+{% block subtitulo %}Turmas vinculadas pela gestão, com acesso rápido ao Diário Escolar.{% endblock %}
+{% block icone %}🏫{% endblock %}
+{% block conteudo %}
+<section class="cards">
+  <article class="card"><span>Total de turmas</span><h2>{{ total_turmas }}</h2><small>vinculadas ao professor</small></article>
+</section>
+
+<section class="turmas-professor-tools">
+  <div class="tools-left">
+    <span class="ia-kicker">IA Pedagógica</span>
+    <div>
+      <h3 class="ia-section-title">Localizar turma rapidamente</h3>
+      <p class="ia-muted">Busque por nome da turma, ano letivo ou status.</p>
+    </div>
+  </div>
+  <div class="tools-search">
+    <input type="text" id="buscarTurma" placeholder="Buscar turma..." autocomplete="off">
+    <span id="contadorTurmas" class="pill">{{ total_turmas }} turma(s)</span>
+  </div>
+</section>
+
+<section class="turmas-grid">
+  {% for turma in turmas %}
+  <article class="turma-card turma-search-card" data-search="{{ turma.nome|lower }} {{ turma.ano_letivo }} {{ turma.turno|default:''|lower }}">
+    <div class="turma-header">
+      <div>
+        <span class="pill">{{ turma.turno|default:'Turno não informado' }}</span>
+        <h2 class="ia-section-title" style="font-size:26px!important;margin-top:12px!important">{{ turma.nome }}</h2>
+        <p class="ia-muted">{{ turma.alunos.count }} aluno(s) • Ano letivo {{ turma.ano_letivo }}</p>
+      </div>
+      <span class="ia-badge">IA Ativa</span>
+    </div>
+    <div class="turma-info">
+      <div class="card"><span>Ano letivo</span><strong>{{ turma.ano_letivo }}</strong></div>
+      <div class="card"><span>Status</span><strong>Ativa</strong></div>
+    </div>
+    <div class="turma-actions">
+      <a href="{% url 'turma_detalhe' turma.id %}" class="btn-premium">Abrir Diário</a>
+    </div>
+  </article>
+  {% empty %}
+  <article class="card" style="grid-column:1/-1">
+    <h2>Nenhuma turma</h2>
+    <p class="ia-muted">Você ainda não possui turmas vinculadas pela gestão.</p>
+    <div class="empty-state">Peça para a gestão criar vínculo professor/turma/disciplina e horários semanais.</div>
+  </article>
+  {% endfor %}
+</section>
+
+<div id="nenhumaTurmaEncontrada" class="empty-state" style="display:none;margin-top:16px">Nenhuma turma encontrada. Tente buscar por outro nome ou ano letivo.</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const input = document.getElementById('buscarTurma');
+  const cards = document.querySelectorAll('.turma-search-card');
+  const contador = document.getElementById('contadorTurmas');
+  const vazio = document.getElementById('nenhumaTurmaEncontrada');
+  if (!input) return;
+  function filtrarTurmas() {
+    const termo = input.value.toLowerCase().trim();
+    let visiveis = 0;
+    cards.forEach(function(card) {
+      const texto = card.dataset.search || card.innerText.toLowerCase();
+      const mostrar = texto.includes(termo);
+      card.style.display = mostrar ? '' : 'none';
+      if (mostrar) visiveis++;
+    });
+    if (contador) contador.textContent = visiveis + (visiveis === 1 ? ' turma' : ' turmas');
+    if (vazio) vazio.style.display = visiveis === 0 && cards.length ? 'flex' : 'none';
+  }
+  input.addEventListener('input', filtrarTurmas);
+});
+</script>
+{% endblock %}

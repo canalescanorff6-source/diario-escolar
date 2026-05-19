@@ -1,0 +1,31 @@
+{% extends 'gestao/base_premium_gestao.html' %}
+{% block titulo %}Estrutura de Turnos e Séries{% endblock %}
+{% block subtitulo %}Manhã: 1º ao 5º ano • Tarde: 6º ao 9º e Ensino Médio • Noite: EJAs.{% endblock %}
+{% block conteudo %}
+<section class="grid">
+  {% for grupo in grupos %}
+  <article class="card">
+    <span>{{ grupo.turno }}</span>
+    <strong>{{ grupo.cadastradas }}/{{ grupo.esperadas }}</strong>
+    <p class="muted">Turmas cadastradas em relação ao padrão solicitado.</p>
+  </article>
+  {% endfor %}
+</section>
+{% for grupo in grupos %}
+<section class="panel">
+  <h3>{{ grupo.turno }} — séries esperadas</h3>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+    {% for serie in grupo.series %}<span class="pill">{% if serie.ok %}✅{% else %}⚠️{% endif %} {{ serie.nome }}</span>{% endfor %}
+  </div>
+  <table class="table">
+    <thead><tr><th>Turma cadastrada</th><th>Ano letivo</th><th>Professor referência</th><th>Ações</th></tr></thead>
+    <tbody>
+      {% for turma in grupo.turmas %}
+      <tr><td><strong>{{ turma.nome }}</strong></td><td>{{ turma.ano_letivo }}</td><td>{{ turma.professor.get_full_name|default:'Não informado'|default:'-' }}</td><td><a class="gestao-base-btn" href="{% url 'diario_oficial_turma_completo' turma.id %}">Diário</a></td></tr>
+      {% empty %}<tr><td colspan="4">Nenhuma turma cadastrada para este turno.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  {% if grupo.pendentes %}<p class="muted">Pendentes: {{ grupo.pendentes|join:', ' }}</p>{% endif %}
+</section>
+{% endfor %}
+{% endblock %}

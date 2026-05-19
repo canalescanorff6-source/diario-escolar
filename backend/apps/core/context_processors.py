@@ -35,12 +35,12 @@ def escola_institucional(request):
         "escola_login_estado": "ESTADO DO MARANHÃO",
         "escola_login_secretaria": "SECRETARIA DE ESTADO DA EDUCAÇÃO",
         "escola_login_nome_titulo": "Instituição escolar",
-        "escola_login_nome_info": "Configurar no painel da gestão",
-        "escola_login_aldeia": "Configurar no painel da gestão",
-        "escola_login_terra": "Configurar no painel da gestão",
+        "escola_login_nome_info": "Aguardando configuração no painel da gestão",
+        "escola_login_aldeia": "Aguardando configuração no painel da gestão",
+        "escola_login_terra": "Aguardando configuração no painel da gestão",
         "escola_login_texto": "Ambiente oficial de acesso da instituição escolar.",
         "gestor_login_nome": "Direção escolar",
-        "gestor_login_cargo": "Gestão responsável",
+        "gestor_login_cargo": "Responsável institucional pela escola",
     }
     try:
         from apps.academico.models import Escola
@@ -52,11 +52,11 @@ def escola_institucional(request):
             nome = _clean(getattr(escola, "nome", ""))
             nome_valido = not _is_placeholder_school_name(nome)
             dados["escola_login_nome_titulo"] = nome if nome_valido else "Instituição escolar"
-            dados["escola_login_nome_info"] = nome if nome_valido else "Configurar no painel da gestão"
+            dados["escola_login_nome_info"] = nome if nome_valido else "Aguardando configuração no painel da gestão"
             dados["escola_login_estado"] = _clean(getattr(escola, "estado_nome", "")) or dados["escola_login_estado"]
             dados["escola_login_secretaria"] = _clean(getattr(escola, "secretaria", "")) or dados["escola_login_secretaria"]
-            dados["escola_login_aldeia"] = _clean(getattr(escola, "aldeia", "")) or "Configurar no painel da gestão"
-            dados["escola_login_terra"] = _clean(getattr(escola, "terra_indigena", "")) or "Configurar no painel da gestão"
+            dados["escola_login_aldeia"] = _clean(getattr(escola, "aldeia", "")) or "Aguardando configuração no painel da gestão"
+            dados["escola_login_terra"] = _clean(getattr(escola, "terra_indigena", "")) or "Aguardando configuração no painel da gestão"
             dados["escola_login_texto"] = _clean(getattr(escola, "texto_institucional", "")) or dados["escola_login_texto"]
 
             gestor_nome = _clean(getattr(escola, "gestor_nome", ""))

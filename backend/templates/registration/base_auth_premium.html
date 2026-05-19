@@ -32,20 +32,20 @@
       <section class="auth-institutional-table auth-executive-record" aria-label="Dados institucionais">
         <div class="auth-table-row auth-table-row-main auth-school-name-row">
           <small>Escola</small>
-          <strong>{{ escola_login_nome_info|default:'Configurar no painel da gestão' }}</strong>
+          <strong>{{ escola_login_nome_info|default:'Aguardando configuração no painel da gestão' }}</strong>
         </div>
         <div class="auth-table-row">
           <small>Aldeia</small>
-          <strong>{{ escola_login_aldeia|default:'Configurar no painel da gestão' }}</strong>
+          <strong>{{ escola_login_aldeia|default:'Aguardando configuração no painel da gestão' }}</strong>
         </div>
         <div class="auth-table-row">
           <small>Terra indígena</small>
-          <strong>{{ escola_login_terra|default:'Configurar no painel da gestão' }}</strong>
+          <strong>{{ escola_login_terra|default:'Aguardando configuração no painel da gestão' }}</strong>
         </div>
         <div class="auth-table-row auth-table-row-main">
-          <small>Gestão escolar</small>
+          <small>Gestão da unidade escolar</small>
           <strong>{{ gestor_login_nome|default:'Direção escolar' }}</strong>
-          <em>{{ gestor_login_cargo|default:'Gestão responsável' }}</em>
+          <em>Responsável institucional pela escola</em>
         </div>
       </section>
     </section>

@@ -316,7 +316,7 @@ def plano_conclusao_1001_1080(professor=None) -> dict:
         {"ordem": 5, "titulo": "Publicação futura", "status": "OK", "descricao": "Render preservado, SQLite mantido e PostgreSQL deixado para produção."},
     ]
     return {
-        "titulo": "Conferência final 1001–1080",
+        "titulo": "Conferência final",
         "subtitulo": "Conferência do sistema de tudo que foi pedido + blindagem para continuar sem quebrar.",
         "auditoria": auditoria,
         "rotas": rotas,
@@ -331,6 +331,6 @@ def mega_checkup_1001_1080(professor=None) -> dict:
         **plano,
         "cards": plano["auditoria"]["cards"],
         "checks": plano["auditoria"]["checks"],
-        "titulo": "Conferência do sistema 1001–1080",
+        "titulo": "Conferência do sistema",
         "subtitulo": "Confere o roteiro do professor e mostra o que ainda depende de cadastros e lançamentos reais.",
     }

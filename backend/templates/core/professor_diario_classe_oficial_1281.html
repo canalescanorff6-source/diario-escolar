@@ -1,17 +1,17 @@
 {% extends 'core/base_professor_premium.html' %}
-{% block titulo %}Meu Diário de Classe{% endblock %}
-{% block subtitulo %}Documento consolidado com frequência P/F/FJ, disciplinas, horários, aulas e fechamento{% endblock %}
+{% block titulo %}Diário consolidado{% endblock %}
+{% block subtitulo %}Documento interno consolidado do professor, acessado a partir do Meu Diário de Classe.{% endblock %}
 {% block icone %}📘{% endblock %}
 {% block conteudo %}
 <section class="hero painel-unico-hero ia-mega-hero no-print">
   <div>
-    <span class="hero-badge">Documento oficial do professor</span>
-    <h1>Meu Diário de Classe</h1>
-    <p>A gestão cadastra escola, turmas, disciplinas, vínculos e horários. Você acompanha o documento consolidado e lança aula, frequência e fechamento.</p>
+    <span class="hero-badge">Documento consolidado</span>
+    <h1>Diário consolidado</h1>
+    <p>Consulta interna com frequência, aulas, vínculos e fechamento. Para o uso diário do professor, acesse primeiro o Meu Diário de Classe.</p>
   </div>
   <div class="hero-actions">
-    <a class="btn-primary" href="{% url 'professor_aula_rapida_321' %}">⚡ Abrir aula</a>
-    <a class="btn-secondary-premium" href="{% url 'professor_diario_oficial' %}">📘 Diário atual</a>
+    <a class="btn-primary" href="{% url 'professor_diario_oficial' %}">📗 Voltar ao Meu Diário</a>
+    <a class="btn-secondary-premium" href="{% url 'professor_aula_rapida_321' %}">⚡ Lançar aula</a>
     <a class="btn-secondary-premium" href="{% url 'professor_fechamento_mensal_901' %}">📕 Fechamento</a>
   </div>
 </section>
@@ -23,7 +23,7 @@
       <h2>{{ professor.get_full_name|default:professor.username }}</h2>
       <p>{% if cobertura.escola %}{{ cobertura.escola.nome }} • {{ cobertura.ano_letivo|default:'Ano letivo' }}{% else %}Escola não cadastrada{% endif %}</p>
     </div>
-    <div class="ia-document-seal">MEU<br>DIÁRIO</div>
+    <div class="ia-document-seal">DIÁRIO<br>CONS.</div>
   </div>
   <div class="ia-document-meta">
     <div><span>Turmas</span><strong>{{ cobertura.totais.turmas }}</strong></div>

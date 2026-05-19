@@ -1,216 +1,190 @@
 {% extends "core/base_professor_premium.html" %}
 {% load static %}
-{% block titulo %}Diário de Classe{% endblock %}
-{% block subtitulo %}Tela integrada ao Diário Escolar.{% endblock %}
+{% block titulo %}Diário de Classe da Turma{% endblock %}
+{% block subtitulo %}Página interna do diário da turma, aberta pelo Meu Diário de Classe ou por Minhas Turmas.{% endblock %}
 {% block conteudo %}
-<div class="premium-only-page visual-1161-1220" data-template="core/diario_classe_turma.html">
-<section class="diario-oficial-page diario-capa">
-            <div class="diario-capa-head">
-                <h2>ESTADO DO MARANHÃO</h2>
-                <h3>SECRETARIA DE ESTADO DA EDUCAÇÃO</h3>
-                <h1>DIÁRIO DE CLASSE</h1>
-            </div>
+<div class="premium-only-page visual-1161-1220 diario-classe-clean" data-template="core/diario_classe_turma.html">
+  <style>
+    .diario-classe-clean{display:flex;flex-direction:column;gap:22px;}
+    .dc-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:2px;}
+    .dc-toolbar-text strong{display:block;color:#fff;font-size:18px;font-weight:900;letter-spacing:-.02em;}
+    .dc-toolbar-text span{display:block;color:#a8bdd1;font-size:13px;margin-top:4px;}
+    .dc-actions{display:flex;gap:10px;flex-wrap:wrap;}
+    .dc-page{border:1px solid rgba(94,234,212,.18);background:linear-gradient(135deg,rgba(15,23,42,.78),rgba(8,47,73,.28));border-radius:26px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25);overflow:hidden;}
+    .dc-cover{position:relative;}
+    .dc-cover:before{content:"";position:absolute;right:-140px;top:-160px;width:420px;height:420px;border-radius:999px;background:radial-gradient(circle,rgba(94,234,212,.16),transparent 60%);pointer-events:none;}
+    .dc-head{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px;}
+    .dc-head h2,.dc-head h3,.dc-head h1{margin:0;}
+    .dc-head h2{color:#5fffee;font-size:13px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;}
+    .dc-head h3{color:#e8f9ff;font-size:15px;margin-top:8px;text-transform:uppercase;font-weight:900;}
+    .dc-head h1{color:#fff;font-size:clamp(28px,4vw,44px);line-height:1;margin-top:12px;letter-spacing:-.04em;}
+    .dc-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid rgba(94,234,212,.28);background:rgba(94,234,212,.10);color:#5fffee;font-weight:900;font-size:12px;}
+    .dc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;position:relative;z-index:1;}
+    .dc-field{border:1px solid rgba(94,234,212,.14);background:rgba(2,6,23,.34);border-radius:18px;padding:14px 16px;min-width:0;}
+    .dc-field.span-2{grid-column:1/-1;}
+    .dc-field span{display:block;color:#5fffee;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;}
+    .dc-field strong{display:block;color:#f4fbff;font-size:16px;font-weight:850;line-height:1.35;overflow-wrap:anywhere;}
+    .dc-counters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:18px;}
+    .dc-counter{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid rgba(94,234,212,.14);border-radius:20px;padding:16px 18px;background:rgba(2,6,23,.42);}
+    .dc-counter span{color:#a8bdd1;font-size:13px;font-weight:750;}
+    .dc-counter strong{flex:0 0 auto;color:#5fffee;font-size:38px;line-height:1;font-weight:950;letter-spacing:-.04em;}
+    .dc-section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px;}
+    .dc-section-title span{display:inline-flex;padding:7px 12px;border-radius:999px;background:rgba(94,234,212,.10);border:1px solid rgba(94,234,212,.22);color:#5fffee;font-size:12px;font-weight:900;}
+    .dc-section-title h2{margin:0;color:#fff;font-size:24px;letter-spacing:-.03em;}
+    .dc-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;}
+    .dc-dia{border:1px solid rgba(94,234,212,.14);border-radius:20px;background:rgba(2,6,23,.32);padding:16px;}
+    .dc-dia h3{margin:0 0 12px;color:#5fffee;font-size:15px;}
+    .dc-horario{padding:11px 0;border-top:1px solid rgba(148,163,184,.12);}
+    .dc-horario:first-of-type{border-top:0;}
+    .dc-horario strong{display:block;color:#fff;font-size:13px;margin-bottom:4px;}
+    .dc-horario span,.dc-empty{display:block;color:#a8bdd1;font-size:13px;}
+    .dc-table-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(94,234,212,.12);}
+    .dc-table{width:100%;border-collapse:collapse;min-width:720px;}
+    .dc-table th{background:rgba(15,23,42,.72);color:#a8bdd1;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;padding:13px 14px;white-space:nowrap;}
+    .dc-table td{border-top:1px solid rgba(148,163,184,.10);color:#e8f9ff;padding:14px;vertical-align:top;}
+    .dc-table tr:hover td{background:rgba(94,234,212,.035);}
+    .dc-note{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:18px;border:1px dashed rgba(94,234,212,.20);background:rgba(94,234,212,.06);color:#a8bdd1;}
+    @media(max-width:900px){.dc-page{padding:18px}.dc-grid,.dc-counters{grid-template-columns:1fr}.dc-counter strong{font-size:32px}.dc-head h1{font-size:30px}.dc-section-title h2{font-size:21px}}
+  </style>
 
-            <div class="diario-identificacao-grid">
-                <div><span>Escola</span><strong>{% if escola %}{{ escola.nome }}{% else %}Não cadastrada{% endif %}</strong></div>
-                <div><span>Aldeia</span><strong>{% if escola and escola.aldeia %}{{ escola.aldeia }}{% else %}-{% endif %}</strong></div>
-                <div><span>Terra indígena</span><strong>{% if escola and escola.terra_indigena %}{{ escola.terra_indigena }}{% else %}-{% endif %}</strong></div>
-                <div><span>Município / UF</span><strong>{% if escola %}{{ escola.municipio|default:"-" }} / {{ escola.estado|default:"-" }}{% else %}-{% endif %}</strong></div>
-                <div><span>Ano letivo</span><strong>{{ ano_base }}</strong></div>
-                <div><span>Ano/Série</span><strong>{{ turma.nome }}</strong></div>
-                <div><span>Turma</span><strong>{{ turma.nome }}</strong></div>
-                <div><span>Turno</span><strong>{{ turma.turno|default:"-" }}</strong></div>
-                <div class="span-2"><span>Professor(a)</span><strong>{{ professor.get_full_name|default:'Não informado' }}</strong></div>
-                <div class="span-2"><span>Componentes curriculares</span><strong>{% for disciplina in disciplinas %}{{ disciplina.nome }}{% if not forloop.last %}, {% endif %}{% empty %}Não cadastrados{% endfor %}</strong></div>
-            </div>
+  <div class="dc-toolbar">
+    <div class="dc-toolbar-text">
+      <strong>Diário de Classe da turma</strong>
+      <span>Identificação, alunos, frequência e registros reunidos em uma tela interna para consulta do professor.</span>
+    </div>
+    <div class="dc-actions">
+      <a class="btn-ghost-premium" href="{% url 'professor_diario_oficial' %}">← Meu Diário</a>
+      <a class="btn-ghost-premium" href="{% url 'turmas' %}">Minhas turmas</a>
+      <a class="btn-ghost-premium" href="{% url 'turma_detalhe' turma.id %}">Resumo da turma</a>
+      <a class="btn-premium" href="{% url 'registro_aulas_mensal_turma' turma.id %}">Lançar aula</a>
+    </div>
+  </div>
 
-            <div class="diario-resumo-cards">
-                <div><strong>{{ resumo.total_alunos }}</strong><span>alunos</span></div>
-                <div><strong>{{ resumo.total_disciplinas }}</strong><span>disciplinas</span></div>
-                <div><strong>{{ resumo.total_horarios }}</strong><span>horários</span></div>
-                <div><strong>{{ resumo.total_registros }}</strong><span>registros de aula</span></div>
-            </div>
-        </section>
+  <section class="dc-page dc-cover">
+    <div class="dc-head">
+      <div>
+        <h2>Estado do Maranhão</h2>
+        <h3>Secretaria de Estado da Educação</h3>
+        <h1>Diário de Classe</h1>
+      </div>
+      <span class="dc-badge">📘 Turma {{ turma.nome }}</span>
+    </div>
 
-        <section class="diario-oficial-page">
-            <div class="diario-section-title">
-                <span>Professor(a)</span>
-                <h2>Dados do(a) Professor(a)</h2>
-            </div>
-            <div class="diario-identificacao-grid compacta">
-                <div class="span-2"><span>Nome</span><strong>{{ professor.get_full_name|default:'Não informado' }}</strong></div>
-                <div><span>Telefone</span><strong>{% if perfil_professor and perfil_professor.telefone %}{{ perfil_professor.telefone }}{% else %}-{% endif %}</strong></div>
-                <div><span>E-mail</span><strong>{{ professor.email|default:"-" }}</strong></div>
-                <div class="span-2"><span>Formação</span><strong>{% if perfil_professor and perfil_professor.formacao %}{{ perfil_professor.formacao }}{% else %}-{% endif %}</strong></div>
-            </div>
+    <div class="dc-grid">
+      <div class="dc-field"><span>Escola</span><strong>{% if escola %}{{ escola.nome }}{% else %}Não cadastrada{% endif %}</strong></div>
+      <div class="dc-field"><span>Aldeia</span><strong>{% if escola and escola.aldeia %}{{ escola.aldeia }}{% else %}-{% endif %}</strong></div>
+      <div class="dc-field"><span>Terra indígena</span><strong>{% if escola and escola.terra_indigena %}{{ escola.terra_indigena }}{% else %}-{% endif %}</strong></div>
+      <div class="dc-field"><span>Município / UF</span><strong>{% if escola %}{{ escola.municipio|default:"-" }} / {{ escola.estado|default:"-" }}{% else %}-{% endif %}</strong></div>
+      <div class="dc-field"><span>Ano letivo</span><strong>{{ ano_base|default:"-" }}</strong></div>
+      <div class="dc-field"><span>Ano/Série</span><strong>{{ turma.nome }}</strong></div>
+      <div class="dc-field"><span>Turma</span><strong>{{ turma.nome }}</strong></div>
+      <div class="dc-field"><span>Turno</span><strong>{{ turma.turno|default:"-" }}</strong></div>
+      <div class="dc-field span-2"><span>Professor(a)</span><strong>{{ professor.get_full_name|default:'Não informado' }}</strong></div>
+      <div class="dc-field span-2"><span>Componentes curriculares</span><strong>{% for disciplina in disciplinas %}{{ disciplina.nome }}{% if not forloop.last %}, {% endif %}{% empty %}Não cadastrados{% endfor %}</strong></div>
+    </div>
 
-            <div class="diario-section-title small">
-                <span>Grade semanal</span>
-                <h2>Horário de Aula</h2>
-            </div>
-            <div class="diario-grade-semanal">
-                {% for dia in grade %}
-                    <div class="dia-grade">
-                        <h3>{{ dia.dia }}</h3>
-                        {% for horario in dia.horarios %}
-                            <div class="horario-item">
-                                <strong>{{ horario.ordem }}º • {{ horario.hora_inicio|time:"H:i" }} às {{ horario.hora_fim|time:"H:i" }}</strong>
-                                <span>{{ horario.disciplina.nome }}</span>
-                            </div>
-                        {% empty %}
-                            <div class="horario-vazio">Sem aula cadastrada</div>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-            </div>
-        </section>
+    <div class="dc-counters">
+      <div class="dc-counter"><span>Alunos</span><strong>{{ resumo.total_alunos }}</strong></div>
+      <div class="dc-counter"><span>Disciplinas</span><strong>{{ resumo.total_disciplinas }}</strong></div>
+      <div class="dc-counter"><span>Horários</span><strong>{{ resumo.total_horarios }}</strong></div>
+      <div class="dc-counter"><span>Registros</span><strong>{{ resumo.total_registros }}</strong></div>
+    </div>
+  </section>
 
-        <section class="diario-oficial-page">
-            <div class="diario-section-title">
-                <span>Turma</span>
-                <h2>Relação Nominal dos Alunos</h2>
-            </div>
-            <table class="diario-table">
-                <thead>
-                    <tr>
-                        <th>Nº</th>
-                        <th>Nome do(a) aluno(a)</th>
-                        <th>Matrícula</th>
-                        <th>Data de nascimento</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for aluno in alunos %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ aluno.nome }}</td>
-                        <td>{{ aluno.matricula }}</td>
-                        <td>{{ aluno.data_nascimento|date:"d/m/Y"|default:"-" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="4">Nenhum aluno cadastrado.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
+  <section class="dc-page">
+    <div class="dc-section-title">
+      <div><span>Professor(a)</span><h2>Dados do(a) Professor(a)</h2></div>
+    </div>
+    <div class="dc-grid">
+      <div class="dc-field span-2"><span>Nome</span><strong>{{ professor.get_full_name|default:'Não informado' }}</strong></div>
+      <div class="dc-field"><span>Telefone</span><strong>{% if perfil_professor and perfil_professor.telefone %}{{ perfil_professor.telefone }}{% else %}-{% endif %}</strong></div>
+      <div class="dc-field"><span>E-mail</span><strong>{{ professor.email|default:"-" }}</strong></div>
+      <div class="dc-field span-2"><span>Formação</span><strong>{% if perfil_professor and perfil_professor.formacao %}{{ perfil_professor.formacao }}{% else %}-{% endif %}</strong></div>
+    </div>
+  </section>
 
-        {% for mes in frequencia_por_mes %}
-            {% for item in mes.disciplinas %}
-            <section class="diario-oficial-page wide-page">
-                <div class="diario-section-title">
-                    <span>Registro de Frequência</span>
-                    <h2>{{ mes.nome }} • {{ item.disciplina.nome }}</h2>
-                </div>
-                <div class="table-wide-wrap">
-                    <table class="diario-table diario-frequency-table">
-                        <thead>
-                            <tr>
-                                <th>Nº</th>
-                                <th>Aluno</th>
-                                {% for data_item in item.datas %}<th>{{ data_item|date:"d" }}</th>{% endfor %}
-                                <th>Faltas</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for linha in item.linhas %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ linha.aluno.nome }}</td>
-                                {% for status in linha.status_por_data %}
-                                    <td class="status-cell status-{{ status.status|lower }}">{{ status.status }}</td>
-                                {% endfor %}
-                                <td><strong>{{ linha.faltas }}</strong></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-            {% endfor %}
-        {% empty %}
-            <section class="diario-oficial-page">
-                <div class="diario-section-title">
-                    <span>Frequência</span>
-                    <h2>Nenhum registro de frequência encontrado</h2>
-                </div>
-            </section>
-        {% endfor %}
+  <section class="dc-page">
+    <div class="dc-section-title">
+      <div><span>Grade semanal</span><h2>Horário de Aula</h2></div>
+    </div>
+    <div class="dc-grade">
+      {% for dia in grade %}
+        <div class="dc-dia">
+          <h3>{{ dia.dia }}</h3>
+          {% for horario in dia.horarios %}
+            <div class="dc-horario">
+              <strong>{{ horario.ordem }}º • {{ horario.hora_inicio|time:"H:i" }} às {{ horario.hora_fim|time:"H:i" }}</strong>
+              <span>{{ horario.disciplina.nome }}</span>
+            </div>
+          {% empty %}
+            <div class="dc-empty">Sem aula cadastrada</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
 
-        {% for bloco in registros_aulas %}
-        <section class="diario-oficial-page">
-            <div class="diario-section-title">
-                <span>Registro de Aulas</span>
-                <h2>{{ bloco.disciplina.nome }}</h2>
-            </div>
-            <table class="diario-table">
-                <thead>
-                    <tr>
-                        <th>Dia/Mês</th>
-                        <th>Carga</th>
-                        <th>Conteúdos / Atividades Realizadas</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for aula in bloco.aulas %}
-                    <tr>
-                        <td>{{ aula.data|date:"d/m" }}</td>
-                        <td>-</td>
-                        <td>{{ aula.descricao }}</td>
-                    </tr>
-                    {% endfor %}
-                    {% for diario in bloco.diarios %}
-                    <tr>
-                        <td>{{ diario.data|date:"d/m" }}</td>
-                        <td>{{ diario.quantidade_aulas|default:1 }}H</td>
-                        <td>{{ diario.conteudo }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
-        {% empty %}
-        <section class="diario-oficial-page">
-            <div class="diario-section-title">
-                <span>Registro de Aulas</span>
-                <h2>Nenhum conteúdo registrado</h2>
-            </div>
-        </section>
-        {% endfor %}
+  <section class="dc-page">
+    <div class="dc-section-title">
+      <div><span>Turma</span><h2>Relação nominal dos alunos</h2></div>
+    </div>
+    <div class="dc-table-wrap">
+      <table class="dc-table">
+        <thead><tr><th>Nº</th><th>Nome do(a) aluno(a)</th><th>Matrícula</th><th>Data de nascimento</th></tr></thead>
+        <tbody>
+          {% for aluno in alunos %}
+          <tr><td>{{ forloop.counter }}</td><td><strong>{{ aluno.nome }}</strong></td><td>{{ aluno.matricula }}</td><td>{{ aluno.data_nascimento|date:"d/m/Y"|default:"-" }}</td></tr>
+          {% empty %}
+          <tr><td colspan="4">Nenhum aluno cadastrado.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-        {% for avaliacao in avaliacoes %}
-        <section class="diario-oficial-page wide-page">
-            <div class="diario-section-title">
-                <span>Avaliação da Aprendizagem</span>
-                <h2>{{ avaliacao.disciplina.nome }}</h2>
-            </div>
-            <div class="table-wide-wrap">
-                <table class="diario-table diario-notes-table">
-                    <thead>
-                        <tr>
-                            <th>Nº</th>
-                            <th>Aluno</th>
-                            <th>1º Período</th>
-                            <th>2º Período</th>
-                            <th>3º Período</th>
-                            <th>4º Período</th>
-                            <th>Média Anual</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for linha in avaliacao.linhas %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ linha.aluno.nome }}</td>
-                            {% for bimestre in linha.bimestres %}
-                                <td>{% if bimestre.media is not None %}{{ bimestre.media }}{% else %}-{% endif %}</td>
-                            {% endfor %}
-                            <td><strong>{% if linha.media_anual is not None %}{{ linha.media_anual }}{% else %}-{% endif %}</strong></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-        {% endfor %}
+  {% for mes in frequencia_por_mes %}
+    {% for item in mes.disciplinas %}
+      <section class="dc-page">
+        <div class="dc-section-title"><div><span>Registro de Frequência</span><h2>{{ mes.nome }} • {{ item.disciplina.nome }}</h2></div></div>
+        <div class="dc-table-wrap">
+          <table class="dc-table">
+            <thead><tr><th>Nº</th><th>Aluno</th>{% for data_item in item.datas %}<th>{{ data_item|date:"d" }}</th>{% endfor %}<th>Faltas</th></tr></thead>
+            <tbody>{% for linha in item.linhas %}<tr><td>{{ forloop.counter }}</td><td><strong>{{ linha.aluno.nome }}</strong></td>{% for status in linha.status_por_data %}<td>{{ status.status }}</td>{% endfor %}<td><strong>{{ linha.faltas }}</strong></td></tr>{% endfor %}</tbody>
+          </table>
+        </div>
+      </section>
+    {% endfor %}
+  {% empty %}
+    <section class="dc-page"><div class="dc-note">ℹ️ Nenhum registro de frequência encontrado para esta turma.</div></section>
+  {% endfor %}
+
+  {% for bloco in registros_aulas %}
+    <section class="dc-page">
+      <div class="dc-section-title"><div><span>Registro de Aulas</span><h2>{{ bloco.disciplina.nome }}</h2></div></div>
+      <div class="dc-table-wrap">
+        <table class="dc-table">
+          <thead><tr><th>Dia/Mês</th><th>Carga</th><th>Conteúdos / Atividades realizadas</th></tr></thead>
+          <tbody>
+            {% for aula in bloco.aulas %}<tr><td>{{ aula.data|date:"d/m" }}</td><td>-</td><td>{{ aula.descricao }}</td></tr>{% endfor %}
+            {% for diario in bloco.diarios %}<tr><td>{{ diario.data|date:"d/m" }}</td><td>{{ diario.quantidade_aulas|default:1 }}H</td><td>{{ diario.conteudo }}</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {% empty %}
+    <section class="dc-page"><div class="dc-note">📝 Nenhum conteúdo registrado ainda. Use o botão <strong>Lançar aula</strong> para iniciar o registro.</div></section>
+  {% endfor %}
+
+  {% for avaliacao in avaliacoes %}
+    <section class="dc-page">
+      <div class="dc-section-title"><div><span>Avaliação da Aprendizagem</span><h2>{{ avaliacao.disciplina.nome }}</h2></div></div>
+      <div class="dc-table-wrap">
+        <table class="dc-table">
+          <thead><tr><th>Nº</th><th>Aluno</th><th>1º Período</th><th>2º Período</th><th>3º Período</th><th>4º Período</th><th>Média Anual</th></tr></thead>
+          <tbody>{% for linha in avaliacao.linhas %}<tr><td>{{ forloop.counter }}</td><td><strong>{{ linha.aluno.nome }}</strong></td>{% for bimestre in linha.bimestres %}<td>{% if bimestre.media is not None %}{{ bimestre.media }}{% else %}-{% endif %}</td>{% endfor %}<td><strong>{% if linha.media_anual is not None %}{{ linha.media_anual }}{% else %}-{% endif %}</strong></td></tr>{% endfor %}</tbody>
+        </table>
+      </div>
+    </section>
+  {% endfor %}
 </div>
 {% endblock %}

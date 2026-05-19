@@ -1,28 +1,28 @@
 {% extends 'core/base_professor_premium.html' %}
-{% block titulo %}Lançamentos do Diário{% endblock %}
-{% block subtitulo %}Chamada, frequência, conteúdo e conferência do Diário de Classe{% endblock %}
+{% block titulo %}Meu Diário de Classe{% endblock %}
+{% block subtitulo %}Central principal do professor para lançar aulas, abrir turmas, consultar frequência e acompanhar o fechamento.{% endblock %}
 {% block icone %}📘{% endblock %}
 {% block conteudo %}
 <section class="hero painel-unico-hero ia-mega-hero no-print">
   <div>
-    <span class="hero-badge">Professor • Lançamentos</span>
-    <h1>Lançamentos do Diário</h1>
-    <p>Use esta área para lançar aula, registrar chamada P/F/FJ, salvar conteúdo e conferir o fechamento mensal sem se perder.</p>
+    <span class="hero-badge">Professor • Diário de Classe</span>
+    <h1>Meu Diário de Classe</h1>
+    <p>Esta é a central principal do Diário. Escolha uma turma, lance aula, registre frequência e acompanhe tudo que precisa ficar no diário escolar.</p>
   </div>
   <div class="hero-actions">
-    <a class="btn-primary" href="{% url 'professor_aula_rapida_321' %}">📝 Iniciar lançamento</a>
-    <a class="btn-secondary-premium" href="{% url 'professor_diario_classe_oficial_1281' %}">📘 Diário consolidado</a>
-    <a class="btn-secondary-premium" href="{% url 'professor_prontidao_lancamentos_163' %}">✅ Conferir fechamento</a>
+    <a class="btn-primary" href="{% url 'professor_aula_rapida_321' %}">📝 Lançar aula de hoje</a>
+    <a class="btn-secondary-premium" href="{% url 'turmas' %}">🏫 Minhas turmas</a>
+    <a class="btn-secondary-premium" href="{% url 'professor_fechamento_mensal_901' %}">📕 Fechamento mensal</a>
   </div>
 </section>
 
 <section class="panel no-print professor-launch-guide">
-  <div class="panel-header"><div><h3>Fluxo simples para lançar aula</h3><span>Use esta sequência todos os dias.</span></div></div>
+  <div class="panel-header"><div><h3>Como usar o Diário de Classe</h3><span>Fluxo simples para o professor usar todos os dias.</span></div></div>
   <div class="lancamentos-guide-grid">
-    <div class="lancamentos-guide-card"><b>1</b><div><strong>Iniciar lançamento</strong><span>Abra a Aula rápida pelo botão principal.</span></div></div>
+    <div class="lancamentos-guide-card"><b>1</b><div><strong>Lançar aula</strong><span>Use a Aula rápida para registrar a aula do dia.</span></div></div>
     <div class="lancamentos-guide-card"><b>2</b><div><strong>Fazer chamada</strong><span>Marque P, F ou FJ para cada aluno.</span></div></div>
     <div class="lancamentos-guide-card"><b>3</b><div><strong>Registrar conteúdo</strong><span>Informe o conteúdo trabalhado na aula.</span></div></div>
-    <div class="lancamentos-guide-card"><b>4</b><div><strong>Conferir</strong><span>Use o fechamento para ver pendências.</span></div></div>
+    <div class="lancamentos-guide-card"><b>4</b><div><strong>Conferir diário</strong><span>Abra a turma para ver frequência, aulas, notas e documento completo.</span></div></div>
   </div>
 </section>
 
@@ -68,8 +68,8 @@
     </div>
     <div class="diario-real-actions no-print">
       <a href="{% url 'professor_aula_rapida_321' %}" class="btn-ghost-premium">📝 Lançar aula</a>
-      <a href="{% url 'diario_oficial_turma_completo' item.turma.id %}" class="btn-ghost-premium">📘 Diário completo</a>
-      <a href="{% url 'diario_classe_turma' item.turma.id %}" class="btn-ghost-premium">📄 Impressão</a>
+      <a href="{% url 'diario_classe_turma' item.turma.id %}" class="btn-ghost-premium">📘 Diário da turma</a>
+      <a href="{% url 'turma_detalhe' item.turma.id %}" class="btn-ghost-premium">🏫 Resumo da turma</a>
       <a href="{% url 'frequencia_mensal_turma' item.turma.id %}" class="btn-ghost-premium">📅 Frequência</a>
       <a href="{% url 'registro_aulas_mensal_turma' item.turma.id %}" class="btn-ghost-premium">📝 Aulas</a>
       <a href="{% url 'notas_turma' item.turma.id %}" class="btn-ghost-premium">📊 Notas</a>

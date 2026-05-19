@@ -3,6 +3,24 @@
 
 from .views_shared import *  # noqa: F401,F403
 
+
+def mes_nome_pt_br(numero):
+    meses = {
+        1: "janeiro",
+        2: "fevereiro",
+        3: "março",
+        4: "abril",
+        5: "maio",
+        6: "junho",
+        7: "julho",
+        8: "agosto",
+        9: "setembro",
+        10: "outubro",
+        11: "novembro",
+        12: "dezembro",
+    }
+    return meses.get(int(numero), "mês")
+
 # =====================================================
 # REGISTRO DE AULAS MENSAL — MODELO DIÁRIO REAL
 # =====================================================
@@ -104,7 +122,7 @@ def registro_aulas_mensal_turma(request, turma_id):
     for numero in range(1, 13):
         meses.append({
             "valor": f"{ano}-{numero:02d}",
-            "nome": calendar.month_name[numero].capitalize(),
+            "nome": mes_nome_pt_br(numero),
             "ativo": numero == mes,
         })
 
@@ -116,7 +134,7 @@ def registro_aulas_mensal_turma(request, turma_id):
         "disciplinas": disciplinas,
         "disciplina_query": disciplina_query,
         "mes_param": mes_param,
-        "mes_nome": calendar.month_name[mes].capitalize(),
+        "mes_nome": mes_nome_pt_br(mes),
         "ano": ano,
         "meses": meses,
         "grupos": grupos,

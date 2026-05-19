@@ -1,247 +1,108 @@
 {% extends "core/base_professor_premium.html" %}
 {% load static %}
 {% block titulo %}Turma{% endblock %}
-{% block subtitulo %}Tela integrada ao Diário Escolar.{% endblock %}
+{% block subtitulo %}Resumo pedagógico da turma e atalhos para chamada, aula, notas e Diário de Classe.{% endblock %}
 {% block conteudo %}
-<div class="premium-only-page visual-1161-1220" data-template="core/turma_detalhe.html">
-<!-- TOPBAR -->
-
-                
-
-
-        <!-- BOTÕES -->
-
-        <div style="display:flex;gap:16px;margin-bottom:25px;flex-wrap:wrap;">
-
-            <a
-                href="{% url 'frequencia_turma' turma.id %}"
-                class="btn-primary"
-            >
-                📅 Fazer Chamada
-            </a>
-
-            <a
-                href="{% url 'frequencia_mensal_turma' turma.id %}"
-                class="btn-primary"
-            >
-                📆 Frequência Mensal
-            </a>
-
-            <a
-                href="{% url 'notas_turma' turma.id %}"
-                class="btn-primary"
-            >
-                📝 Lançar Notas
-            </a>
-
-            <a
-                href="{% url 'diario_home' %}?turma={{ turma.id }}"
-                class="btn-primary"
-            >
-                📘 Conteúdo Aula
-            </a>
-
-            <a
-                href="{% url 'registro_aulas_mensal_turma' turma.id %}"
-                class="btn-primary"
-            >
-                📚 Registro de Aulas
-            </a>
-
-            <a
-                href="{% url 'boletim_ia' turma.id %}"
-                class="btn-primary"
-            >
-                📊 Boletim IA
-            </a>
-
-
-            <a
-                href="{% url 'diario_classe_turma' turma.id %}"
-                class="btn-primary"
-            >
-                📄 Diário de Classe
-            </a>
-
-        </div>
-
-        <!-- CARDS -->
-
-        <section class="cards">
-
-            <div class="premium-card">
-
-                <span>Frequência Média</span>
-
-                <h2>{{ frequencia_media }}%</h2>
-
-                <small>
-                    Excelente presença
-                </small>
-
-            </div>
-
-            <div class="premium-card">
-
-                <span>Média Geral</span>
-
-                <h2>{{ media_geral }}</h2>
-
-                <small>
-                    Bom desempenho
-                </small>
-
-            </div>
-
-            <div class="premium-card">
-
-                <span>IA Pedagógica</span>
-
-                <h2>ON</h2>
-
-                <small>
-                    Monitoramento ativo
-                </small>
-
-            </div>
-
-        </section>
-
-        <!-- TABELA PREMIUM -->
-
-        <section class="panel table-panel">
-
-            <div class="panel-top">
-
-                <div>
-
-                    <h3>Alunos da Turma</h3>
-
-                    <p>
-                        Gestão pedagógica inteligente
-                    </p>
-
-                </div>
-
-            </div>
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>Aluno</th>
-
-                        <th>Frequência</th>
-
-                        <th>Média</th>
-
-                        <th>Status IA</th>
-
-                        <th>Boletim</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {% for aluno in alunos %}
-
-                    <tr>
-
-                        <td>
-
-                            <div style="display:flex;align-items:center;gap:14px;">
-
-                                <div class="avatar">
-
-                                    {{ aluno.nome|slice:":1" }}
-
-                                </div>
-
-                                <div>
-
-                                    <strong>
-                                        {{ aluno.nome }}
-                                    </strong>
-
-                                    <br>
-
-                                    <small style="color:#6b7280;">
-                                        Matrícula {{ aluno.matricula }}
-                                    </small>
-
-                                </div>
-
-                            </div>
-
-                        </td>
-
-                        <td>
-
-                            <span class="success">
-                                {{ aluno.frequencia }}%
-                            </span>
-
-                        </td>
-
-                        <td>
-
-                            <strong style="color:#5eead4;">
-                                {{ aluno.media }}
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            <span class="success">
-                                {{ aluno.status }}
-                            </span>
-
-                        </td>
-
-                        <td>
-
-                            {% if request.user.tipo == 'PROF' %}
-                                <a href="{% url 'boletim_aluno' aluno.id %}"
-                                   class="btn-primary"
-                                   style="padding:10px 16px;border-radius:12px;font-size:13px;">
-                                    📄 Abrir
-                                </a>
-                            {% else %}
-                                <a href="{% url 'gestao_documento_boletim_oficial' aluno.id %}"
-                                   class="btn-primary"
-                                   style="padding:10px 16px;border-radius:12px;font-size:13px;">
-                                    📄 Boletim oficial
-                                </a>
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                    {% empty %}
-
-                    <tr>
-
-                        <td colspan="5"
-                            style="text-align:center;padding:40px;color:#94a3b8;">
-
-                            Nenhum aluno encontrado.
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        </section>
+<div class="premium-only-page visual-1161-1220 turma-detail-clean" data-template="core/turma_detalhe.html">
+  <style>
+    .turma-detail-clean{display:flex;flex-direction:column;gap:22px;}
+    .td-hero{border:1px solid rgba(94,234,212,.18);background:linear-gradient(135deg,rgba(15,23,42,.82),rgba(8,47,73,.34));border-radius:28px;padding:24px;box-shadow:0 22px 52px rgba(0,0,0,.25);position:relative;overflow:hidden;}
+    .td-hero:before{content:"";position:absolute;right:-120px;top:-140px;width:380px;height:380px;border-radius:999px;background:radial-gradient(circle,rgba(94,234,212,.18),transparent 62%);pointer-events:none;}
+    .td-hero-inner{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+    .td-kicker{display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border-radius:999px;border:1px solid rgba(94,234,212,.28);background:rgba(94,234,212,.10);color:#5fffee;font-size:12px;font-weight:900;}
+    .td-title h1{margin:12px 0 8px;color:#fff;font-size:clamp(30px,4.5vw,48px);line-height:1;letter-spacing:-.05em;}
+    .td-title p{margin:0;color:#a8bdd1;font-size:15px;line-height:1.5;}
+    .td-status{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    .td-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(94,234,212,.22);background:rgba(2,6,23,.34);border-radius:999px;color:#e8f9ff;font-weight:850;padding:10px 14px;}
+    .td-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;}
+    .td-action{display:flex;align-items:center;gap:12px;padding:16px;border-radius:20px;border:1px solid rgba(94,234,212,.16);background:rgba(15,23,42,.62);text-decoration:none;color:#e8f9ff;font-weight:900;transition:.18s ease;}
+    .td-action:hover{transform:translateY(-2px);border-color:rgba(94,234,212,.42);background:rgba(94,234,212,.10);color:#fff;}
+    .td-action-icon{width:38px;height:38px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;background:rgba(94,234,212,.12);border:1px solid rgba(94,234,212,.18);font-size:18px;flex:0 0 auto;}
+    .td-action-text{display:flex;flex-direction:column;gap:4px;min-width:0;}
+    .td-action-text small{font-size:12px;font-weight:650;color:#a8bdd1;line-height:1.25;}
+    .td-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
+    .td-kpi{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:112px;border:1px solid rgba(94,234,212,.16);background:linear-gradient(135deg,rgba(15,23,42,.78),rgba(8,47,73,.22));border-radius:24px;padding:20px 22px;box-shadow:0 16px 38px rgba(0,0,0,.20);overflow:hidden;position:relative;}
+    .td-kpi:after{content:"";position:absolute;right:-55px;bottom:-70px;width:165px;height:165px;border-radius:999px;background:rgba(94,234,212,.07);pointer-events:none;}
+    .td-kpi-text{display:flex;flex-direction:column;gap:6px;min-width:0;position:relative;z-index:1;}
+    .td-kpi-text span{color:#a8bdd1;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;}
+    .td-kpi-text small{color:#c4d4e2;font-size:13px;line-height:1.25;}
+    .td-kpi strong{position:relative;z-index:1;flex:0 0 auto;color:#5fffee;font-size:44px;line-height:1;font-weight:950;letter-spacing:-.05em;text-align:right;}
+    .td-panel{border:1px solid rgba(94,234,212,.16);background:rgba(15,23,42,.62);border-radius:26px;padding:22px;box-shadow:0 16px 40px rgba(0,0,0,.18);}
+    .td-panel-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
+    .td-panel-head h3{margin:0;color:#fff;font-size:24px;letter-spacing:-.03em;}
+    .td-panel-head p{margin:6px 0 0;color:#a8bdd1;}
+    .td-table-wrap{overflow:auto;border:1px solid rgba(94,234,212,.10);border-radius:18px;}
+    .td-table{width:100%;min-width:720px;border-collapse:collapse;}
+    .td-table th{background:rgba(15,23,42,.78);color:#a8bdd1;text-align:left;padding:13px 14px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;}
+    .td-table td{border-top:1px solid rgba(148,163,184,.10);padding:14px;color:#e8f9ff;vertical-align:middle;}
+    .td-table tr:hover td{background:rgba(94,234,212,.035);}
+    .td-student{display:flex;align-items:center;gap:12px;min-width:0;}
+    .td-avatar{width:38px;height:38px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(94,234,212,.12);border:1px solid rgba(94,234,212,.18);color:#5fffee;font-weight:950;flex:0 0 auto;}
+    .td-student strong{display:block;color:#fff;}
+    .td-student small{display:block;color:#a8bdd1;margin-top:3px;}
+    .td-badge-ok{display:inline-flex;align-items:center;padding:7px 11px;border-radius:999px;border:1px solid rgba(94,234,212,.18);background:rgba(94,234,212,.10);color:#5fffee;font-weight:900;white-space:nowrap;}
+    .td-empty{text-align:center;padding:34px!important;color:#a8bdd1!important;}
+    @media(max-width:1000px){.td-kpis{grid-template-columns:1fr}.td-kpi strong{font-size:38px}.td-actions{grid-template-columns:1fr}.td-hero{padding:20px}.td-status{justify-content:flex-start}}
+  </style>
+
+  <section class="td-hero">
+    <div class="td-hero-inner">
+      <div class="td-title">
+        <span class="td-kicker">🏫 Turma vinculada</span>
+        <h1>{{ turma.nome }}</h1>
+        <p>{{ alunos|length }} aluno(s) • Ano letivo {{ turma.ano_letivo|default:"não informado" }} • {{ turma.turno|default:"Turno não informado" }}</p>
+      </div>
+      <div class="td-status">
+        <span class="td-pill">📘 Diário de Classe</span>
+        <span class="td-pill">✨ IA ativa</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="td-actions" aria-label="Ações principais da turma">
+    <a href="{% url 'frequencia_turma' turma.id %}" class="td-action"><span class="td-action-icon">✅</span><span class="td-action-text">Fazer chamada<small>Marcar presença dos alunos</small></span></a>
+    <a href="{% url 'registro_aulas_mensal_turma' turma.id %}" class="td-action"><span class="td-action-icon">📝</span><span class="td-action-text">Lançar aula<small>Registrar conteúdo e atividades</small></span></a>
+    <a href="{% url 'frequencia_mensal_turma' turma.id %}" class="td-action"><span class="td-action-icon">📅</span><span class="td-action-text">Frequência mensal<small>Consultar chamadas do mês</small></span></a>
+    <a href="{% url 'notas_turma' turma.id %}" class="td-action"><span class="td-action-icon">📊</span><span class="td-action-text">Lançar notas<small>Avaliações da turma</small></span></a>
+    <a href="{% url 'boletim_ia' turma.id %}" class="td-action"><span class="td-action-icon">🤖</span><span class="td-action-text">Boletim IA<small>Análise pedagógica</small></span></a>
+    <a href="{% url 'diario_classe_turma' turma.id %}" class="td-action"><span class="td-action-icon">📘</span><span class="td-action-text">Abrir Diário de Classe<small>Documento completo da turma</small></span></a>
+  </section>
+
+  <section class="td-kpis">
+    <div class="td-kpi"><div class="td-kpi-text"><span>Frequência média</span><small>Presença geral da turma</small></div><strong>{{ frequencia_media }}%</strong></div>
+    <div class="td-kpi"><div class="td-kpi-text"><span>Média geral</span><small>Desempenho pedagógico</small></div><strong>{{ media_geral }}</strong></div>
+    <div class="td-kpi"><div class="td-kpi-text"><span>IA pedagógica</span><small>Monitoramento ativo</small></div><strong>ON</strong></div>
+  </section>
+
+  <section class="td-panel">
+    <div class="td-panel-head">
+      <div><h3>Alunos da turma</h3><p>Lista dos alunos vinculados, com atalhos para boletim e acompanhamento.</p></div>
+      <span class="td-badge-ok">{{ alunos|length }} aluno(s)</span>
+    </div>
+    <div class="td-table-wrap">
+      <table class="td-table">
+        <thead><tr><th>Aluno</th><th>Frequência</th><th>Média</th><th>Status IA</th><th>Boletim</th></tr></thead>
+        <tbody>
+          {% for aluno in alunos %}
+          <tr>
+            <td><div class="td-student"><div class="td-avatar">{{ aluno.nome|slice:":1" }}</div><div><strong>{{ aluno.nome }}</strong><small>Matrícula {{ aluno.matricula|default:"não informada" }}</small></div></div></td>
+            <td><span class="td-badge-ok">{{ aluno.frequencia }}%</span></td>
+            <td><strong style="color:#5fffee;">{{ aluno.media }}</strong></td>
+            <td><span class="td-badge-ok">{{ aluno.status }}</span></td>
+            <td>
+              {% if request.user.tipo == 'PROF' %}
+                <a href="{% url 'boletim_aluno' aluno.id %}" class="btn-ghost-premium">📄 Abrir</a>
+              {% else %}
+                <a href="{% url 'gestao_documento_boletim_oficial' aluno.id %}" class="btn-ghost-premium">📄 Boletim oficial</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="td-empty">Nenhum aluno encontrado nesta turma.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>
 {% endblock %}

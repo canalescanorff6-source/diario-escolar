@@ -1,4 +1,4 @@
-{% load static %}
+{% load static tratamento_usuario_tags %}
 <!doctype html>
 <html lang="pt-br">
 <head>
@@ -16,13 +16,16 @@
     <main class="content professor-content">
         <header class="topbar premium-header-card compact-premium-header no-print">
             <div class="topbar-left premium-header-title"><span class="premium-header-badge">Diário IA • Professor</span><div class="premium-header-row"><div><h1>{% block titulo %}{% endblock %}</h1><p>{% block subtitulo %}Painel do professor{% endblock %}</p></div><span class="premium-header-icon">{% block icone %}✨{% endblock %}</span></div></div>
-            <div class="topbar-right">{% include 'partials/professor_page_actions.html' %}<a class="hero-mini-card professor-mini-user profile-mini-link" href="{% url 'professor_configuracoes' %}" title="Minha imagem">
+            <div class="topbar-right">{% include 'partials/professor_page_actions.html' %}<a class="hero-mini-card professor-mini-user profile-mini-link profile-mini-with-name" href="{% url 'professor_configuracoes' %}" title="Minha imagem e perfil">
                 {% if request.user and request.user.is_authenticated and request.user.foto %}
                     <img class="profile-mini-photo" src="{{ request.user.foto.url }}" alt="Imagem do professor">
                 {% else %}
-                    <strong>{% if request.user and request.user.is_authenticated %}{{ request.user.nome|default:request.user.first_name|default:request.user.username|default:'P'|slice:':1' }}{% else %}P{% endif %}</strong>
+                    <strong class="profile-mini-initial">{% if request.user and request.user.is_authenticated %}{{ request.user|nome_exibicao|default:'P'|slice:':1' }}{% else %}P{% endif %}</strong>
                 {% endif %}
-                <span>Professor</span>
+                <span class="profile-mini-text">
+                    <b class="profile-mini-role">{% if request.user and request.user.is_authenticated %}{{ request.user|tratamento_professor }}{% else %}Professor(a){% endif %}</b>
+                    <small class="profile-mini-name">{% if request.user and request.user.is_authenticated %}{{ request.user|nome_exibicao }}{% else %}Acesso do professor{% endif %}</small>
+                </span>
             </a></div>
         </header>
         {% include 'partials/messages_premium.html' %}

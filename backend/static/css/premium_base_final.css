@@ -2435,3 +2435,61 @@ html,body{min-height:100%}
   .professor-content .professor-kpi-value,
   .professor-content .professor-week-card > strong{font-size:40px!important;}
 }
+
+/* Perfil compacto com tratamento automático: Professor/Professora e Gestor/Gestora */
+.profile-mini-with-name{
+  min-width: 190px!important;
+  display: flex!important;
+  align-items: center!important;
+  justify-content: flex-start!important;
+  gap: 12px!important;
+  text-align: left!important;
+  padding: 12px 14px!important;
+}
+.profile-mini-with-name .profile-mini-photo{
+  flex: 0 0 auto!important;
+  width: 52px!important;
+  height: 52px!important;
+}
+.profile-mini-with-name .profile-mini-initial{
+  flex: 0 0 52px!important;
+  width: 52px!important;
+  height: 52px!important;
+  border-radius: 18px!important;
+  display: inline-flex!important;
+  align-items: center!important;
+  justify-content: center!important;
+  background: rgba(94,234,212,.10)!important;
+  border: 1px solid rgba(94,234,212,.34)!important;
+  box-shadow: 0 0 0 4px rgba(94,234,212,.06), 0 12px 26px rgba(0,0,0,.28)!important;
+}
+.profile-mini-with-name .profile-mini-text{
+  display: flex!important;
+  flex-direction: column!important;
+  gap: 3px!important;
+  min-width: 0!important;
+  margin: 0!important;
+}
+.profile-mini-with-name .profile-mini-role{
+  display: block!important;
+  color: var(--ia-teal)!important;
+  font-size: 12px!important;
+  line-height: 1.1!important;
+  font-weight: 950!important;
+  letter-spacing: .08em!important;
+  text-transform: uppercase!important;
+}
+.profile-mini-with-name .profile-mini-name{
+  display: block!important;
+  color: #eafaf8!important;
+  font-size: 13px!important;
+  line-height: 1.15!important;
+  font-weight: 850!important;
+  max-width: 118px!important;
+  overflow: hidden!important;
+  text-overflow: ellipsis!important;
+  white-space: nowrap!important;
+}
+@media(max-width:1100px){
+  .profile-mini-with-name{display:none!important;}
+}

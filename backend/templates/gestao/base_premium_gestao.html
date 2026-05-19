@@ -1,4 +1,4 @@
-{% load static %}
+{% load static tratamento_usuario_tags %}
 <!doctype html>
 <html lang="pt-br">
 <head>
@@ -22,13 +22,16 @@
             </div>
             <div class="gestao-base-actions">
                 {% include 'partials/gestao_page_actions.html' %}
-                <a class="hero-mini-card gestao-mini-user profile-mini-link" href="{% url 'gestao_configuracoes' %}" title="Imagem da gestão">
+                <a class="hero-mini-card gestao-mini-user profile-mini-link profile-mini-with-name" href="{% url 'gestao_configuracoes' %}" title="Imagem e perfil da gestão">
                     {% if request.user and request.user.is_authenticated and request.user.foto %}
                         <img class="profile-mini-photo" src="{{ request.user.foto.url }}" alt="Imagem da gestão">
                     {% else %}
-                        <strong>{% if request.user and request.user.is_authenticated %}{{ request.user.nome|default:request.user.first_name|default:request.user.username|default:'G'|slice:':1' }}{% else %}G{% endif %}</strong>
+                        <strong class="profile-mini-initial">{% if request.user and request.user.is_authenticated %}{{ request.user|nome_exibicao|default:'G'|slice:':1' }}{% else %}G{% endif %}</strong>
                     {% endif %}
-                    <span>Gestão</span>
+                    <span class="profile-mini-text">
+                        <b class="profile-mini-role">{% if request.user and request.user.is_authenticated %}{{ request.user|tratamento_gestao }}{% else %}Gestor(a){% endif %}</b>
+                        <small class="profile-mini-name">{% if request.user and request.user.is_authenticated %}{{ request.user|nome_exibicao }}{% else %}Acesso da gestão{% endif %}</small>
+                    </span>
                 </a>
             </div>
         </header>

@@ -2,17 +2,85 @@
 {% block titulo %}Rotina semanal{% endblock %}
 {% block subtitulo %}Carga horária, aulas de hoje e pendências da semana{% endblock %}
 {% block icone %}🕒{% endblock %}
+{% block extra_css %}
+<style>
+  .professor-kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:14px;
+    margin:0 0 18px;
+  }
+  .professor-kpi-card{
+    min-height:88px;
+    display:flex!important;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    padding:18px 20px!important;
+    overflow:hidden;
+  }
+  .professor-kpi-text{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .professor-kpi-text span{
+    display:block;
+    font-size:.9rem;
+    font-weight:750;
+    line-height:1.2;
+    color:var(--premium-muted)!important;
+  }
+  .professor-kpi-text small{
+    display:block;
+    font-size:.78rem;
+    font-weight:650;
+    line-height:1.25;
+    color:rgba(220,255,252,.62)!important;
+  }
+  .professor-kpi-value{
+    flex:0 0 auto;
+    min-width:62px;
+    text-align:right;
+    font-size:clamp(2.25rem,4vw,3.45rem);
+    line-height:.9;
+    font-weight:950;
+    letter-spacing:-.05em;
+    color:var(--premium-teal)!important;
+  }
+  @media(max-width:980px){
+    .professor-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  }
+  @media(max-width:620px){
+    .professor-kpi-grid{grid-template-columns:1fr;}
+    .professor-kpi-card{min-height:82px;}
+  }
+</style>
+{% endblock %}
 {% block conteudo %}
 <section class="panel painel-unico-hero">
   <div><span class="pill">Professor em sala</span><h1>{{ request.user.get_full_name|default:request.user.username|default:'Professor' }}</h1><p class="muted">A gestão cadastra vínculos e horários; o professor recebe aqui sua semana pronta.</p></div>
   <div class="hero-actions"><a href="{% url 'professor_aula_rapida_321' %}">⚡ Abrir aula rápida</a><a href="{% url 'professor_carga_horaria_301' %}">🕒 Carga horária</a></div>
 </section>
 
-<div class="grid">
-  <div class="card"><span>Aulas na semana</span><strong>{{ carga.aulas }}</strong><small class="muted">grade semanal</small></div>
-  <div class="card"><span>Horas semanais</span><strong>{{ carga.horas }}</strong><small class="muted">calculadas pelos horários</small></div>
-  <div class="card"><span>Aulas hoje</span><strong>{{ aulas_hoje.count }}</strong><small class="muted">{{ hoje|date:'d/m/Y' }}</small></div>
-  <div class="card"><span>Pendências</span><strong>{{ pendencias|length }}</strong><small class="muted">lançamentos e vínculos</small></div>
+<div class="professor-kpi-grid">
+  <div class="card professor-kpi-card">
+    <div class="professor-kpi-text"><span>Aulas na semana</span><small>grade semanal</small></div>
+    <strong class="professor-kpi-value">{{ carga.aulas }}</strong>
+  </div>
+  <div class="card professor-kpi-card">
+    <div class="professor-kpi-text"><span>Horas semanais</span><small>calculadas pelos horários</small></div>
+    <strong class="professor-kpi-value">{{ carga.horas }}</strong>
+  </div>
+  <div class="card professor-kpi-card">
+    <div class="professor-kpi-text"><span>Aulas hoje</span><small>{{ hoje|date:'d/m/Y' }}</small></div>
+    <strong class="professor-kpi-value">{{ aulas_hoje.count }}</strong>
+  </div>
+  <div class="card professor-kpi-card">
+    <div class="professor-kpi-text"><span>Pendências</span><small>lançamentos e vínculos</small></div>
+    <strong class="professor-kpi-value">{{ pendencias|length }}</strong>
+  </div>
 </div>
 
 <section class="panel">

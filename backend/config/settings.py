@@ -153,7 +153,13 @@ CRIADOR_ADMIN_USERNAMES = _csv_env('CRIADOR_ADMIN_USERNAMES', '')
 CRIADOR_ADMIN_IDENTIFICADORES = CRIADOR_ADMIN_EMAILS | CRIADOR_ADMIN_USERNAMES
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage' if LOCAL_DEV_SERVER else 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Na RunSite, use storage sem manifesto para evitar erro 500 caso o collectstatic
+# ainda não tenha gerado staticfiles.json no primeiro boot.
+STATICFILES_STORAGE = os.environ.get('DJANGO_STATICFILES_STORAGE') or (
+    'django.contrib.staticfiles.storage.StaticFilesStorage' if LOCAL_DEV_SERVER
+    else 'whitenoise.storage.CompressedStaticFilesStorage' if ON_RUNSITE
+    else 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+)
 STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
     'staticfiles': {'BACKEND': STATICFILES_STORAGE},

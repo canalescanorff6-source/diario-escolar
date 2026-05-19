@@ -4,8 +4,16 @@ from django.conf.urls.static import static
 from django.urls import path, include, re_path
 from django.contrib.auth.views import LogoutView
 from django.views.static import serve as media_serve
+from django.http import HttpResponse
+
+
+
+def health_check_runsite(request):
+    return HttpResponse('ok', content_type='text/plain')
 
 urlpatterns = [
+    path('healthz', health_check_runsite, name='healthz'),
+    path('health', health_check_runsite, name='health'),
     path('admin/', admin.site.urls),
     path('logout/', LogoutView.as_view(), name='logout_direct'),
 

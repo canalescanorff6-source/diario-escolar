@@ -1,0 +1,89 @@
+{% load licenca_tags %}
+{% licenca_gestao_status as licenca_gestao %}
+{% if licenca_gestao.mostrar %}
+  <section class="gestao-license-banner gestao-license-banner-{{ licenca_gestao.status }} no-print">
+    <div class="gestao-license-icon">{% if licenca_gestao.expirado %}🔒{% elif licenca_gestao.status == 'ok' %}✅{% else %}⏳{% endif %}</div>
+    <div class="gestao-license-text">
+      <strong>{{ licenca_gestao.titulo }}</strong>
+      <span>{{ licenca_gestao.texto }} Validade até {{ licenca_gestao.expira|date:"d/m/Y H:i" }}.</span>
+    </div>
+    {% if licenca_gestao.expirado or licenca_gestao.status != 'ok' %}
+      <a class="gestao-license-action" href="{% url 'ativar_acesso_gestao' %}">Ativar acesso</a>
+    {% endif %}
+  </section>
+
+  <style>
+    .gestao-license-banner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin:0 0 18px;
+      padding:16px 18px;
+      border:1px solid rgba(95,255,238,.28);
+      border-radius:22px;
+      background:linear-gradient(135deg, rgba(8,20,38,.92), rgba(15,68,73,.72));
+      box-shadow:0 16px 40px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.04);
+      color:#eaffff;
+    }
+    .gestao-license-icon{
+      width:44px;
+      height:44px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:rgba(95,255,238,.12);
+      border:1px solid rgba(95,255,238,.25);
+      font-size:20px;
+      flex:0 0 auto;
+    }
+    .gestao-license-text{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+      flex:1;
+    }
+    .gestao-license-text strong{
+      font-size:15px;
+      font-weight:900;
+      color:#6dfff0;
+      letter-spacing:.01em;
+    }
+    .gestao-license-text span{
+      font-size:13px;
+      line-height:1.45;
+      color:rgba(226,245,255,.76);
+    }
+    .gestao-license-action{
+      text-decoration:none;
+      white-space:nowrap;
+      padding:10px 14px;
+      border-radius:14px;
+      border:1px solid rgba(95,255,238,.35);
+      background:rgba(95,255,238,.12);
+      color:#6dfff0;
+      font-size:13px;
+      font-weight:900;
+    }
+    .gestao-license-banner-atencao{
+      border-color:rgba(255,207,73,.42);
+      background:linear-gradient(135deg, rgba(37,27,7,.92), rgba(76,53,11,.74));
+    }
+    .gestao-license-banner-atencao .gestao-license-text strong,
+    .gestao-license-banner-atencao .gestao-license-action{color:#ffd46a;}
+    .gestao-license-banner-critico,
+    .gestao-license-banner-expirado{
+      border-color:rgba(255,91,122,.48);
+      background:linear-gradient(135deg, rgba(45,10,22,.94), rgba(86,23,43,.78));
+    }
+    .gestao-license-banner-critico .gestao-license-text strong,
+    .gestao-license-banner-expirado .gestao-license-text strong,
+    .gestao-license-banner-critico .gestao-license-action,
+    .gestao-license-banner-expirado .gestao-license-action{color:#ff9eb4;}
+    @media(max-width:760px){
+      .gestao-license-banner{align-items:flex-start; flex-direction:column;}
+      .gestao-license-action{width:100%; text-align:center;}
+    }
+  </style>
+{% endif %}

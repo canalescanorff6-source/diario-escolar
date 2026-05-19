@@ -19,7 +19,7 @@ def _columns(connection, cursor, table_name):
     return columns
 
 
-def garantir_horario_numero(apps, schema_editor):
+def garantir_horario_numero_no_banco(apps, schema_editor):
     connection = schema_editor.connection
     table = "academico_horarioaula"
     with connection.cursor() as cursor:
@@ -43,19 +43,30 @@ def garantir_horario_numero(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("academico", "0007_reparo_schema_banco_existente"),
+        ("academico", "0013_escola_login_institucional"),
     ]
     operations = [
-        migrations.SeparateDatabaseAndState(
-            database_operations=[
-                migrations.RunPython(garantir_horario_numero, migrations.RunPython.noop)
-            ],
-            state_operations=[
-                migrations.AddField(
-                    model_name="horarioaula",
-                    name="horario_numero",
-                    field=models.PositiveSmallIntegerField(default=1, verbose_name="Número do horário"),
-                ),
-            ],
+        migrations.RunPython(garantir_horario_numero_no_banco, migrations.RunPython.noop),
+        migrations.AlterField(
+            model_name="escola",
+            name="brasao_logo",
+            field=models.ImageField(
+                blank=True,
+                help_text="Imagem institucional exibida na tela de login institucional.",
+                null=True,
+                upload_to="escolas/",
+                verbose_name="Foto, logo ou brasão",
+            ),
+        ),
+        migrations.AlterField(
+            model_name="frequencia",
+            name="status",
+            field=models.CharField(
+                choices=[("P", "Presença"), ("F", "Falta"), ("FJ", "Falta justificada")],
+                db_index=True,
+                default="P",
+                help_text="Status oficial do Diário Escolar: P, F ou FJ.",
+                max_length=2,
+            ),
         ),
     ]

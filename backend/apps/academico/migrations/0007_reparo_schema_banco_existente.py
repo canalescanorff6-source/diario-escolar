@@ -1,4 +1,4 @@
-﻿from django.db import migrations
+from django.db import migrations
 
 
 def _table_exists(connection, cursor, table_name):
@@ -8,17 +8,14 @@ def _table_exists(connection, cursor, table_name):
 def _columns(connection, cursor, table_name):
     if not _table_exists(connection, cursor, table_name):
         return set()
-
     description = connection.introspection.get_table_description(cursor, table_name)
     columns = set()
-
     for column in description:
         name = getattr(column, "name", None)
         if not name and len(column) > 0:
             name = column[0]
         if name:
             columns.add(name)
-
     return columns
 
 
@@ -33,7 +30,6 @@ def _add_column_if_missing(connection, cursor, schema_editor, table_name, column
 
 def reparar_schema(apps, schema_editor):
     connection = schema_editor.connection
-
     with connection.cursor() as cursor:
         _add_column_if_missing(
             connection,
@@ -43,7 +39,6 @@ def reparar_schema(apps, schema_editor):
             "ano_letivo_ativo_id",
             "bigint NULL REFERENCES academico_anoletivo(id) DEFERRABLE INITIALLY DEFERRED",
         )
-
         _add_column_if_missing(
             connection,
             cursor,
@@ -52,7 +47,6 @@ def reparar_schema(apps, schema_editor):
             "ordem",
             "smallint NOT NULL DEFAULT 1",
         )
-
         _add_column_if_missing(
             connection,
             cursor,
@@ -61,7 +55,6 @@ def reparar_schema(apps, schema_editor):
             "usuario_id",
             "bigint NULL REFERENCES usuarios_usuario(id) DEFERRABLE INITIALLY DEFERRED",
         )
-
         if _table_exists(connection, cursor, "academico_professorperfil"):
             cols = _columns(connection, cursor, "academico_professorperfil")
             if "usuario_id" in cols and "professor_id" in cols:
@@ -82,7 +75,6 @@ def reparar_schema(apps, schema_editor):
             "DocumentoGerado",
             "NotificacaoGestao",
         ]
-
         for model_name in modelos_para_garantir:
             Model = apps.get_model("academico", model_name)
             if not _table_exists(connection, cursor, Model._meta.db_table):
@@ -97,7 +89,6 @@ class Migration(migrations.Migration):
     dependencies = [
         ("academico", "0004_alter_nota_disciplina"),
     ]
-
     operations = [
         migrations.RunPython(reparar_schema, reverter_reparo),
     ]

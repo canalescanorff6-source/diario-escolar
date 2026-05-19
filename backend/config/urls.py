@@ -4,6 +4,7 @@ from django.conf.urls.static import static
 from django.urls import path, include, re_path
 from django.contrib.auth.views import LogoutView
 from django.views.static import serve as media_serve
+from django.contrib.staticfiles.views import serve as staticfiles_serve
 from django.http import HttpResponse
 
 
@@ -11,7 +12,17 @@ def health_check_runsite(request):
     return HttpResponse('ok', content_type='text/plain')
 
 
-urlpatterns = [
+urlpatterns = []
+
+# Fallback de static para RunSite: se o WhiteNoise não encontrar /static/,
+# o Django serve os arquivos diretamente pelos staticfiles finders.
+# Isso evita tela sem CSS após troca de plataforma ou redeploy.
+if getattr(settings, 'RUNSITE_STATIC_URL_FALLBACK', False):
+    urlpatterns.append(
+        re_path(r'^static/(?P<path>.*)$', staticfiles_serve, {'insecure': True})
+    )
+
+urlpatterns += [
     path('healthz', health_check_runsite, name='healthz_no_slash'),
     path('healthz/', health_check_runsite, name='healthz'),
     path('health', health_check_runsite, name='health_no_slash'),

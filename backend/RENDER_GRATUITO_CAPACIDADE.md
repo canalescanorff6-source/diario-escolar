@@ -30,3 +30,6 @@ DEFAULT_FROM_EMAIL=Diário IA Escolar <email-remetente-verificado>
 ## Atenção
 
 Não use SQLite no Render para dados reais. O filesystem do Render é temporário, e dados locais podem sumir em restart/redeploy/spin down.
+
+
+Guia passo a passo completo: `DEPLOY_RENDER_NEON_BREVO.md`.

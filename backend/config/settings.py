@@ -165,6 +165,18 @@ STORAGES = {
     'staticfiles': {'BACKEND': STATICFILES_STORAGE},
 }
 
+# RunSite pode iniciar o web container sem preservar a pasta gerada pelo collectstatic.
+# Com estas opções, o WhiteNoise/Django consegue encontrar os arquivos em backend/static
+# e a tela de login não fica em HTML puro caso o staticfiles não tenha sido servido.
+WHITENOISE_USE_FINDERS = os.environ.get(
+    'WHITENOISE_USE_FINDERS',
+    'true' if ON_RUNSITE else 'false',
+).lower() in ('1', 'true', 'yes', 'on')
+RUNSITE_STATIC_URL_FALLBACK = os.environ.get(
+    'RUNSITE_STATIC_URL_FALLBACK',
+    'true' if ON_RUNSITE else 'false',
+).lower() in ('1', 'true', 'yes', 'on')
+
 DEFAULT_CSRF_TRUSTED_ORIGINS = (
     'https://diario-escolar.runsite.app,https://*.runsite.app,'
     'https://diario-escolar.onrender.com,https://*.onrender.com'
@@ -194,8 +206,16 @@ GESTAO_AUTORIZACAO_EMAIL = os.environ.get(
     "GESTAO_AUTORIZACAO_EMAIL",
     os.environ.get("EMAIL_GESTAO_AUTORIZADA", "thiago01268230@gmail.com"),
 ).strip()
+# Primeiro lemos as variáveis da Brevo para permitir seleção automática do backend.
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
+BREVO_API_URL = os.environ.get("BREVO_API_URL", "https://api.brevo.com/v3/smtp/email")
+BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", os.environ.get("EMAIL_HOST_USER", ""))
+BREVO_SENDER_NAME = os.environ.get("BREVO_SENDER_NAME", "Diário IA Escolar")
+
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND") or (
-    "django.core.mail.backends.smtp.EmailBackend" if os.environ.get("EMAIL_HOST") else "django.core.mail.backends.console.EmailBackend"
+    "apps.core.email_backends.BrevoEmailBackend" if BREVO_API_KEY and BREVO_SENDER_EMAIL
+    else "django.core.mail.backends.smtp.EmailBackend" if os.environ.get("EMAIL_HOST")
+    else "django.core.mail.backends.console.EmailBackend"
 )
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
 try:
@@ -216,11 +236,6 @@ SERVER_EMAIL = os.environ.get("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
 # Envio gratuito recomendado em hospedagens free: API HTTPS da Brevo.
 # Algumas hospedagens bloqueiam SMTP nas portas 25/465/587; para e-mail real,
 # prefira EMAIL_BACKEND=apps.core.email_backends.BrevoEmailBackend.
-BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
-BREVO_API_URL = os.environ.get("BREVO_API_URL", "https://api.brevo.com/v3/smtp/email")
-BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", EMAIL_HOST_USER or "")
-BREVO_SENDER_NAME = os.environ.get("BREVO_SENDER_NAME", "Diário IA Escolar")
-
 
 # Logs claros no console da hospedagem para diagnosticar erro 500 em RunSite/Render.
 LOGGING = {

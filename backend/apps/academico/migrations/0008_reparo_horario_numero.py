@@ -1,60 +1,30 @@
 from django.db import migrations, models
 
 
-def _table_exists(connection, cursor, table_name):
-    return table_name in connection.introspection.table_names(cursor)
-
-
-def _columns(connection, cursor, table_name):
-    if not _table_exists(connection, cursor, table_name):
-        return set()
-    description = connection.introspection.get_table_description(cursor, table_name)
-    columns = set()
-    for column in description:
-        name = getattr(column, "name", None)
-        if not name and len(column) > 0:
-            name = column[0]
-        if name:
-            columns.add(name)
-    return columns
-
-
 def garantir_horario_numero(apps, schema_editor):
-    connection = schema_editor.connection
-    table = "academico_horarioaula"
-    with connection.cursor() as cursor:
-        if not _table_exists(connection, cursor, table):
-            return
-        colunas = _columns(connection, cursor, table)
-        if "horario_numero" not in colunas:
-            cursor.execute(
-                f"ALTER TABLE {schema_editor.quote_name(table)} "
-                f"ADD COLUMN {schema_editor.quote_name('horario_numero')} integer NOT NULL DEFAULT 1"
-            )
-            colunas.add("horario_numero")
-        if "ordem" in colunas:
-            cursor.execute(
-                f"UPDATE {schema_editor.quote_name(table)} "
-                f"SET {schema_editor.quote_name('horario_numero')} = {schema_editor.quote_name('ordem')} "
-                f"WHERE {schema_editor.quote_name('horario_numero')} IS NULL "
-                f"OR {schema_editor.quote_name('horario_numero')} = 0"
-            )
+    table = 'academico_horarioaula'
+    with schema_editor.connection.cursor() as cursor:
+        cursor.execute(f"PRAGMA table_info({table})")
+        colunas = [row[1] for row in cursor.fetchall()]
+        if 'horario_numero' not in colunas:
+            cursor.execute(f"ALTER TABLE {table} ADD COLUMN horario_numero integer NOT NULL DEFAULT 1")
+        cursor.execute(f"UPDATE {table} SET horario_numero = ordem WHERE horario_numero IS NULL OR horario_numero = 0")
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("academico", "0007_reparo_schema_banco_existente"),
+        ('academico', '0007_reparo_schema_banco_existente'),
     ]
+
     operations = [
         migrations.SeparateDatabaseAndState(
-            database_operations=[
-                migrations.RunPython(garantir_horario_numero, migrations.RunPython.noop)
-            ],
+            database_operations=[migrations.RunPython(garantir_horario_numero, migrations.RunPython.noop)],
             state_operations=[
                 migrations.AddField(
-                    model_name="horarioaula",
-                    name="horario_numero",
-                    field=models.PositiveSmallIntegerField(default=1, verbose_name="Número do horário"),
+                    model_name='horarioaula',
+                    name='horario_numero',
+                    field=models.PositiveSmallIntegerField(default=1, verbose_name='Número do horário'),
                 ),
             ],
         ),

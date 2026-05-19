@@ -33,12 +33,13 @@ class BrevoEmailBackend(BaseEmailBackend):
         if not email_messages:
             return 0
 
-        api_key = getattr(settings, "BREVO_API_KEY", "")
-        api_url = getattr(settings, "BREVO_API_URL", "https://api.brevo.com/v3/smtp/email")
-        sender_name = getattr(settings, "BREVO_SENDER_NAME", "Diário IA Escolar")
-        sender_email = getattr(settings, "BREVO_SENDER_EMAIL", "")
+        api_key = str(getattr(settings, "BREVO_API_KEY", "") or "").strip().strip("'\"")
+        api_url = str(getattr(settings, "BREVO_API_URL", "https://api.brevo.com/v3/smtp/email") or "").strip().strip("'\"")
+        sender_name = str(getattr(settings, "BREVO_SENDER_NAME", "Diário IA Escolar") or "").strip()
+        sender_email = str(getattr(settings, "BREVO_SENDER_EMAIL", "") or "").strip().strip("'\"")
 
         default_name, default_email = _parse_email(getattr(settings, "DEFAULT_FROM_EMAIL", ""))
+        default_email = str(default_email or "").strip().strip("'\"")
         sender_email = sender_email or default_email
         sender_name = sender_name or default_name or "Diário IA Escolar"
 
@@ -80,7 +81,11 @@ class BrevoEmailBackend(BaseEmailBackend):
 
             try:
                 response = requests.post(api_url, headers=headers, json=payload, timeout=getattr(settings, "EMAIL_TIMEOUT", 20))
-                response.raise_for_status()
+                try:
+                    response.raise_for_status()
+                except requests.HTTPError as exc:
+                    detalhe = response.text[:800] if response is not None else ""
+                    raise RuntimeError(f"Brevo recusou o envio: HTTP {response.status_code}. Resposta: {detalhe}") from exc
             except Exception:
                 if not self.fail_silently:
                     raise

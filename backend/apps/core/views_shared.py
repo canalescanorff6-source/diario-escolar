@@ -14,6 +14,7 @@ import json
 import os
 import secrets
 import calendar
+import logging
 from pathlib import Path
 
 from apps.academico.models import (
@@ -43,6 +44,8 @@ from apps.academico.models import (
 
 from apps.ia.services import AnaliseInteligenteService
 from apps.diario.models import Diario
+
+logger = logging.getLogger(__name__)
 from apps.core.operacao_861_900 import (
     resumo_aula_861_900,
     resumo_gestao_861_900,
@@ -1843,6 +1846,24 @@ def _codigo_gestao_sessao_valido(request, codigo_digitado):
     return True
 
 
+
+
+def _mensagem_erro_email_gestao(exc):
+    """Traduz falhas comuns de e-mail sem expor segredo/API key na tela."""
+    texto = str(exc or "")
+    baixo = texto.lower()
+    if "configure brevo_api_key" in baixo or "brevo_api_key" in baixo and "sender" in baixo:
+        return "Não foi possível enviar o e-mail: faltam BREVO_API_KEY ou BREVO_SENDER_EMAIL nas variáveis do RunSite."
+    if "401" in texto or "unauthorized" in baixo or "invalid api key" in baixo:
+        return "Não foi possível enviar o e-mail: a chave BREVO_API_KEY está inválida ou foi copiada incorretamente."
+    if "sender" in baixo or "remetente" in baixo or "not verified" in baixo or "unverified" in baixo:
+        return "Não foi possível enviar o e-mail: o BREVO_SENDER_EMAIL não está verificado/autorizado na Brevo."
+    if "timeout" in baixo or "timed out" in baixo:
+        return "Não foi possível enviar o e-mail: a RunSite demorou demais para conectar na Brevo. Tente novamente ou aumente EMAIL_TIMEOUT."
+    if "connection" in baixo or "name or service not known" in baixo or "temporary failure" in baixo:
+        return "Não foi possível enviar o e-mail: a RunSite não conseguiu conectar na API da Brevo."
+    return "Não foi possível enviar o e-mail agora. Confira os logs do RunSite; o erro técnico foi registrado no console."
+
 def solicitar_codigo_gestao(request):
     """Envia um código numérico de 6 dígitos ao e-mail autorizado da direção.
 
@@ -1871,8 +1892,9 @@ def solicitar_codigo_gestao(request):
                     recipient_list=[email_autorizado],
                     fail_silently=False,
                 )
-            except Exception:
-                messages.error(request, "Não foi possível enviar o e-mail agora. Confira a configuração de e-mail do sistema.")
+            except Exception as exc:
+                logger.exception("Falha ao enviar código de autorização da gestão por e-mail")
+                messages.error(request, _mensagem_erro_email_gestao(exc))
                 return render(request, "registration/solicitar_codigo_gestao.html", {"email_autorizado": email_autorizado, "validade_minutos": CODIGO_GESTAO_VALIDADE_MINUTOS})
 
             _salvar_codigo_gestao_na_sessao(request, codigo)

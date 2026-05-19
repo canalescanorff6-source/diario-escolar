@@ -19,7 +19,7 @@ def _gerar_codigo_6_digitos():
 
 
 class Command(BaseCommand):
-    help = "Envia um e-mail de teste com código numérico de 6 dígitos para validar o SMTP."
+    help = "Envia um e-mail de teste com código numérico de 6 dígitos para validar Brevo/API ou SMTP."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -37,6 +37,8 @@ class Command(BaseCommand):
 
         self.stdout.write("Configuração atual de e-mail:")
         self.stdout.write(f"  EMAIL_BACKEND={getattr(settings, 'EMAIL_BACKEND', '')}")
+        self.stdout.write(f"  BREVO_API_KEY={_mask(getattr(settings, 'BREVO_API_KEY', ''))}")
+        self.stdout.write(f"  BREVO_SENDER_EMAIL={getattr(settings, 'BREVO_SENDER_EMAIL', '') or '(vazio)'}")
         self.stdout.write(f"  EMAIL_HOST={getattr(settings, 'EMAIL_HOST', '') or '(vazio)'}")
         self.stdout.write(f"  EMAIL_PORT={getattr(settings, 'EMAIL_PORT', '')}")
         self.stdout.write(f"  EMAIL_USE_TLS={getattr(settings, 'EMAIL_USE_TLS', '')}")
@@ -49,7 +51,7 @@ class Command(BaseCommand):
                 subject="Teste de e-mail — Diário IA Escolar",
                 message=(
                     "Teste de envio do Diário IA Escolar.\n\n"
-                    "Se você recebeu esta mensagem, o SMTP está funcionando.\n\n"
+                    "Se você recebeu esta mensagem, o envio real por e-mail está funcionando.\n\n"
                     f"Código numérico de teste: {codigo}\n\n"
                     "Atenção: este código é apenas para testar o envio de e-mail. "
                     "Na tela real, o sistema gera outro código de 6 dígitos e valida pela sessão do navegador.\n"
@@ -67,8 +69,8 @@ class Command(BaseCommand):
         backend_name = str(getattr(settings, "EMAIL_BACKEND", ""))
         if "console.EmailBackend" in backend_name:
             self.stdout.write(self.style.WARNING(
-                "Teste gerado no terminal. Para envio real, configure EMAIL_HOST, "
-                "EMAIL_HOST_USER e EMAIL_HOST_PASSWORD com SMTP."
+                "Teste gerado no terminal. Para envio real no Render Free, configure "
+                "EMAIL_BACKEND=apps.core.email_backends.BrevoEmailBackend, BREVO_API_KEY e BREVO_SENDER_EMAIL."
             ))
         else:
             self.stdout.write(self.style.SUCCESS(f"E-mail de teste enviado para {destino}."))

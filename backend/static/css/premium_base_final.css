@@ -2246,3 +2246,172 @@ html,body{min-height:100%}
   color:rgba(214,236,245,.74);
   line-height:1.4;
 }
+
+
+/* =========================================================
+   Ajustes de UX do professor — cards e fluxo de lançamentos
+   Mantém o número separado do texto e deixa a navegação mais clara.
+   ========================================================= */
+.professor-shell .painel-kpis-limpos .premium-card,
+.professor-shell .ia-kpi-grid .ia-kpi-card,
+.professor-shell .ia-final-grid .ia-final-card,
+.professor-shell .mega961-grid .mega961-card,
+.professor-shell .final-1080-grid .final-1080-card,
+.professor-shell .cards:not(.gestao-cards) > .premium-card,
+.professor-shell .professor-doc-kpi {
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-areas:
+    "label value"
+    "detail value";
+  align-items:center;
+  gap:5px 16px;
+  min-height:92px!important;
+  padding:16px 18px!important;
+  overflow:hidden;
+}
+
+.professor-shell .painel-kpis-limpos .premium-card > span,
+.professor-shell .ia-kpi-grid .ia-kpi-card > span,
+.professor-shell .ia-final-grid .ia-final-card > span,
+.professor-shell .mega961-grid .mega961-card > span,
+.professor-shell .final-1080-grid .final-1080-card > span,
+.professor-shell .cards:not(.gestao-cards) > .premium-card > span,
+.professor-shell .professor-doc-kpi > span {
+  grid-area:label;
+  margin:0!important;
+  min-width:0;
+  white-space:normal!important;
+  line-height:1.18!important;
+}
+
+.professor-shell .painel-kpis-limpos .premium-card > h2,
+.professor-shell .painel-kpis-limpos .premium-card > strong,
+.professor-shell .ia-kpi-grid .ia-kpi-card > strong,
+.professor-shell .ia-final-grid .ia-final-card > strong,
+.professor-shell .mega961-grid .mega961-card > strong,
+.professor-shell .final-1080-grid .final-1080-card > strong,
+.professor-shell .cards:not(.gestao-cards) > .premium-card > h2,
+.professor-shell .cards:not(.gestao-cards) > .premium-card > strong,
+.professor-shell .professor-doc-kpi > strong {
+  grid-area:value;
+  justify-self:end;
+  align-self:center;
+  min-width:58px;
+  max-width:140px;
+  text-align:right;
+  margin:0!important;
+  line-height:.92!important;
+  white-space:nowrap;
+  font-size:clamp(28px,3.6vw,48px)!important;
+  letter-spacing:-.055em!important;
+  color:var(--ia-teal)!important;
+  z-index:1;
+}
+
+.professor-shell .painel-kpis-limpos .premium-card > small,
+.professor-shell .ia-kpi-grid .ia-kpi-card > small,
+.professor-shell .ia-final-grid .ia-final-card > small,
+.professor-shell .mega961-grid .mega961-card > small,
+.professor-shell .final-1080-grid .final-1080-card > small,
+.professor-shell .cards:not(.gestao-cards) > .premium-card > small,
+.professor-shell .professor-doc-kpi > small {
+  grid-area:detail;
+  margin:0!important;
+  min-width:0;
+  line-height:1.22!important;
+  white-space:normal!important;
+}
+
+.professor-shell .ia-document-meta {
+  align-items:stretch;
+}
+
+.professor-shell .ia-document-meta > div {
+  min-width:0;
+  overflow:hidden;
+}
+
+.professor-shell .ia-document-meta > div span,
+.professor-shell .ia-document-meta > div strong {
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.professor-shell .lancamentos-guide-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:12px;
+  margin:16px 0 0;
+}
+
+.professor-shell .lancamentos-guide-card {
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(94,234,212,.16);
+  background:rgba(2,6,23,.46);
+}
+
+.professor-shell .lancamentos-guide-card b {
+  flex:0 0 34px;
+  width:34px;
+  height:34px;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  color:#06191a;
+  background:linear-gradient(135deg,#5eead4,#99f6e4);
+  font-weight:1000;
+}
+
+.professor-shell .lancamentos-guide-card strong {
+  display:block;
+  color:#effffb;
+  margin-bottom:4px;
+}
+
+.professor-shell .lancamentos-guide-card span {
+  display:block;
+  color:var(--ia-muted);
+  line-height:1.35;
+  font-size:.88rem;
+}
+
+.professor-shell .professor-actions-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+}
+
+@media(max-width:720px) {
+  .professor-shell .painel-kpis-limpos .premium-card,
+  .professor-shell .ia-kpi-grid .ia-kpi-card,
+  .professor-shell .ia-final-grid .ia-final-card,
+  .professor-shell .mega961-grid .mega961-card,
+  .professor-shell .final-1080-grid .final-1080-card,
+  .professor-shell .cards:not(.gestao-cards) > .premium-card,
+  .professor-shell .professor-doc-kpi {
+    grid-template-columns:1fr auto;
+    min-height:82px!important;
+    padding:14px 15px!important;
+  }
+
+  .professor-shell .painel-kpis-limpos .premium-card > h2,
+  .professor-shell .painel-kpis-limpos .premium-card > strong,
+  .professor-shell .ia-kpi-grid .ia-kpi-card > strong,
+  .professor-shell .ia-final-grid .ia-final-card > strong,
+  .professor-shell .mega961-grid .mega961-card > strong,
+  .professor-shell .final-1080-grid .final-1080-card > strong,
+  .professor-shell .cards:not(.gestao-cards) > .premium-card > h2,
+  .professor-shell .cards:not(.gestao-cards) > .premium-card > strong,
+  .professor-shell .professor-doc-kpi > strong {
+    min-width:46px;
+    font-size:clamp(25px,10vw,38px)!important;
+  }
+}
+

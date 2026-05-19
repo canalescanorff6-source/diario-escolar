@@ -1,0 +1,195 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Servidor iniciando — Diário IA Escolar</title>
+  <meta http-equiv="refresh" content="20">
+  <style>
+    :root{
+      --bg:#06111f;
+      --panel:#081b27;
+      --panel2:#0c2630;
+      --line:rgba(95,255,238,.26);
+      --text:#ecfeff;
+      --muted:#a9bfcc;
+      --teal:#5fffee;
+      --warning:#ffd166;
+      --danger:#ff6b8a;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(95,255,238,.14), transparent 28%),
+        radial-gradient(circle at 85% 15%, rgba(20,184,166,.16), transparent 30%),
+        linear-gradient(135deg,#050b16 0%,#071827 55%,#06111f 100%);
+      color:var(--text);
+      font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .wrap{
+      width:min(760px,100%);
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:linear-gradient(145deg, rgba(8,27,39,.96), rgba(5,15,27,.94));
+      box-shadow:0 28px 80px rgba(0,0,0,.42), inset 0 0 44px rgba(95,255,238,.05);
+      padding:34px;
+      position:relative;
+      overflow:hidden;
+    }
+    .wrap:before{
+      content:"";
+      position:absolute;
+      inset:auto -80px -120px auto;
+      width:280px;
+      height:280px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(95,255,238,.18), transparent 62%);
+      pointer-events:none;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:9px 14px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      color:var(--teal);
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      font-size:12px;
+      background:rgba(95,255,238,.08);
+    }
+    .dot{
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      background:var(--teal);
+      box-shadow:0 0 20px var(--teal);
+      animation:pulse 1.4s infinite ease-in-out;
+    }
+    h1{
+      margin:22px 0 12px;
+      font-size:clamp(32px,6vw,56px);
+      line-height:.95;
+      letter-spacing:-.05em;
+    }
+    h1 span{color:var(--teal)}
+    p{
+      color:var(--muted);
+      font-size:17px;
+      line-height:1.55;
+      margin:0 0 18px;
+      max-width:620px;
+    }
+    .box{
+      display:grid;
+      gap:12px;
+      margin-top:24px;
+      padding:18px;
+      border:1px solid rgba(95,255,238,.18);
+      border-radius:20px;
+      background:rgba(255,255,255,.035);
+    }
+    .row{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      color:#d9eef5;
+      font-weight:700;
+    }
+    .row small{
+      display:block;
+      color:var(--muted);
+      font-weight:600;
+      margin-top:2px;
+    }
+    .icon{
+      flex:0 0 34px;
+      width:34px;
+      height:34px;
+      display:grid;
+      place-items:center;
+      border-radius:12px;
+      border:1px solid rgba(95,255,238,.2);
+      background:rgba(95,255,238,.08);
+    }
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:26px;
+    }
+    a,button{
+      border:0;
+      text-decoration:none;
+      cursor:pointer;
+      border-radius:16px;
+      padding:13px 18px;
+      font-weight:900;
+      color:#04111b;
+      background:linear-gradient(135deg, var(--teal), #7cf8d4);
+      box-shadow:0 16px 34px rgba(95,255,238,.14);
+    }
+    .secondary{
+      color:var(--teal);
+      background:rgba(95,255,238,.08);
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+    .timer{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:700;
+    }
+    @keyframes pulse{
+      0%,100%{transform:scale(.85); opacity:.55}
+      50%{transform:scale(1.25); opacity:1}
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="badge"><span class="dot"></span> Diário IA Escolar</div>
+    <h1>Servidor <span>iniciando</span></h1>
+    <p>
+      O sistema pode levar alguns segundos para responder, principalmente quando o servidor gratuito ficou parado por um tempo.
+      Aguarde um instante: esta página tentará carregar novamente de forma automática.
+    </p>
+
+    <section class="box">
+      <div class="row">
+        <div class="icon">⏳</div>
+        <div>
+          Tentando reconectar ao sistema
+          <small>A página será atualizada automaticamente a cada 20 segundos.</small>
+        </div>
+      </div>
+      <div class="row">
+        <div class="icon">🔒</div>
+        <div>
+          Seus dados continuam seguros
+          <small>Não feche o navegador se estiver realizando um cadastro ou login.</small>
+        </div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button onclick="location.reload()">Tentar novamente agora</button>
+      <a class="secondary" href="/">Voltar ao início</a>
+      <a class="secondary" href="https://wa.me/5598996127032" target="_blank" rel="noopener">Falar no WhatsApp</a>
+    </div>
+
+    <div class="timer">
+      Se esta tela continuar aparecendo por muito tempo, avise o suporte pelo WhatsApp.
+    </div>
+  </main>
+</body>
+</html>

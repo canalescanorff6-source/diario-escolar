@@ -34,6 +34,26 @@ from apps.academico.models import (
 from apps.diario.models import Diario
 
 
+MESES_PT_BR = {
+    1: "janeiro",
+    2: "fevereiro",
+    3: "março",
+    4: "abril",
+    5: "maio",
+    6: "junho",
+    7: "julho",
+    8: "agosto",
+    9: "setembro",
+    10: "outubro",
+    11: "novembro",
+    12: "dezembro",
+}
+
+
+def mes_nome_pt_br(numero: int) -> str:
+    return MESES_PT_BR.get(int(numero), "mês")
+
+
 def _pct(parte: int | float, total: int | float) -> float:
     if not total:
         return 0.0
@@ -302,11 +322,11 @@ def fechamento_mensal_901_960(professor=None, ano=None, mes=None) -> dict:
             "status": "Completo" if pontos >= 3 else "Pendente",
         })
 
-    meses = [{"valor": f"{ano}-{i:02d}", "nome": calendar.month_name[i].capitalize(), "ativo": i == mes} for i in range(1, 13)]
+    meses = [{"valor": f"{ano}-{i:02d}", "nome": mes_nome_pt_br(i), "ativo": i == mes} for i in range(1, 13)]
     return {
         "ano": ano,
         "mes": mes,
-        "mes_nome": calendar.month_name[mes].capitalize(),
+        "mes_nome": mes_nome_pt_br(mes),
         "periodo": f"{primeiro:%d/%m/%Y} a {ultimo:%d/%m/%Y}",
         "meses": meses,
         "linhas": linhas,

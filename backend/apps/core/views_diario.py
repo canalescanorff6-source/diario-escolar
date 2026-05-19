@@ -330,8 +330,25 @@ def professor_aula_rapida_321(request, horario_id=None):
     professor = request.user
     horario = _resolver_horario_do_professor(professor, horario_id)
     if not horario:
-        messages.warning(request, "A gestão precisa cadastrar seus vínculos e horários antes da aula rápida.")
-        return redirect("professor_centro_operacional_321")
+        # Mantém o professor dentro da tela Aula rápida, mesmo quando a gestão
+        # ainda não cadastrou horários. Antes o clique redirecionava para a
+        # Central do Professor e dava a impressão de que a Aula rápida estava vazia.
+        outros_horarios = HorarioAula.objects.select_related("turma", "disciplina").filter(
+            professor=professor,
+            ativo=True,
+        ).order_by("dia_semana", "ordem", "hora_inicio")
+        messages.warning(request, "A gestão precisa cadastrar seus vínculos e horários antes da Aula rápida.")
+        return render(request, "core/professor_aula_rapida_321.html", {
+            "aula_rapida_sem_horario": True,
+            "horario": None,
+            "outros_horarios": outros_horarios,
+            "alunos_linhas": [],
+            "conteudo": None,
+            "data_aula": date.today(),
+            "resumo": {"alunos": 0, "presencas": 0, "faltas": 0, "fj": 0},
+            "aula_861_900": None,
+            "status_choices": Frequencia.STATUS_FREQUENCIA_CHOICES,
+        })
 
     data_aula = date.today()
     data_informada = request.POST.get("data") if request.method == "POST" else request.GET.get("data")

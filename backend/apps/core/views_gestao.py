@@ -16,6 +16,27 @@ def gestao_escola(request):
     if request.method == "POST":
         nome = request.POST.get("nome") or "Minha Escola"
         ano_id = request.POST.get("ano_letivo_ativo") or None
+        ano_novo = (request.POST.get("ano_letivo_novo") or "").strip()
+
+        if ano_novo:
+            try:
+                ano_numero = int(ano_novo)
+                if ano_numero < 2000 or ano_numero > 2100:
+                    raise ValueError
+                ano_obj, _ = AnoLetivo.objects.get_or_create(
+                    ano=ano_numero,
+                    defaults={"ativo": True},
+                )
+                AnoLetivo.objects.exclude(pk=ano_obj.pk).update(ativo=False)
+                ano_obj.ativo = True
+                ano_obj.save(update_fields=["ativo"])
+                ano_id = ano_obj.pk
+            except ValueError:
+                messages.error(request, "Informe um ano letivo válido, por exemplo 2026.")
+                return redirect("gestao_escola")
+        elif ano_id:
+            AnoLetivo.objects.filter(pk=ano_id).update(ativo=True)
+            AnoLetivo.objects.exclude(pk=ano_id).update(ativo=False)
 
         if escola is None:
             escola = Escola.objects.create(nome=nome)

@@ -76,13 +76,24 @@
         </label>
       </div>
 
-      <label class="gestao-field">
-        <span>Ano letivo ativo</span>
-        <select name="ano_letivo_ativo">
-          <option value="">Selecione...</option>
-          {% for ano in anos %}<option value="{{ ano.id }}" {% if escola and escola.ano_letivo_ativo_id == ano.id %}selected{% endif %}>{{ ano.ano }}</option>{% endfor %}
-        </select>
-      </label>
+      <div class="gestao-form-grid two">
+        <label class="gestao-field">
+          <span>Ano letivo ativo</span>
+          <select name="ano_letivo_ativo">
+            <option value="">Selecione...</option>
+            {% for ano in anos %}
+              <option value="{{ ano.id }}" {% if escola and escola.ano_letivo_ativo_id == ano.id %}selected{% endif %}>{{ ano.ano }}</option>
+            {% endfor %}
+          </select>
+          <small>Selecione um ano já cadastrado.</small>
+        </label>
+
+        <label class="gestao-field">
+          <span>Cadastrar novo ano letivo</span>
+          <input name="ano_letivo_novo" type="number" min="2000" max="2100" placeholder="Ex.: 2026">
+          <small>Preencha aqui caso o ano ainda não apareça na lista.</small>
+        </label>
+      </div>
       <label class="gestao-check"><input type="checkbox" name="ativa" {% if not escola or escola.ativa %}checked{% endif %}> Escola ativa</label>
     </div>
 

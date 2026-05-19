@@ -69,20 +69,20 @@
   <div class="hero-actions"><a href="{% url 'professor_aula_rapida_321' %}">⚡ Abrir aula rápida</a><a href="{% url 'professor_carga_horaria_301' %}">🕒 Carga horária</a></div>
 </section>
 
-<div class="professor-kpi-grid">
-  <div class="card professor-kpi-card">
+<div class="professor-kpi-grid professor-metric-grid professor-dashboard-kpis">
+  <div class="card professor-kpi-card professor-metric-card">
     <div class="professor-kpi-text"><span>Aulas na semana</span><small>grade semanal</small></div>
     <strong class="professor-kpi-value">{{ carga.aulas }}</strong>
   </div>
-  <div class="card professor-kpi-card">
+  <div class="card professor-kpi-card professor-metric-card">
     <div class="professor-kpi-text"><span>Horas semanais</span><small>calculadas pelos horários</small></div>
     <strong class="professor-kpi-value">{{ carga.horas }}</strong>
   </div>
-  <div class="card professor-kpi-card">
+  <div class="card professor-kpi-card professor-metric-card">
     <div class="professor-kpi-text"><span>Aulas hoje</span><small>{{ hoje|date:'d/m/Y' }}</small></div>
     <strong class="professor-kpi-value">{{ aulas_hoje.count }}</strong>
   </div>
-  <div class="card professor-kpi-card">
+  <div class="card professor-kpi-card professor-metric-card">
     <div class="professor-kpi-text"><span>Pendências</span><small>lançamentos e vínculos</small></div>
     <strong class="professor-kpi-value">{{ pendencias|length }}</strong>
   </div>
@@ -97,9 +97,9 @@
 
 <section class="panel">
   <h3>Semana do professor</h3>
-  <div class="grid">
+  <div class="grid professor-week-grid">
   {% for dia in carga.dias %}
-    <div class="card"><span>{{ dia.dia }}</span><strong>{{ dia.total }}</strong><small class="muted">{{ dia.horas }}h neste dia da semana</small></div>
+    <div class="card professor-week-card"><span>{{ dia.dia }}</span><strong>{{ dia.total }}</strong><small class="muted">{{ dia.horas }}h neste dia da semana</small></div>
   {% endfor %}
   </div>
 </section>

@@ -7,27 +7,22 @@
   <div>
     <span class="hero-badge">Professor • Lançamentos</span>
     <h1>Lançamentos do Diário</h1>
-    <p>Use esta área para iniciar o lançamento da aula, registrar chamada P/F/FJ, salvar o conteúdo ministrado e depois conferir o fechamento mensal.</p>
+    <p>Use esta área para lançar aula, registrar chamada P/F/FJ, salvar conteúdo e conferir o fechamento mensal sem se perder.</p>
   </div>
   <div class="hero-actions">
     <a class="btn-primary" href="{% url 'professor_aula_rapida_321' %}">📝 Iniciar lançamento</a>
-    <a class="btn-secondary-premium" href="{% url 'professor_diario_classe_oficial_1281' %}">📘 Ver diário consolidado</a>
+    <a class="btn-secondary-premium" href="{% url 'professor_diario_classe_oficial_1281' %}">📘 Diário consolidado</a>
     <a class="btn-secondary-premium" href="{% url 'professor_prontidao_lancamentos_163' %}">✅ Conferir fechamento</a>
   </div>
 </section>
 
-<section class="panel no-print">
-  <div class="panel-header">
-    <div>
-      <h3>Como lançar a aula sem se perder</h3>
-      <span>Fluxo recomendado para o professor usar todos os dias.</span>
-    </div>
-  </div>
+<section class="panel no-print professor-launch-guide">
+  <div class="panel-header"><div><h3>Fluxo simples para lançar aula</h3><span>Use esta sequência todos os dias.</span></div></div>
   <div class="lancamentos-guide-grid">
-    <div class="lancamentos-guide-card"><b>1</b><div><strong>Iniciar lançamento</strong><span>Clique em “Iniciar lançamento” ou no menu “Lançar aula”.</span></div></div>
-    <div class="lancamentos-guide-card"><b>2</b><div><strong>Salvar chamada</strong><span>Marque P, F ou FJ para cada aluno da turma.</span></div></div>
-    <div class="lancamentos-guide-card"><b>3</b><div><strong>Registrar conteúdo</strong><span>Informe o conteúdo ministrado e observações da aula.</span></div></div>
-    <div class="lancamentos-guide-card"><b>4</b><div><strong>Conferir fechamento</strong><span>Use a conferência mensal para ver pendências antes de finalizar.</span></div></div>
+    <div class="lancamentos-guide-card"><b>1</b><div><strong>Iniciar lançamento</strong><span>Abra a Aula rápida pelo botão principal.</span></div></div>
+    <div class="lancamentos-guide-card"><b>2</b><div><strong>Fazer chamada</strong><span>Marque P, F ou FJ para cada aluno.</span></div></div>
+    <div class="lancamentos-guide-card"><b>3</b><div><strong>Registrar conteúdo</strong><span>Informe o conteúdo trabalhado na aula.</span></div></div>
+    <div class="lancamentos-guide-card"><b>4</b><div><strong>Conferir</strong><span>Use o fechamento para ver pendências.</span></div></div>
   </div>
 </section>
 
@@ -74,8 +69,9 @@
     <div class="diario-real-actions no-print">
       <a href="{% url 'professor_aula_rapida_321' %}" class="btn-ghost-premium">📝 Lançar aula</a>
       <a href="{% url 'diario_oficial_turma_completo' item.turma.id %}" class="btn-ghost-premium">📘 Diário completo</a>
-      <a href="{% url 'frequencia_mensal_turma' item.turma.id %}" class="btn-ghost-premium">📅 Frequência mensal</a>
-      <a href="{% url 'registro_aulas_mensal_turma' item.turma.id %}" class="btn-ghost-premium">📚 Registro de aulas</a>
+      <a href="{% url 'diario_classe_turma' item.turma.id %}" class="btn-ghost-premium">📄 Impressão</a>
+      <a href="{% url 'frequencia_mensal_turma' item.turma.id %}" class="btn-ghost-premium">📅 Frequência</a>
+      <a href="{% url 'registro_aulas_mensal_turma' item.turma.id %}" class="btn-ghost-premium">📝 Aulas</a>
       <a href="{% url 'notas_turma' item.turma.id %}" class="btn-ghost-premium">📊 Notas</a>
     </div>
   </article>

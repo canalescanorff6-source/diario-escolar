@@ -2247,171 +2247,191 @@ html,body{min-height:100%}
   line-height:1.4;
 }
 
-
-/* =========================================================
-   Ajustes de UX do professor — cards e fluxo de lançamentos
-   Mantém o número separado do texto e deixa a navegação mais clara.
-   ========================================================= */
-.professor-shell .painel-kpis-limpos .premium-card,
-.professor-shell .ia-kpi-grid .ia-kpi-card,
-.professor-shell .ia-final-grid .ia-final-card,
-.professor-shell .mega961-grid .mega961-card,
-.professor-shell .final-1080-grid .final-1080-card,
-.professor-shell .cards:not(.gestao-cards) > .premium-card,
-.professor-shell .professor-doc-kpi {
+/* ===== CORREÇÃO FINAL UX PROFESSOR — cards, lançamentos e leitura em sala ===== */
+.professor-content .professor-metric-grid,
+.professor-content .professor-dashboard-kpis{
   display:grid!important;
-  grid-template-columns:minmax(0,1fr) auto;
-  grid-template-areas:
-    "label value"
-    "detail value";
-  align-items:center;
-  gap:5px 16px;
-  min-height:92px!important;
-  padding:16px 18px!important;
-  overflow:hidden;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr))!important;
+  gap:16px!important;
+  align-items:stretch!important;
+  margin:18px 0!important;
 }
-
-.professor-shell .painel-kpis-limpos .premium-card > span,
-.professor-shell .ia-kpi-grid .ia-kpi-card > span,
-.professor-shell .ia-final-grid .ia-final-card > span,
-.professor-shell .mega961-grid .mega961-card > span,
-.professor-shell .final-1080-grid .final-1080-card > span,
-.professor-shell .cards:not(.gestao-cards) > .premium-card > span,
-.professor-shell .professor-doc-kpi > span {
-  grid-area:label;
+.professor-content .professor-metric-card,
+.professor-content .professor-kpi-card,
+.professor-content .professor-week-card{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-rows:auto auto!important;
+  align-items:center!important;
+  column-gap:18px!important;
+  row-gap:4px!important;
+  min-height:96px!important;
+  padding:18px 20px!important;
+  overflow:hidden!important;
+  position:relative!important;
+}
+.professor-content .professor-metric-card > span,
+.professor-content .professor-kpi-text,
+.professor-content .professor-week-card > span{
+  grid-column:1!important;
+  grid-row:1!important;
+  min-width:0!important;
+  align-self:end!important;
+}
+.professor-content .professor-metric-card > small,
+.professor-content .professor-week-card > small{
+  grid-column:1!important;
+  grid-row:2!important;
+  display:block!important;
+  min-width:0!important;
   margin:0!important;
-  min-width:0;
+  align-self:start!important;
+  font-size:12px!important;
+  line-height:1.25!important;
+  color:rgba(220,255,252,.68)!important;
+  text-transform:none!important;
+  letter-spacing:0!important;
   white-space:normal!important;
+}
+.professor-content .professor-metric-card > h2,
+.professor-content .professor-metric-card > strong,
+.professor-content .professor-kpi-value,
+.professor-content .professor-week-card > strong{
+  grid-column:2!important;
+  grid-row:1 / span 2!important;
+  justify-self:end!important;
+  align-self:center!important;
+  min-width:62px!important;
+  max-width:120px!important;
+  margin:0!important;
+  text-align:right!important;
+  font-size:clamp(34px,4.4vw,56px)!important;
+  line-height:.88!important;
+  letter-spacing:-.06em!important;
+  color:#5fffee!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+}
+.professor-content .professor-metric-card > span,
+.professor-content .professor-week-card > span,
+.professor-content .professor-kpi-text span{
+  display:block!important;
+  color:rgba(226,245,255,.80)!important;
+  font-size:13px!important;
+  font-weight:900!important;
   line-height:1.18!important;
-}
-
-.professor-shell .painel-kpis-limpos .premium-card > h2,
-.professor-shell .painel-kpis-limpos .premium-card > strong,
-.professor-shell .ia-kpi-grid .ia-kpi-card > strong,
-.professor-shell .ia-final-grid .ia-final-card > strong,
-.professor-shell .mega961-grid .mega961-card > strong,
-.professor-shell .final-1080-grid .final-1080-card > strong,
-.professor-shell .cards:not(.gestao-cards) > .premium-card > h2,
-.professor-shell .cards:not(.gestao-cards) > .premium-card > strong,
-.professor-shell .professor-doc-kpi > strong {
-  grid-area:value;
-  justify-self:end;
-  align-self:center;
-  min-width:58px;
-  max-width:140px;
-  text-align:right;
-  margin:0!important;
-  line-height:.92!important;
-  white-space:nowrap;
-  font-size:clamp(28px,3.6vw,48px)!important;
-  letter-spacing:-.055em!important;
-  color:var(--ia-teal)!important;
-  z-index:1;
-}
-
-.professor-shell .painel-kpis-limpos .premium-card > small,
-.professor-shell .ia-kpi-grid .ia-kpi-card > small,
-.professor-shell .ia-final-grid .ia-final-card > small,
-.professor-shell .mega961-grid .mega961-card > small,
-.professor-shell .final-1080-grid .final-1080-card > small,
-.professor-shell .cards:not(.gestao-cards) > .premium-card > small,
-.professor-shell .professor-doc-kpi > small {
-  grid-area:detail;
-  margin:0!important;
-  min-width:0;
-  line-height:1.22!important;
+  text-transform:none!important;
+  letter-spacing:0!important;
   white-space:normal!important;
 }
-
-.professor-shell .ia-document-meta {
-  align-items:stretch;
+.professor-content .professor-kpi-text small{
+  display:block!important;
+  margin-top:5px!important;
+  font-size:12px!important;
+  line-height:1.22!important;
+  color:rgba(220,255,252,.66)!important;
+  white-space:normal!important;
 }
-
-.professor-shell .ia-document-meta > div {
-  min-width:0;
-  overflow:hidden;
+.professor-content .professor-week-grid{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;
+  gap:12px!important;
 }
-
-.professor-shell .ia-document-meta > div span,
-.professor-shell .ia-document-meta > div strong {
-  display:block;
-  overflow:hidden;
-  text-overflow:ellipsis;
+.professor-content .professor-week-card{
+  min-height:82px!important;
+  padding:15px 16px!important;
 }
-
-.professor-shell .lancamentos-guide-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  gap:12px;
-  margin:16px 0 0;
+.professor-content .professor-week-card > strong{
+  font-size:clamp(28px,3.5vw,44px)!important;
+  min-width:44px!important;
 }
-
-.professor-shell .lancamentos-guide-card {
-  display:flex;
-  align-items:flex-start;
-  gap:12px;
-  padding:14px;
-  border-radius:18px;
-  border:1px solid rgba(94,234,212,.16);
-  background:rgba(2,6,23,.46);
+.professor-content .lancamentos-guide-grid{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr))!important;
+  gap:12px!important;
 }
-
-.professor-shell .lancamentos-guide-card b {
-  flex:0 0 34px;
-  width:34px;
-  height:34px;
-  border-radius:13px;
-  display:grid;
-  place-items:center;
-  color:#06191a;
-  background:linear-gradient(135deg,#5eead4,#99f6e4);
-  font-weight:1000;
+.professor-content .lancamentos-guide-card{
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr)!important;
+  gap:12px!important;
+  align-items:center!important;
+  padding:14px!important;
+  border-radius:18px!important;
+  border:1px solid rgba(94,234,212,.16)!important;
+  background:rgba(2,18,28,.46)!important;
 }
-
-.professor-shell .lancamentos-guide-card strong {
-  display:block;
-  color:#effffb;
-  margin-bottom:4px;
+.professor-content .lancamentos-guide-card b{
+  width:42px!important;
+  height:42px!important;
+  border-radius:15px!important;
+  display:grid!important;
+  place-items:center!important;
+  background:rgba(94,234,212,.12)!important;
+  border:1px solid rgba(94,234,212,.28)!important;
+  color:#5fffee!important;
+  font-size:20px!important;
+  line-height:1!important;
 }
-
-.professor-shell .lancamentos-guide-card span {
-  display:block;
-  color:var(--ia-muted);
-  line-height:1.35;
-  font-size:.88rem;
+.professor-content .lancamentos-guide-card strong{
+  display:block!important;
+  margin:0 0 4px!important;
+  color:#ffffff!important;
+  font-size:14px!important;
+  line-height:1.15!important;
+  letter-spacing:0!important;
 }
-
-.professor-shell .professor-actions-row {
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-top:14px;
+.professor-content .lancamentos-guide-card span{
+  display:block!important;
+  color:rgba(220,255,252,.72)!important;
+  font-size:12px!important;
+  line-height:1.35!important;
 }
-
-@media(max-width:720px) {
-  .professor-shell .painel-kpis-limpos .premium-card,
-  .professor-shell .ia-kpi-grid .ia-kpi-card,
-  .professor-shell .ia-final-grid .ia-final-card,
-  .professor-shell .mega961-grid .mega961-card,
-  .professor-shell .final-1080-grid .final-1080-card,
-  .professor-shell .cards:not(.gestao-cards) > .premium-card,
-  .professor-shell .professor-doc-kpi {
-    grid-template-columns:1fr auto;
-    min-height:82px!important;
-    padding:14px 15px!important;
-  }
-
-  .professor-shell .painel-kpis-limpos .premium-card > h2,
-  .professor-shell .painel-kpis-limpos .premium-card > strong,
-  .professor-shell .ia-kpi-grid .ia-kpi-card > strong,
-  .professor-shell .ia-final-grid .ia-final-card > strong,
-  .professor-shell .mega961-grid .mega961-card > strong,
-  .professor-shell .final-1080-grid .final-1080-card > strong,
-  .professor-shell .cards:not(.gestao-cards) > .premium-card > h2,
-  .professor-shell .cards:not(.gestao-cards) > .premium-card > strong,
-  .professor-shell .professor-doc-kpi > strong {
-    min-width:46px;
-    font-size:clamp(25px,10vw,38px)!important;
-  }
+.professor-content .professor-clean-panel .panel-header,
+.professor-content .professor-launch-guide .panel-header{
+  margin-bottom:12px!important;
 }
-
+.professor-content .professor-pill-list{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:7px!important;
+}
+.professor-content .professor-clean-table td strong,
+.professor-content .premium-table td strong,
+.professor-content table td strong{
+  font-size:14px!important;
+  line-height:1.2!important;
+  letter-spacing:0!important;
+  color:#eaffff!important;
+  margin:0!important;
+}
+.professor-content .painel-comando-card strong,
+.professor-content .dashboard-focus-card strong,
+.professor-content .gestao-list-card strong,
+.professor-content .feed-card strong{
+  font-size:15px!important;
+  line-height:1.22!important;
+  letter-spacing:0!important;
+  margin:0!important;
+  color:#eaffff!important;
+}
+.professor-content .diario-real-score{
+  font-size:clamp(28px,4vw,46px)!important;
+  line-height:1!important;
+  margin:0!important;
+  color:#eaffff!important;
+}
+.professor-content .hero-actions a.btn-primary[href*="aula-rapida"],
+.professor-content .professor-sidebar-premium a[href*="aula-rapida"]{
+  border-color:rgba(94,234,212,.50)!important;
+}
+@media(max-width:740px){
+  .professor-content .professor-metric-grid,
+  .professor-content .professor-dashboard-kpis{grid-template-columns:1fr!important;}
+  .professor-content .professor-metric-card,
+  .professor-content .professor-kpi-card,
+  .professor-content .professor-week-card{min-height:86px!important;padding:16px!important;}
+  .professor-content .professor-metric-card > h2,
+  .professor-content .professor-metric-card > strong,
+  .professor-content .professor-kpi-value,
+  .professor-content .professor-week-card > strong{font-size:40px!important;}
+}

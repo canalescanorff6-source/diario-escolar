@@ -17,11 +17,11 @@
 {% include 'partials/professor_fluxo_aula.html' %}
 {% include 'partials/resumo_861_900_professor.html' %}
 
-<section class="cards painel-kpis-limpos">
-  <div class="card premium-card"><span>Carga semanal</span><h2>{{ carga.horas }}h</h2><small>{{ carga.aulas }} horário(s)</small></div>
-  <div class="card premium-card"><span>Aulas de hoje</span><h2>{{ aulas_hoje|length }}</h2><small>{{ hoje|date:'d/m/Y' }}</small></div>
-  <div class="card premium-card"><span>Turmas</span><h2>{{ turmas|length }}</h2><small>vinculadas pela gestão</small></div>
-  <div class="card premium-card"><span>Pendências</span><h2>{{ pendencias|length }}</h2><small>para completar o diário</small></div>
+<section class="cards painel-kpis-limpos professor-metric-grid professor-dashboard-kpis">
+  <div class="card premium-card professor-metric-card"><span>Carga semanal</span><h2>{{ carga.horas }}h</h2><small>{{ carga.aulas }} horário(s)</small></div>
+  <div class="card premium-card professor-metric-card"><span>Aulas de hoje</span><h2>{{ aulas_hoje|length }}</h2><small>{{ hoje|date:'d/m/Y' }}</small></div>
+  <div class="card premium-card professor-metric-card"><span>Turmas</span><h2>{{ turmas|length }}</h2><small>vinculadas pela gestão</small></div>
+  <div class="card premium-card professor-metric-card"><span>Pendências</span><h2>{{ pendencias|length }}</h2><small>para completar o diário</small></div>
 </section>
 
 <section class="grid-layout gestao-grid-layout">
@@ -44,7 +44,7 @@
       <div class="panel-header"><div><h3>Minhas turmas e disciplinas</h3><span>Turmas e disciplinas atribuídas pela gestão.</span></div></div>
       <table class="table premium-table"><thead><tr><th>Turma</th><th>Disciplina</th><th>Ação</th></tr></thead><tbody>
         {% for v in vinculos %}
-          <tr><td>{{ v.turma.nome }}</td><td>{{ v.disciplina.nome }}</td><td><a class="btn-secondary-premium btn-mini" href="{% url 'professor_diario_oficial' %}">Diário</a></td></tr>
+          <tr><td>{{ v.turma.nome }}</td><td>{{ v.disciplina.nome }}</td><td><a class="btn-secondary-premium btn-mini" href="{% url 'professor_aula_rapida_321' %}">Lançar aula</a></td></tr>
         {% empty %}
           <tr><td colspan="3">Nenhum vínculo encontrado. A gestão precisa vincular professor, turma e disciplina.</td></tr>
         {% endfor %}

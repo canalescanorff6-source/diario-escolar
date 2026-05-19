@@ -37,11 +37,11 @@
 {% include 'partials/mega_checkup_1001_1080_resumo.html' %}
 {% endwith %}
 
-<section class="cards gestao-cards painel-kpis-limpos">
-    <div class="card premium-card"><span>Turmas</span><h2>{{ total_turmas }}</h2><small>vinculadas pela gestão</small></div>
-    <div class="card premium-card"><span>Disciplinas</span><h2>{{ total_disciplinas }}</h2><small>por vínculo ativo</small></div>
-    <div class="card premium-card"><span>Carga semanal</span><h2>{{ carga_horaria_semana.horas }}h</h2><small>{{ carga_horaria_semana.aulas }} horário(s)</small></div>
-    <div class="card premium-card"><span>Aulas hoje</span><h2>{{ aulas_hoje.count }}</h2><small>rotina diária</small></div>
+<section class="cards gestao-cards painel-kpis-limpos professor-metric-grid professor-dashboard-kpis">
+    <div class="card premium-card professor-metric-card"><span>Turmas</span><h2>{{ total_turmas }}</h2><small>vinculadas pela gestão</small></div>
+    <div class="card premium-card professor-metric-card"><span>Disciplinas</span><h2>{{ total_disciplinas }}</h2><small>por vínculo ativo</small></div>
+    <div class="card premium-card professor-metric-card"><span>Carga semanal</span><h2>{{ carga_horaria_semana.horas }}h</h2><small>{{ carga_horaria_semana.aulas }} horário(s)</small></div>
+    <div class="card premium-card professor-metric-card"><span>Aulas hoje</span><h2>{{ aulas_hoje.count }}</h2><small>rotina diária</small></div>
 </section>
 
 <section class="dashboard-focus-grid painel-comando-grid painel-211-fluxo">

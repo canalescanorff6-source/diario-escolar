@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/background">
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
+    <TextView android:id="@+id/title" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text" android:textStyle="bold" android:textSize="24sp" />
+    <TextView android:id="@+id/meta" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/muted" android:layout_marginTop="4dp" android:layout_marginBottom="14dp" />
+    <LinearLayout android:id="@+id/studentsContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+    <EditText android:id="@+id/content" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Conteúdo ministrado" android:minLines="3" android:gravity="top" android:inputType="textMultiLine" android:layout_marginTop="18dp" />
+    <EditText android:id="@+id/notes" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Observações (opcional)" android:minLines="2" android:gravity="top" android:inputType="textMultiLine" android:layout_marginTop="10dp" />
+    <Button android:id="@+id/saveButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Salvar aula" android:layout_marginTop="16dp" />
+    <ProgressBar android:id="@+id/progress" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:visibility="gone" android:layout_margin="12dp" />
+    <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/muted" android:layout_marginTop="8dp" />
+  </LinearLayout>
+</ScrollView>

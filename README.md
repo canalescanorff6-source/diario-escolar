@@ -1,4 +1,4 @@
-# Diário Escolar Pro 2.0
+# Diário Escolar Pro 2.0.1
 
 **Versão:** 2.0.0
 

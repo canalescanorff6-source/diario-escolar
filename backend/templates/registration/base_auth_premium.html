@@ -13,17 +13,45 @@
 <body>
 <main class="auth-page">
   <section class="auth-brand" aria-label="Identidade institucional">
-    {% if escola_login_logo %}<img class="auth-brand-logo" src="{{ escola_login_logo }}" alt="Logo da escola">{% else %}<img class="auth-brand-logo" src="{% static 'img/icon-192.png' %}" alt="Diário Escolar Pro">{% endif %}
+    {% if escola_login_logo %}
+      <img class="auth-brand-logo" src="{{ escola_login_logo }}" alt="Brasão ou logo da escola">
+    {% else %}
+      <img class="auth-brand-logo" src="{% static 'img/logo_escola_login.png' %}" alt="Brasão institucional">
+    {% endif %}
+
     <div>
       <span class="eyebrow light">Gestão acadêmica inteligente</span>
       <h1>Diário Escolar Pro</h1>
-      <p>{{ escola_login_texto|default:'Um ambiente simples, seguro e organizado para professores e gestão escolar.' }}</p>
-      <div class="auth-institution">
+      <p>{{ escola_login_texto|default:'Portal oficial de acesso ao diário escolar da instituição.' }}</p>
+
+      <div class="auth-institution" aria-label="Dados institucionais da escola">
         <strong>{{ escola_login_nome_info|default:'Sua instituição de ensino' }}</strong>
-        {% if escola_login_municipio %}<span>{{ escola_login_municipio }}{% if escola_login_estado_sigla %} · {{ escola_login_estado_sigla }}{% endif %}</span>{% endif %}
+
+        {% if escola_login_estado or escola_login_secretaria %}
+          <span>
+            {% if escola_login_estado %}{{ escola_login_estado }}{% endif %}
+            {% if escola_login_estado and escola_login_secretaria %} · {% endif %}
+            {% if escola_login_secretaria %}{{ escola_login_secretaria }}{% endif %}
+          </span>
+        {% endif %}
+
+        {% if escola_login_municipio or escola_login_estado_sigla %}
+          <span>
+            {% if escola_login_municipio %}{{ escola_login_municipio }}{% endif %}
+            {% if escola_login_municipio and escola_login_estado_sigla %} · {% endif %}
+            {% if escola_login_estado_sigla %}{{ escola_login_estado_sigla }}{% endif %}
+          </span>
+        {% endif %}
+
+        {% if escola_login_aldeia %}<span><b>Aldeia:</b> {{ escola_login_aldeia }}</span>{% endif %}
+        {% if escola_login_terra %}<span><b>Terra indígena:</b> {{ escola_login_terra }}</span>{% endif %}
+        {% if gestor_login_nome %}
+          <span><b>{{ gestor_login_cargo|default:'Direção escolar' }}:</b> {{ gestor_login_nome }}</span>
+        {% endif %}
       </div>
     </div>
   </section>
+
   <section class="auth-panel">
     <div class="auth-card">
       {% block auth_content %}{% endblock %}

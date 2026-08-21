@@ -1,8 +1,0 @@
-{% extends 'gestao/base_premium_gestao.html' %}
-{% block titulo %}Conferência do Diário Escolar{% endblock %}
-{% block subtitulo %}Revisão oficial, espelho mensal, dossiê do aluno e mapa de lançamento • {{ mes_nome }}/{{ ano }}{% endblock %}
-{% block conteudo %}
-<section class="grid">{% for card in cards %}<article class="card"><span>{{ card.titulo }}</span><strong>{{ card.valor }}</strong><p class="pill">{% if card.ok %}OK{% else %}Conferir{% endif %}</p></article>{% endfor %}</section>
-<section class="panel no-print"><h3>Rotas novas</h3><a class="gestao-base-btn" href="{% url 'gestao_revisao_oficial_diario_real_169' %}?mes={{ mes_param }}">Revisão oficial</a> <a class="gestao-base-btn" href="{% url 'gestao_diario_oficial' %}?mes={{ mes_param }}">Mapa professor</a> <a class="gestao-base-btn" href="{% url 'gestao_conferencia_final_diario_real_163' %}?mes={{ mes_param }}">Livro 163</a></section>
-<section class="panel"><h3>Resumo técnico</h3><p>As fases concluídas 169–174 consolidam o que já existe: identificação da escola, ano letivo, série/turma/turno, professor automático da gestão, horários semanais, frequência P/F/FJ por data e disciplina, registro mensal de aulas e clique no aluno para dossiê oficial.</p></section>
-{% endblock %}

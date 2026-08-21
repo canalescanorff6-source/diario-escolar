@@ -3,122 +3,30 @@
 {% block titulo %}Registro de Aulas{% endblock %}
 {% block subtitulo %}Tela integrada ao Diário Escolar.{% endblock %}
 {% block conteudo %}
-<div class="premium-only-page visual-1161-1220" data-template="core/registro_aulas_mensal.html">
-<section class="registro-hero-panel">
-            <div>
-                <span class="registro-kicker">Diário de Classe</span>
-                <h2>Conteúdos e atividades realizadas</h2>
-                <p>
-                    Acompanhe os registros mensais por disciplina, com data, carga horária,
-                    conteúdo trabalhado e observações pedagógicas, seguindo o modelo do diário físico.
-                </p>
-            </div>
+<div class="page-shell page-modern" data-template="core/registro_aulas_mensal.html">
+<section class="registro-hero-panel"><div><span class="registro-kicker">Diário de Classe</span><h2>Conteúdos e atividades realizadas</h2><p>Acompanhe os registros mensais por disciplina, com data, carga horária,
+ conteúdo trabalhado e observações pedagógicas, seguindo o modelo do diário físico.
+ </p></div><div class="registro-actions"><a href="{% url 'professor_registrar_aula' %}?turma={{ turma.id }}" class="btn-primary"> Novo Registro</a><a href="{% url 'turma_detalhe' turma.id %}" class="btn-secondary-premium">↩ Voltar</a></div></section><section class="panel table-panel registro-filter-panel"><form method="GET" class="registro-filtros"><label><span>Mês</span><select name="mes">{% for item in meses %}
+ <option value="{{ item.valor }}" {% if item.ativo %}selected{% endif %}>{{ item.nome }}</option>{% endfor %}
+ </select></label><label><span>Disciplina</span><select name="disciplina"><option value="">Todas as disciplinas</option>{% for disciplina in disciplinas %}
+ <option value="{{ disciplina.id }}" {% if disciplina_query == disciplina.nome %}selected{% endif %}>{{ disciplina.nome }}
+ </option>{% endfor %}
+ </select></label><button class="btn-primary" type="submit"> Filtrar</button></form></section>{% for grupo in grupos %}
 
-            <div class="registro-actions">
-                <a href="{% url 'novo_diario' %}?turma={{ turma.id }}" class="btn-primary">➕ Novo Registro</a>
-                <a href="{% url 'turma_detalhe' turma.id %}" class="btn-secondary-premium">↩ Voltar</a>
-            </div>
-        </section>
+ <section class="panel table-panel registro-disciplina-panel"><div class="panel-header"><div><h3>{{ grupo.disciplina }}</h3><span>{{ grupo.total_registros }} registro(s) • {{ grupo.total_aulas }} aula(s)</span></div><div class="panel-badge">{{ mes_nome }}</div></div><div class="table-scroll registro-table-scroll"><table class="premium-table registro-table"><thead><tr><th>Dia/Mês</th><th>Carga</th><th>Conteúdos / Atividades realizadas</th><th>Status</th></tr></thead><tbody>{% for registro in grupo.registros %}
+ <tr><td><strong>{{ registro.data|date:"d/m" }}</strong></td><td><span class="registro-carga">{{ registro.quantidade_aulas|default:1 }}H</span></td><td><div class="registro-conteudo"><strong>{{ registro.titulo }}</strong><p>{{ registro.conteudo }}</p>{% if registro.habilidades %}
+ <small>BNCC / habilidades: {{ registro.habilidades }}</small>{% endif %}
+ {% if registro.observacoes %}
+ <small>Observações: {{ registro.observacoes }}</small>{% endif %}
+ </div></td><td>{% if registro.status == "RASCUNHO" %}
+ <span class="registro-status status-rascunho">Rascunho</span>{% elif registro.status == "REVISAO" %}
+ <span class="registro-status status-revisao">Revisão</span>{% else %}
+ <span class="registro-status status-concluido">Concluída</span>{% endif %}
+ </td></tr>{% empty %}
+ <tr><td colspan="4" style="text-align:center;padding:34px;color:#94a3b8;">Nenhum registro encontrado para esta disciplina.
+ </td></tr>{% endfor %}
+ </tbody></table></div></section>{% empty %}
 
-        <section class="panel table-panel registro-filter-panel">
-            <form method="GET" class="registro-filtros">
-                <label>
-                    <span>Mês</span>
-                    <select name="mes">
-                        {% for item in meses %}
-                            <option value="{{ item.valor }}" {% if item.ativo %}selected{% endif %}>{{ item.nome }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-
-                <label>
-                    <span>Disciplina</span>
-                    <select name="disciplina">
-                        <option value="">Todas as disciplinas</option>
-                        {% for disciplina in disciplinas %}
-                            <option value="{{ disciplina.id }}" {% if disciplina_query == disciplina.nome %}selected{% endif %}>
-                                {{ disciplina.nome }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </label>
-
-                <button class="btn-primary" type="submit">🔎 Filtrar</button>
-            </form>
-        </section>
-
-        {% for grupo in grupos %}
-
-            <section class="panel table-panel registro-disciplina-panel">
-                <div class="panel-header">
-                    <div>
-                        <h3>{{ grupo.disciplina }}</h3>
-                        <span>{{ grupo.total_registros }} registro(s) • {{ grupo.total_aulas }} aula(s)</span>
-                    </div>
-                    <div class="panel-badge">{{ mes_nome }}</div>
-                </div>
-
-                <div class="table-scroll registro-table-scroll">
-                    <table class="premium-table registro-table">
-                        <thead>
-                            <tr>
-                                <th>Dia/Mês</th>
-                                <th>Carga</th>
-                                <th>Conteúdos / Atividades realizadas</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for registro in grupo.registros %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ registro.data|date:"d/m" }}</strong>
-                                    </td>
-                                    <td>
-                                        <span class="registro-carga">{{ registro.quantidade_aulas|default:1 }}H</span>
-                                    </td>
-                                    <td>
-                                        <div class="registro-conteudo">
-                                            <strong>{{ registro.titulo }}</strong>
-                                            <p>{{ registro.conteudo }}</p>
-                                            {% if registro.habilidades %}
-                                                <small>BNCC / habilidades: {{ registro.habilidades }}</small>
-                                            {% endif %}
-                                            {% if registro.observacoes %}
-                                                <small>Observações: {{ registro.observacoes }}</small>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        {% if registro.status == "RASCUNHO" %}
-                                            <span class="registro-status status-rascunho">Rascunho</span>
-                                        {% elif registro.status == "REVISAO" %}
-                                            <span class="registro-status status-revisao">Revisão</span>
-                                        {% else %}
-                                            <span class="registro-status status-concluido">Concluída</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="4" style="text-align:center;padding:34px;color:#94a3b8;">
-                                        Nenhum registro encontrado para esta disciplina.
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-        {% empty %}
-
-            <section class="registro-empty-panel">
-                <strong>Nenhum registro encontrado</strong>
-                <span>Crie o primeiro registro mensal para esta turma.</span>
-                <a href="{% url 'novo_diario' %}?turma={{ turma.id }}" class="btn-primary">📘 Novo Registro</a>
-            </section>
-
-        {% endfor %}
+ <section class="registro-empty-panel"><strong>Nenhum registro encontrado</strong><span>Crie o primeiro registro mensal para esta turma.</span><a href="{% url 'professor_registrar_aula' %}?turma={{ turma.id }}" class="btn-primary"> Novo Registro</a></section>{% endfor %}
 </div>
 {% endblock %}

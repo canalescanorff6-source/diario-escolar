@@ -1,0 +1,42 @@
+name: Backend quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  django:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SECRET_KEY: ci-only-secret-key-diario-escolar-pro
+      DEBUG: "True"
+      PRODUCTION: "False"
+      DJANGO_REQUIRE_DATABASE_URL: "False"
+      EMAIL_BACKEND: django.core.mail.backends.locmem.EmailBackend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install dependencies
+        run: python -m pip install -r backend/requirements.txt
+      - name: Django system check
+        working-directory: backend
+        run: python manage.py check
+      - name: Verify migrations are complete
+        working-directory: backend
+        run: python manage.py makemigrations --check --dry-run
+      - name: Apply migrations on clean database
+        working-directory: backend
+        run: python manage.py migrate --noinput
+      - name: Run tests
+        working-directory: backend
+        run: python manage.py test --verbosity 2
+      - name: Collect static files
+        working-directory: backend
+        run: python manage.py collectstatic --noinput

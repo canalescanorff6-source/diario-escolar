@@ -1,88 +1,27 @@
 {% extends "gestao/base_premium_gestao.html" %}
 {% block titulo %}Professores{% endblock %}
 {% block subtitulo %}Cadastro oficial apenas de professores. Alunos, turmas e disciplinas ficam em suas próprias áreas.{% endblock %}
-{% block icone %}👨‍🏫{% endblock %}
+{% block icone %}‍{% endblock %}
 {% block conteudo %}
 {% if messages %}
-<section class="clean-card">
-  {% for message in messages %}<div class="clean-pill">{{ message }}</div>{% endfor %}
+<section class="clean-card">{% for message in messages %}<div class="clean-pill">{{ message }}</div>{% endfor %}
 </section>
 {% endif %}
 
-<section class="clean-page-grid">
-  <form class="clean-form-card clean-form" method="post">
-    {% csrf_token %}
-    <h3>Cadastrar professor</h3>
-    <p>Crie ou atualize o acesso do professor. Depois vincule turma, disciplina e carga horária em “Vínculos e carga”.</p>
-
-    <label>Usuário/login
-      <input name="username" placeholder="prof.maria" required>
-    </label>
-
-    <label>Nome
-      <input name="first_name" placeholder="Maria">
-    </label>
-
-    <label>Sobrenome
-      <input name="last_name" placeholder="Silva">
-    </label>
-
-    <label>E-mail
-      <input name="email" type="email" placeholder="professor@email.com">
-    </label>
-
-    <label>Senha inicial
-      <input name="password" type="password" placeholder="12345678">
-    </label>
-
-    <label>Telefone
-      <input name="telefone" placeholder="(00) 00000-0000">
-    </label>
-
-    <label>Formação
-      <input name="formacao" placeholder="Licenciatura / área de formação">
-    </label>
-
-    <label>Escola
-      <select name="escola">
-        <option value="">Sem escola vinculada</option>
-        {% for escola in escolas %}<option value="{{ escola.id }}">{{ escola.nome }}</option>{% endfor %}
-      </select>
-    </label>
-
-    <label style="display:flex;align-items:center;gap:10px;">
-      <input type="checkbox" name="ativo" checked style="width:auto"> Professor ativo
-    </label>
-
-    <button class="clean-btn" type="submit">Salvar professor</button>
-  </form>
-
-  <section class="clean-list-card">
-    <div style="display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px;">
-      <div>
-        <h3>Professores cadastrados</h3>
-        <p>Lista limpa, com vínculos e horários já resumidos.</p>
-      </div>
-      <span class="clean-pill">{{ professores_dados|length }} professores</span>
-    </div>
-
-    <div class="clean-scroll clean-list">
-      {% for item in professores_dados %}
-        <article class="clean-list-item">
-          <div class="clean-list-main">
-            <strong>{{ item.nome }}</strong>
-            <small>{{ item.professor.username }}{% if item.professor.email %} • {{ item.professor.email }}{% endif %}</small>
-            <small>{{ item.vinculos }} vínculo(s) • {{ item.horarios }} horário(s){% if item.perfil and item.perfil.escola %} • {{ item.perfil.escola.nome }}{% endif %}</small>
-          </div>
-          <div class="clean-actions">
-            <a href="{% url 'gestao_carga_horaria_professores_301' %}">Carga</a>
-            <a href="{% url 'gestao_vinculos' %}">Vínculos</a>
-          </div>
-        </article>
-      {% empty %}
-        <div class="clean-empty">Nenhum professor cadastrado ainda.</div>
-      {% endfor %}
-    </div>
-  </section>
+<section class="clean-page-grid"><form class="clean-form-card clean-form" method="post">{% csrf_token %}
+ <h3>Cadastrar professor</h3><p>Crie ou atualize o acesso do professor. Depois vincule turma, disciplina e carga horária em “Vínculos e carga”.</p><label>Usuário/login
+ <input name="username" placeholder="prof.maria" required></label><label>Nome
+ <input name="first_name" placeholder="Maria"></label><label>Sobrenome
+ <input name="last_name" placeholder="Silva"></label><label>E-mail
+ <input name="email" type="email" placeholder="professor@email.com"></label><label>Senha inicial
+ <input name="password" type="password" placeholder="Senha forte (mín. 8 caracteres)"></label><label>Telefone
+ <input name="telefone" placeholder="(00) 00000-0000"></label><label>Formação
+ <input name="formacao" placeholder="Licenciatura / área de formação"></label><label>Escola
+ <select name="escola"><option value="">Sem escola vinculada</option>{% for escola in escolas %}<option value="{{ escola.id }}">{{ escola.nome }}</option>{% endfor %}
+ </select></label><label style="display:flex;align-items:center;gap:10px;"><input type="checkbox" name="ativo" checked style="width:auto"> Professor ativo
+ </label><button class="clean-btn" type="submit">Salvar professor</button></form><section class="clean-list-card"><div style="display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px;"><div><h3>Professores cadastrados</h3><p>Lista limpa, com vínculos e horários já resumidos.</p></div><span class="clean-pill">{{ professores_dados|length }} professores</span></div><div class="clean-scroll clean-list">{% for item in professores_dados %}
+ <article class="clean-list-item"><div class="clean-list-main"><strong>{{ item.nome }}</strong><small>{{ item.professor.username }}{% if item.professor.email %} • {{ item.professor.email }}{% endif %}</small><small>{{ item.vinculos }} vínculo(s) • {{ item.horarios }} horário(s){% if item.perfil and item.perfil.escola %} • {{ item.perfil.escola.nome }}{% endif %}</small></div><div class="clean-actions"><a href="{% url 'gestao_carga_horaria' %}">Carga</a><a href="{% url 'gestao_vinculos' %}">Vínculos</a></div></article>{% empty %}
+ <div class="clean-empty">Nenhum professor cadastrado ainda.</div>{% endfor %}
+ </div></section>
 </section>
 {% endblock %}

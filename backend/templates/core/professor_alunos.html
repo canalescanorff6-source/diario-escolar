@@ -1,26 +1,12 @@
 {% extends "core/base_professor_premium.html" %}
 {% block titulo %}Meus Alunos{% endblock %}
 {% block subtitulo %}Alunos das turmas vinculadas pela gestão{% endblock %}
-{% block icone %}👨‍🎓{% endblock %}
+{% block icone %}‍{% endblock %}
 {% block conteudo %}
-<section class="cards gestao-cards">
-    <div class="card premium-card"><span>Alunos</span><h2>{{ total_alunos }}</h2><small>acompanhados pelo professor</small></div>
+<section class="cards gestao-cards"><div class="card premium-card"><span>Alunos</span><h2>{{ total_alunos }}</h2><small>acompanhados pelo professor</small></div>
 </section>
-<section class="panel table-panel premium-safe-panel">
-    <div class="panel-top"><div><h3>Lista de alunos</h3><p>Ações disponíveis para acompanhamento da turma.</p></div></div>
-    <div class="table-scroll"><table class="premium-table">
-        <thead><tr><th>Aluno</th><th>Turma</th><th>Matrícula</th><th>Responsável</th><th>Ações</th></tr></thead>
-        <tbody>
-        {% for aluno in alunos %}
-            <tr>
-                <td><strong>{{ aluno.nome }}</strong></td>
-                <td>{{ aluno.turma.nome }}</td>
-                <td>{{ aluno.matricula }}</td>
-                <td>{{ aluno.responsavel|default:'—' }}</td>
-                <td><div class="safe-action-row"><a class="btn-ghost-premium" href="{% url 'boletim_aluno' aluno.id %}">Boletim</a><a class="btn-ghost-premium" href="{% url 'frequencia_turma' aluno.turma.id %}">Frequência</a><a class="btn-ghost-premium" href="{% url 'turma_detalhe' aluno.turma.id %}">Turma</a></div></td>
-            </tr>
-        {% empty %}<tr><td colspan="5">Nenhum aluno vinculado às suas turmas.</td></tr>{% endfor %}
-        </tbody>
-    </table></div>
+<section class="panel table-panel premium-safe-panel"><div class="panel-top"><div><h3>Lista de alunos</h3><p>Ações disponíveis para acompanhamento da turma.</p></div></div><div class="table-scroll"><table class="premium-table"><thead><tr><th>Aluno</th><th>Turma</th><th>Matrícula</th><th>Responsável</th><th>Ações</th></tr></thead><tbody>{% for aluno in alunos %}
+ <tr><td><strong>{{ aluno.nome }}</strong></td><td>{{ aluno.turma.nome }}</td><td>{{ aluno.matricula }}</td><td>{{ aluno.responsavel|default:'—' }}</td><td><div class="safe-action-row"><a class="btn-ghost-premium" href="{% url 'boletim_aluno' aluno.id %}">Boletim</a><a class="btn-ghost-premium" href="{% url 'frequencia_turma' aluno.turma.id %}">Frequência</a><a class="btn-ghost-premium" href="{% url 'turma_detalhe' aluno.turma.id %}">Turma</a></div></td></tr>{% empty %}<tr><td colspan="5">Nenhum aluno vinculado às suas turmas.</td></tr>{% endfor %}
+ </tbody></table></div>
 </section>
 {% endblock %}

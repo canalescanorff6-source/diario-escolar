@@ -1,7 +1,0 @@
-{% extends 'core/base_professor_premium.html' %}
-{% block titulo %}Relatório mensal de lançamentos{% endblock %}
-{% block subtitulo %}Frequência por data/disciplina e registro mensal de aulas{% endblock %}
-{% block conteudo %}
-<form class="panel" method="get" style="display:flex;gap:10px;align-items:end"><label>Mês<br><input type="month" name="mes" value="{{ mes_param }}"></label><button class="btn-primary">Abrir</button><button class="btn-primary" type="button" onclick="window.print()">Imprimir</button></form>
-<section class="panel"><h3>{{ mes_nome }} / {{ ano }}</h3><table class="table"><thead><tr><th>Turma</th><th>Disciplina</th><th>P</th><th>F</th><th>FJ</th><th>Datas de frequência</th><th>Aulas</th><th>Status</th></tr></thead><tbody>{% for l in linhas %}<tr><td>{{ l.vinculo.turma.nome }}</td><td>{{ l.vinculo.disciplina.nome }}</td><td>{{ l.frequencia.presencas }}</td><td>{{ l.frequencia.faltas }}</td><td>{{ l.frequencia.fj }}</td><td>{% for d in l.datas_frequencia %}<span class="pill">{{ d.data|date:'d/m' }}</span> {% empty %}<span class="muted">Sem data</span>{% endfor %}</td><td>{% for a in l.aulas %}<span class="pill">{{ a.data|date:'d/m' }}</span> {% empty %}<span class="muted">Sem aula</span>{% endfor %}</td><td>{% if l.pendente %}<span class="pill" style="color:#facc15">Pendente</span>{% else %}<span class="pill">OK</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="8">Nenhum vínculo ativo encontrado.</td></tr>{% endfor %}</tbody></table></section>
-{% endblock %}

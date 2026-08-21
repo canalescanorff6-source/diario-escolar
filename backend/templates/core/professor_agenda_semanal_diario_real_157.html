@@ -1,6 +1,0 @@
-{% extends 'core/base_professor_premium.html' %}
-{% block titulo %}Agenda semanal do Diário{% endblock %}
-{% block subtitulo %}Horários cadastrados pela gestão • {{ professor_nome }}{% endblock %}
-{% block conteudo %}
-{% for dia in dias %}<section class="panel"><h3>{{ dia.nome }}</h3><table class="table"><thead><tr><th>Horário</th><th>Turma</th><th>Disciplina</th><th>Turno</th></tr></thead><tbody>{% for h in dia.horarios %}<tr><td>{{ h.ordem }}º • {{ h.hora_inicio|time:'H:i' }}–{{ h.hora_fim|time:'H:i' }}</td><td>{{ h.turma.nome }}</td><td>{{ h.disciplina.nome }}</td><td>{{ h.turno|default:h.turma.turno }}</td></tr>{% empty %}<tr><td colspan="4">Sem horário cadastrado.</td></tr>{% endfor %}</tbody></table></section>{% endfor %}
-{% endblock %}

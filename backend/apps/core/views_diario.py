@@ -1,5 +1,4 @@
-# Camada de views diario — refatoração real etapa 1221-1280.
-# Mantém os nomes públicos usados pelas URLs, mas tira o peso do antigo views.py.
+"""Views do Diário de Classe e fechamentos."""
 
 from .views_shared import *  # noqa: F401,F403
 
@@ -253,7 +252,7 @@ def gestao_fechamento_anual(request):
             titulo=f"Fechamento anual • {turma_selecionada.nome}",
             turma=turma_selecionada,
             gerado_por=request.user,
-            observacoes="Mapa anual consolidado gerado pela Etapa 14.",
+            observacoes="Mapa anual consolidado do fechamento letivo.",
         )
         registrar_auditoria(request.user, "Fechamento anual", "Mapa anual gerado", objeto=turma_selecionada.nome)
         messages.success(request, "Fechamento anual consolidado registrado nos documentos oficiais.")
@@ -313,7 +312,7 @@ def gestao_checklist_fechamento(request):
             "status": status,
         })
 
-    registrar_auditoria(request.user, "Fechamento", "Checklist de fechamento consultado", objeto="Etapa 15")
+    registrar_auditoria(request.user, "Fechamento", "Checklist de fechamento consultado", objeto="Fechamento mensal")
     return render(request, "gestao/checklist_fechamento.html", {
         "escola": Escola.objects.filter(ativa=True).first(),
         "hoje": date.today(),
@@ -325,46 +324,23 @@ def gestao_checklist_fechamento(request):
 
 
 @login_required
-def professor_registro_rapido_aula(request):
-    """Atalho premium para o professor abrir rapidamente o registro mensal de aulas."""
-    if not usuario_professor(request.user):
-        return render(request, "core/acesso_negado.html")
-    turmas = _turmas_visiveis_para_usuario(request.user)
-    cards = []
-    for turma in turmas:
-        cards.append({
-            "turma": turma,
-            "disciplinas": _disciplinas_da_turma(turma, request.user),
-            "ultimos": ConteudoAula.objects.filter(turma=turma, professor=request.user).order_by("-data")[:4],
-        })
-    return render(request, "core/professor_registro_rapido_aula.html", {"cards": cards, "hoje": date.today()})
-
-
-@login_required
-def professor_aula_rapida_321(request, horario_id=None):
-    """Aula operacional: chamada P/F/FJ + conteúdo em uma tela premium."""
+def professor_registrar_aula(request, horario_id=None):
+    """Registra chamada P/F/FJ e conteúdo da aula em uma única tela."""
     if not usuario_professor(request.user):
         return redirect("dashboard_gestao") if usuario_gestor(request.user) else render(request, "core/acesso_negado.html")
+
     professor = request.user
     horario = _resolver_horario_do_professor(professor, horario_id)
+    outros_horarios = HorarioAula.objects.select_related("turma", "disciplina").filter(
+        professor=professor, ativo=True
+    ).order_by("dia_semana", "ordem", "hora_inicio")
+
     if not horario:
-        # Mantém o professor dentro da tela Aula rápida, mesmo quando a gestão
-        # ainda não cadastrou horários. Antes o clique redirecionava para a
-        # Central do Professor e dava a impressão de que a Aula rápida estava vazia.
-        outros_horarios = HorarioAula.objects.select_related("turma", "disciplina").filter(
-            professor=professor,
-            ativo=True,
-        ).order_by("dia_semana", "ordem", "hora_inicio")
-        messages.warning(request, "A gestão precisa cadastrar seus vínculos e horários antes da Aula rápida.")
-        return render(request, "core/professor_aula_rapida_321.html", {
-            "aula_rapida_sem_horario": True,
-            "horario": None,
-            "outros_horarios": outros_horarios,
-            "alunos_linhas": [],
-            "conteudo": None,
-            "data_aula": date.today(),
+        messages.warning(request, "A gestão precisa cadastrar seus vínculos e horários antes do primeiro lançamento.")
+        return render(request, "core/professor_registrar_aula.html", {
+            "horario": None, "outros_horarios": outros_horarios, "alunos_linhas": [],
+            "conteudo": None, "data_aula": date.today(),
             "resumo": {"alunos": 0, "presencas": 0, "faltas": 0, "fj": 0},
-            "aula_861_900": None,
             "status_choices": Frequencia.STATUS_FREQUENCIA_CHOICES,
         })
 
@@ -373,98 +349,88 @@ def professor_aula_rapida_321(request, horario_id=None):
     if data_informada:
         try:
             data_aula = datetime.strptime(data_informada, "%Y-%m-%d").date()
-        except Exception:
-            data_aula = date.today()
+        except (TypeError, ValueError):
+            messages.warning(request, "Data inválida. Foi utilizada a data de hoje.")
+
+    aula_numero = max(int(getattr(horario, "ordem", 1) or 1), 1)
 
     if request.method == "POST":
         acao = request.POST.get("acao")
         if acao == "salvar_chamada":
             for aluno in horario.turma.alunos.filter(ativo=True):
                 status = request.POST.get(f"status_{aluno.id}") or "P"
-                observacao = request.POST.get(f"obs_{aluno.id}") or ""
+                if status not in {"P", "F", "FJ"}:
+                    status = "P"
+                observacao = (request.POST.get(f"obs_{aluno.id}") or "").strip()
                 Frequencia.objects.update_or_create(
                     aluno=aluno,
                     disciplina=horario.disciplina,
                     data=data_aula,
+                    aula_numero=aula_numero,
                     defaults={"turma": horario.turma, "status": status, "observacao": observacao},
                 )
-            messages.success(request, "Chamada oficial salva com P/F/FJ.")
+            registrar_auditoria(
+                professor, "Frequência", "Chamada registrada",
+                objeto=f"{horario.turma.nome} • {horario.disciplina.nome}",
+                descricao=f"{data_aula:%d/%m/%Y} • aula {aula_numero}",
+            )
+            messages.success(request, "Chamada salva com sucesso.")
+
         elif acao == "salvar_conteudo":
             descricao = (request.POST.get("descricao") or "").strip()
             observacoes = (request.POST.get("observacoes") or "").strip()
+            try:
+                quantidade_aulas = max(1, min(10, int(request.POST.get("quantidade_aulas") or 1)))
+            except (TypeError, ValueError):
+                quantidade_aulas = 1
             if descricao:
                 ConteudoAula.objects.update_or_create(
                     professor=professor,
                     turma=horario.turma,
                     disciplina=horario.disciplina,
                     data=data_aula,
-                    defaults={"descricao": descricao, "observacoes": observacoes},
+                    aula_numero=aula_numero,
+                    defaults={
+                        "descricao": descricao,
+                        "observacoes": observacoes,
+                        "quantidade_aulas": quantidade_aulas,
+                    },
                 )
-                messages.success(request, "Conteúdo da aula salvo no Diário Escolar.")
+                registrar_auditoria(
+                    professor, "Diário de Classe", "Conteúdo registrado",
+                    objeto=f"{horario.turma.nome} • {horario.disciplina.nome}",
+                    descricao=f"{data_aula:%d/%m/%Y} • aula {aula_numero}",
+                )
+                messages.success(request, "Conteúdo da aula salvo no Diário de Classe.")
             else:
-                messages.warning(request, "Informe o conteúdo da aula para salvar o registro mensal.")
-        destino = redirect("professor_aula_rapida_321_horario", horario_id=horario.id)
+                messages.warning(request, "Informe o conteúdo ministrado antes de salvar.")
+
+        destino = redirect("professor_registrar_aula_horario", horario_id=horario.id)
         destino["Location"] = f"{destino['Location']}?data={data_aula:%Y-%m-%d}"
         return destino
 
     alunos_linhas = []
     for aluno in horario.turma.alunos.filter(ativo=True).order_by("nome"):
-        freq = Frequencia.objects.filter(aluno=aluno, turma=horario.turma, disciplina=horario.disciplina, data=data_aula).first()
+        freq = Frequencia.objects.filter(
+            aluno=aluno, turma=horario.turma, disciplina=horario.disciplina,
+            data=data_aula, aula_numero=aula_numero,
+        ).first()
         alunos_linhas.append({"aluno": aluno, "frequencia": freq, "status": freq.status_oficial if freq else "P"})
-    conteudo = ConteudoAula.objects.filter(professor=professor, turma=horario.turma, disciplina=horario.disciplina, data=data_aula).first()
-    outros_horarios = HorarioAula.objects.select_related("turma", "disciplina").filter(professor=professor, ativo=True).order_by("dia_semana", "ordem")
+
+    conteudo = ConteudoAula.objects.filter(
+        professor=professor, turma=horario.turma, disciplina=horario.disciplina,
+        data=data_aula, aula_numero=aula_numero,
+    ).first()
     resumo = {
         "alunos": len(alunos_linhas),
-        "presencas": sum(1 for l in alunos_linhas if l["status"] == "P"),
-        "faltas": sum(1 for l in alunos_linhas if l["status"] == "F"),
-        "fj": sum(1 for l in alunos_linhas if l["status"] == "FJ"),
+        "presencas": sum(1 for linha in alunos_linhas if linha["status"] == "P"),
+        "faltas": sum(1 for linha in alunos_linhas if linha["status"] == "F"),
+        "fj": sum(1 for linha in alunos_linhas if linha["status"] == "FJ"),
     }
-    return render(request, "core/professor_aula_rapida_321.html", {
-        "horario": horario,
-        "outros_horarios": outros_horarios,
-        "alunos_linhas": alunos_linhas,
-        "conteudo": conteudo,
-        "data_aula": data_aula,
-        "resumo": resumo,
-        "aula_861_900": resumo_aula_861_900(horario, data_aula, professor),
-        "status_choices": Frequencia.STATUS_FREQUENCIA_CHOICES,
+    return render(request, "core/professor_registrar_aula.html", {
+        "horario": horario, "outros_horarios": outros_horarios, "alunos_linhas": alunos_linhas,
+        "conteudo": conteudo, "data_aula": data_aula, "resumo": resumo,
+        "status_choices": Frequencia.STATUS_FREQUENCIA_CHOICES, "aula_numero": aula_numero,
     })
 
 
-@login_required
-def gestao_fechamento_mensal_901(request):
-    if not usuario_gestor(request.user):
-        return render(request, "core/acesso_negado.html")
-    mes_param = request.GET.get("mes") or ""
-    ano = mes = None
-    if mes_param and "-" in mes_param:
-        try:
-            ano, mes = [int(x) for x in mes_param.split("-", 1)]
-        except Exception:
-            ano = mes = None
-    contexto = {
-        "fechamento": fechamento_mensal_901_960(ano=ano, mes=mes),
-        "finalizacao": finalizacao_901_960(),
-        "hoje": date.today(),
-    }
-    registrar_auditoria(request.user, "Fechamento mensal", "Mapa final 901-960 consultado")
-    return render(request, "gestao/fechamento_mensal_901.html", contexto)
-
-
-@login_required
-def professor_fechamento_mensal_901(request):
-    if not usuario_professor(request.user):
-        return redirect("dashboard_gestao") if usuario_gestor(request.user) else render(request, "core/acesso_negado.html")
-    mes_param = request.GET.get("mes") or ""
-    ano = mes = None
-    if mes_param and "-" in mes_param:
-        try:
-            ano, mes = [int(x) for x in mes_param.split("-", 1)]
-        except Exception:
-            ano = mes = None
-    contexto = {
-        "fechamento": fechamento_mensal_901_960(professor=request.user, ano=ano, mes=mes),
-        "finalizacao": finalizacao_901_960(professor=request.user),
-        "hoje": date.today(),
-    }
-    return render(request, "core/professor_fechamento_mensal_901.html", contexto)

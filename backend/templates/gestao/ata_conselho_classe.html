@@ -3,10 +3,10 @@
 {% block titulo %}Ata de Conselho de Classe{% endblock %}
 {% block subtitulo %}Tela integrada ao Diário Escolar.{% endblock %}
 {% block conteudo %}
-<div class="premium-only-page visual-1161-1220" data-template="gestao/ata_conselho_classe.html">
+<div class="page-shell page-modern" data-template="gestao/ata_conselho_classe.html">
 {% if messages %}<div class="official-box">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
 
-<div class="print-actions"><form method="get"><select name="turma">{% for turma in turmas %}<option value="{{ turma.id }}" {% if turma_selecionada.id == turma.id %}selected{% endif %}>{{ turma.nome }}</option>{% endfor %}</select><button class="btn-primary" type="submit">Filtrar</button></form>{% if turma_selecionada %}<form method="post">{% csrf_token %}<button class="btn-primary" type="submit">📄 Registrar ata</button></form>{% endif %}</div>
+<div class="print-actions"><form method="get"><select name="turma">{% for turma in turmas %}<option value="{{ turma.id }}" {% if turma_selecionada.id == turma.id %}selected{% endif %}>{{ turma.nome }}</option>{% endfor %}</select><button class="btn-primary" type="submit">Filtrar</button></form>{% if turma_selecionada %}<form method="post">{% csrf_token %}<button class="btn-primary" type="submit"> Registrar ata</button></form>{% endif %}</div>
 <section class="official-box"><h2>Ata de Conselho de Classe</h2><p><strong>Escola:</strong> {{ escola.nome|default:'—' }} • <strong>Turma:</strong> {{ turma_selecionada.nome|default:'—' }} • <strong>Data:</strong> {{ hoje|date:'d/m/Y' }}</p><p>Reuniram-se equipe gestora, coordenação pedagógica, secretaria e professores para análise de rendimento, frequência, recuperação paralela e encaminhamentos pedagógicos.</p><table class="premium-table"><thead><tr><th>Aluno</th><th>Média</th><th>Faltas</th><th>Situação</th><th>Encaminhamento</th></tr></thead><tbody>{% for item in alunos_analise %}<tr><td>{{ item.aluno.nome }}</td><td>{{ item.media }}</td><td>{{ item.faltas }}</td><td>{{ item.nivel }}</td><td>{% for acao in item.acoes %}• {{ acao }}<br>{% endfor %}</td></tr>{% empty %}<tr><td colspan="5">Sem alunos para análise.</td></tr>{% endfor %}</tbody></table><div class="signature-grid"><div class="signature-line">Direção</div><div class="signature-line">Coordenação</div><div class="signature-line">Secretaria</div><div class="signature-line">Professor(a)</div></div></section>
 </div>
 {% endblock %}

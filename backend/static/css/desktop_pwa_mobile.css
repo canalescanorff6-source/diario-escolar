@@ -1,4 +1,0 @@
-/* Compatibilidade PWA/mobile.
-   Arquivo criado para evitar 404 no service worker.
-   O visual principal continua em premium_base_final.css. */
-@import url('/static/css/premium_base_final.css');

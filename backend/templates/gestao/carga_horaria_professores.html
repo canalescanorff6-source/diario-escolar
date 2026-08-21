@@ -1,0 +1,47 @@
+{% extends "gestao/base_premium_gestao.html" %}
+{% block titulo %}Vínculos e carga horária{% endblock %}
+{% block subtitulo %}Associe professores às turmas e organize a grade semanal oficial.{% endblock %}
+{% block conteudo %}
+<div class="page-shell stack-lg">
+  <section class="page-hero compact"><div><span class="eyebrow">Organização acadêmica</span><h1>Vínculos e horários</h1><p>O vínculo define o que cada professor pode acessar; a grade define suas aulas no site e no Android.</p></div></section>
+
+  <section class="stats-grid four">
+    <article class="stat-card"><span>Aulas semanais</span><strong>{{ total_aulas }}</strong><small>horários ativos</small></article>
+    <article class="stat-card"><span>Carga total</span><strong>{{ total_horas }}h</strong><small>soma semanal</small></article>
+    <article class="stat-card"><span>Professores</span><strong>{{ linhas|length }}</strong><small>com resumo de carga</small></article>
+  </section>
+
+  <section class="content-grid two-thirds">
+    <form class="panel stack-md" method="post">{% csrf_token %}<input type="hidden" name="acao" value="vinculo">
+      <div class="panel-heading"><h2>1. Vincular professor</h2><span>Turma + disciplina + ano letivo.</span></div>
+      <div class="form-grid two">
+        <label class="field full">Professor<select name="professor" required><option value="">Selecione...</option>{% for p in professores %}<option value="{{ p.id }}">{{ p.get_full_name|default:p.username }}</option>{% endfor %}</select></label>
+        <label class="field">Turma<select name="turma" required><option value="">Selecione...</option>{% for t in turmas %}<option value="{{ t.id }}">{{ t.nome }} · {{ t.ano_letivo }}</option>{% endfor %}</select></label>
+        <label class="field">Disciplina<select name="disciplina" required><option value="">Selecione...</option>{% for d in disciplinas %}<option value="{{ d.id }}">{{ d.nome }}</option>{% endfor %}</select></label>
+        <label class="field full">Ano letivo<select name="ano_letivo"><option value="">Usar o ano da turma</option>{% for a in anos %}<option value="{{ a.id }}">{{ a.ano }}</option>{% endfor %}</select></label>
+      </div><div class="form-actions"><button class="btn-primary" type="submit">Salvar vínculo</button></div>
+    </form>
+
+    <aside class="panel stack-md"><div class="panel-heading"><h2>Fluxo recomendado</h2><span>Configuração correta antes do primeiro lançamento.</span></div><div class="link-list"><div class="link-row"><strong>1. Vínculo</strong><small>Define as permissões pedagógicas.</small></div><div class="link-row"><strong>2. Horário</strong><small>Organiza a agenda semanal.</small></div><div class="link-row"><strong>3. Diário</strong><small>Professor registra aula e chamada.</small></div></div></aside>
+  </section>
+
+  <form class="panel stack-md" method="post">{% csrf_token %}<input type="hidden" name="acao" value="horario">
+    <div class="panel-heading"><h2>2. Cadastrar horário</h2><span>Use os mesmos professor, turma e disciplina do vínculo.</span></div>
+    <div class="form-grid three">
+      <label class="field">Professor<select name="professor" required><option value="">Selecione...</option>{% for p in professores %}<option value="{{ p.id }}">{{ p.get_full_name|default:p.username }}</option>{% endfor %}</select></label>
+      <label class="field">Turma<select name="turma" required><option value="">Selecione...</option>{% for t in turmas %}<option value="{{ t.id }}">{{ t.nome }} · {{ t.ano_letivo }}</option>{% endfor %}</select></label>
+      <label class="field">Disciplina<select name="disciplina" required><option value="">Selecione...</option>{% for d in disciplinas %}<option value="{{ d.id }}">{{ d.nome }}</option>{% endfor %}</select></label>
+      <label class="field">Dia<select name="dia_semana" required>{% for valor, nome in dias_semana %}<option value="{{ valor }}">{{ nome }}</option>{% endfor %}</select></label>
+      <label class="field">Aula nº<input name="ordem" type="number" min="1" max="20" value="1" required></label>
+      <label class="field">Turno<select name="turno"><option value="">Selecione...</option>{% for valor, nome in turnos %}<option value="{{ valor }}">{{ nome }}</option>{% endfor %}</select></label>
+      <label class="field">Início<input name="hora_inicio" type="time" value="07:00" required></label>
+      <label class="field">Fim<input name="hora_fim" type="time" value="07:45" required></label>
+      <label class="field">Ano letivo<select name="ano_letivo"><option value="">Usar o ano da turma</option>{% for a in anos %}<option value="{{ a.id }}">{{ a.ano }}</option>{% endfor %}</select></label>
+    </div><div class="form-actions"><button class="btn-primary" type="submit">Salvar horário</button></div>
+  </form>
+
+  <section class="panel stack-md"><div class="panel-heading"><h2>Grade cadastrada</h2><span>Horários ativos usados pelo website e aplicativo.</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Dia</th><th>Aula</th><th>Horário</th><th>Professor</th><th>Turma</th><th>Disciplina</th></tr></thead><tbody>{% for h in horarios %}<tr><td>{{ h.get_dia_semana_display }}</td><td>{{ h.ordem }}º</td><td>{{ h.hora_inicio|time:"H:i" }}–{{ h.hora_fim|time:"H:i" }}</td><td>{{ h.professor.get_full_name|default:h.professor.username }}</td><td>{{ h.turma.nome }}</td><td>{{ h.disciplina.nome }}</td></tr>{% empty %}<tr><td colspan="6" class="empty-cell">Nenhum horário cadastrado.</td></tr>{% endfor %}</tbody></table></div></section>
+
+  <section class="panel stack-md"><div class="panel-heading"><h2>Carga por professor</h2><span>Resumo semanal.</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Professor</th><th>Aulas</th><th>Horas</th></tr></thead><tbody>{% for linha in linhas %}<tr><td>{{ linha.professor.get_full_name|default:linha.professor.username }}</td><td>{{ linha.aulas }}</td><td>{{ linha.horas }}h</td></tr>{% empty %}<tr><td colspan="3" class="empty-cell">Nenhuma carga calculada.</td></tr>{% endfor %}</tbody></table></div></section>
+</div>
+{% endblock %}

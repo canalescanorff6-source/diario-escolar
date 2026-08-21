@@ -2,86 +2,52 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Diário IA • Gestão</title>
-    <link rel="stylesheet" href="{% static 'css/premium_base_final.css' %}">
-    <link rel="stylesheet" href="{% static 'css/premium_responsive_final.css' %}">
-    <link rel="stylesheet" href="{% static 'css/premium_print_final.css' %}">
-    {% block extra_css %}{% endblock %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="color-scheme" content="light dark">
+  <title>Diário Escolar Pro • Gestão</title>
+  <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{% static 'img/icon-192.png' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'css/print.css' %}">
+  {% block extra_css %}{% endblock %}
 </head>
 <body>
-<div class="layout ia-clean-shell gestao-shell">
-    {% include 'partials/gestao_sidebar.html' %}
-    <main class="content gestao-content">
-        <header class="gestao-base-header no-print">
-            <div>
-                <span class="gestao-base-badge">Diário IA • Gestão Escolar</span>
-                <h1 class="gestao-base-title">{% block titulo %}{% endblock %}</h1>
-                <p class="gestao-base-sub">{% block subtitulo %}Administração escolar{% endblock %}</p>
-            </div>
-            <div class="gestao-base-actions">
-                {% include 'partials/gestao_page_actions.html' %}
-                <a class="hero-mini-card gestao-mini-user profile-mini-link profile-mini-with-name" href="{% url 'gestao_configuracoes' %}" title="Imagem e perfil da gestão">
-                    {% if request.user and request.user.is_authenticated and request.user.foto %}
-                        <img class="profile-mini-photo" src="{{ request.user.foto.url }}" alt="Imagem da gestão">
-                    {% else %}
-                        <strong class="profile-mini-initial">{% if request.user and request.user.is_authenticated %}{{ request.user|nome_exibicao|default:'G'|slice:':1' }}{% else %}G{% endif %}</strong>
-                    {% endif %}
-                    <span class="profile-mini-text">
-                        <b class="profile-mini-role">{% if request.user and request.user.is_authenticated %}{{ request.user|tratamento_gestao }}{% else %}Gestor(a){% endif %}</b>
-                        <small class="profile-mini-name">{% if request.user and request.user.is_authenticated %}{{ request.user|nome_exibicao }}{% else %}Acesso da gestão{% endif %}</small>
-                    </span>
-                </a>
-            </div>
-        </header>
-        {% include 'partials/messages_premium.html' %}
-        {% include 'partials/aviso_licenca_gestao.html' %}
-        {% block conteudo %}{% endblock %}
-        {% block gestao_content %}{% endblock %}
-        {% block content %}{% endblock %}
-    </main>
+<div class="nav-backdrop" data-nav-close aria-hidden="true"></div>
+<div class="layout gestao-shell">
+  {% include 'partials/gestao_sidebar.html' %}
+  <main class="content gestao-content">
+    <div class="mobile-bar no-print">
+      <div class="mobile-brand"><button class="mobile-menu-btn" type="button" data-nav-open aria-label="Abrir menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><strong>Diário Escolar Pro</strong></div>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Alternar tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.03-.91-.1-1.35A7 7 0 0 1 12 3z"/></svg></button>
+    </div>
+    <header class="gestao-base-header no-print">
+      <div><span class="gestao-base-badge">Gestão Escolar</span><h1 class="gestao-base-title">{% block titulo %}Gestão{% endblock %}</h1><p class="gestao-base-sub">{% block subtitulo %}Administração acadêmica{% endblock %}</p></div>
+      <div class="gestao-base-actions">
+        <div class="page-actions">{% include 'partials/gestao_page_actions.html' %}</div>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Alternar tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.03-.91-.1-1.35A7 7 0 0 1 12 3z"/></svg></button>
+        <a class="profile-mini-link" href="{% url 'gestao_configuracoes' %}" title="Perfil da gestão">
+          {% if request.user.is_authenticated and request.user.foto %}<img class="profile-mini-photo" src="{{ request.user.foto.url }}" alt="Foto da gestão">{% else %}<strong class="profile-mini-initial">{{ request.user|nome_exibicao|default:'G'|slice:':1' }}</strong>{% endif %}
+          <span class="profile-mini-text"><b class="profile-mini-role">Gestão</b><small class="profile-mini-name">{{ request.user|nome_exibicao }}</small></span>
+        </a>
+      </div>
+    </header>
+    {% include 'partials/messages_premium.html' %}
+    {% include 'partials/aviso_licenca_gestao.html' %}
+    {% block conteudo %}{% endblock %}
+    {% block gestao_content %}{% endblock %}
+    {% block content %}{% endblock %}
+  </main>
+  <nav class="mobile-bottom-nav no-print" aria-label="Navegação rápida da gestão">
+    <a href="{% url 'dashboard_gestao' %}"><span>Início</span></a>
+    <a href="{% url 'gestao_alunos' %}"><span>Alunos</span></a>
+    <a class="mobile-bottom-primary" href="{% url 'gestao_diario_oficial' %}"><strong>+</strong><span>Diário</span></a>
+    <a href="{% url 'gestao_relatorios' %}"><span>Relatórios</span></a>
+    <button type="button" data-nav-open><span>Menu</span></button>
+  </nav>
 </div>
-
-
-<script>
-(function(){
-  function normalizePath(value){
-    try { return (new URL(value, window.location.origin).pathname || '/').replace(/\/$/, '') || '/'; }
-    catch(e){ return String(value || '').split('?')[0].split('#')[0].replace(/\/$/, '') || '/'; }
-  }
-  function parsePaths(value){
-    return String(value || '').split('|').map(function(x){ return normalizePath(x.trim()).toLowerCase(); }).filter(Boolean);
-  }
-  function matchPath(current, candidate){
-    if(!candidate) return false;
-    if(candidate === '/') return current === '/' || current === '/professor' || current === '/professor/';
-    return current === candidate || current.indexOf(candidate + '/') === 0;
-  }
-  function markSidebarActive(){
-    var current = normalizePath(window.location.pathname).toLowerCase();
-    var links = Array.prototype.slice.call(document.querySelectorAll('.sidebar a[href]'));
-    var best = null, bestScore = -1;
-    links.forEach(function(a){ a.classList.remove('active'); a.removeAttribute('aria-current'); a.removeAttribute('data-active'); });
-    links.forEach(function(a){
-      var paths = parsePaths(a.getAttribute('data-active-paths'));
-      if(!paths.length) paths = [normalizePath(a.getAttribute('href')).toLowerCase()];
-      paths.forEach(function(p){
-        if(matchPath(current, p)){
-          var exactBonus = current === p ? 1000 : 0;
-          var score = p.length + exactBonus;
-          if(score > bestScore){ best = a; bestScore = score; }
-        }
-      });
-    });
-    if(best){ best.classList.add('active'); best.setAttribute('aria-current','page'); best.setAttribute('data-active','true'); }
-  }
-  window.diarioIAMarkSidebarActive = markSidebarActive;
-  if(document.readyState !== 'loading') markSidebarActive(); else document.addEventListener('DOMContentLoaded', markSidebarActive);
-})();
-</script>
-
-<script src="{% static 'js/premium_app_final.js' %}"></script>
+<script src="{% static 'js/app.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

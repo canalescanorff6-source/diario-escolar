@@ -1,84 +1,28 @@
 {% extends "gestao/base_premium_gestao.html" %}
 {% block titulo %}Alunos{% endblock %}
 {% block subtitulo %}Cadastro de alunos, ficha oficial, boletim, frequência e acompanhamento individual.{% endblock %}
-{% block icone %}👨‍🎓{% endblock %}
+{% block icone %}‍{% endblock %}
 {% block conteudo %}
 {% if messages %}
-<section class="clean-card">
-  {% for message in messages %}<span class="clean-pill">{{ message }}</span>{% endfor %}
+<section class="clean-card">{% for message in messages %}<span class="clean-pill">{{ message }}</span>{% endfor %}
 </section>
 {% endif %}
 
-<section class="clean-form-card clean-form" style="margin-bottom:22px;">
-  <h3>Novo aluno</h3>
-  <p>Cadastre o aluno direto pela gestão e vincule à turma oficial.</p>
-  <form method="post" class="clean-page-grid" style="margin-top:14px;">
-    {% csrf_token %}
-    <label>Nome do aluno
-      <input name="nome" placeholder="Nome completo do aluno" required>
-    </label>
-    <label>Matrícula
-      <input name="matricula" placeholder="Opcional: o sistema gera se ficar vazio">
-    </label>
-    <label>Turma
-      <select name="turma" required>
-        <option value="">Selecione a turma...</option>
-        {% for turma in turmas %}
-          <option value="{{ turma.id }}">{{ turma.nome }}{% if turma.ano_letivo %} • {{ turma.ano_letivo.ano }}{% endif %}</option>
-        {% endfor %}
-      </select>
-    </label>
-    <label>Responsável
-      <input name="responsavel" placeholder="Nome do responsável">
-    </label>
-    <label>Telefone/WhatsApp
-      <input name="telefone" placeholder="(98) 99999-9999">
-    </label>
-    <div style="display:flex;align-items:end;">
-      <button class="clean-btn" type="submit">Salvar aluno</button>
-    </div>
-  </form>
-</section>
-
-<section class="clean-card">
-  <form method="get" class="clean-filter">
-    <input type="text" name="busca" value="{{ busca }}" placeholder="Buscar aluno pelo nome...">
-    <select name="turma">
-      <option value="">Todas as turmas</option>
-      {% for turma in turmas %}
-        <option value="{{ turma.id }}" {% if turma_id == turma.id|stringformat:'s' %}selected{% endif %}>{{ turma.nome }}</option>
-      {% endfor %}
-    </select>
-    <button class="clean-btn" type="submit">Filtrar</button>
-  </form>
-</section>
-
-<section class="clean-list-card">
-  <div style="display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px;">
-    <div>
-      <h3>Lista oficial de alunos</h3>
-      <p>Os nomes ficam dentro de uma caixa com rolagem para não espalhar tudo na tela.</p>
-    </div>
-    <span class="clean-pill">{{ alunos_dados|length }} alunos</span>
-  </div>
-
-  <div class="clean-scroll clean-list">
-    {% for item in alunos_dados %}
-      <article class="clean-list-item">
-        <div class="clean-list-main">
-          <strong>{{ item.aluno.nome }}</strong>
-          <small>{{ item.aluno.turma.nome|default:"Turma não informada" }} • Matrícula {{ item.aluno.matricula|default:"sem matrícula" }}</small>
-          <small>Frequência {{ item.frequencia }}% • Média {{ item.media }} • Faltas {{ item.faltas }}</small>
-        </div>
-        <div class="clean-actions">
-          <span class="clean-pill">{{ item.status }}</span>
-          <a href="{% url 'gestao_ficha_aluno' item.aluno.id %}">Ficha oficial</a>
-          <a href="{% url 'boletim_aluno' item.aluno.id %}?origem=gestao">Boletim</a>
-        </div>
-      </article>
-    {% empty %}
-      <div class="clean-empty">Nenhum aluno encontrado para os filtros atuais.</div>
-    {% endfor %}
-  </div>
+<section class="clean-form-card clean-form" style="margin-bottom:22px;"><h3>Novo aluno</h3><p>Cadastre o aluno direto pela gestão e vincule à turma oficial.</p><form method="post" class="clean-page-grid" style="margin-top:14px;">{% csrf_token %}
+ <label>Nome do aluno
+ <input name="nome" placeholder="Nome completo do aluno" required></label><label>Matrícula
+ <input name="matricula" placeholder="Opcional: o sistema gera se ficar vazio"></label><label>Turma
+ <select name="turma" required><option value="">Selecione a turma...</option>{% for turma in turmas %}
+ <option value="{{ turma.id }}">{{ turma.nome }}{% if turma.ano_letivo %} • {{ turma.ano_letivo.ano }}{% endif %}</option>{% endfor %}
+ </select></label><label>Responsável
+ <input name="responsavel" placeholder="Nome do responsável"></label><label>Telefone/WhatsApp
+ <input name="telefone" placeholder="(98) 99999-9999"></label><div style="display:flex;align-items:end;"><button class="clean-btn" type="submit">Salvar aluno</button></div></form>
+</section><section class="clean-card"><form method="get" class="clean-filter"><input type="text" name="busca" value="{{ busca }}" placeholder="Buscar aluno pelo nome..."><select name="turma"><option value="">Todas as turmas</option>{% for turma in turmas %}
+ <option value="{{ turma.id }}" {% if turma_id == turma.id|stringformat:'s' %}selected{% endif %}>{{ turma.nome }}</option>{% endfor %}
+ </select><button class="clean-btn" type="submit">Filtrar</button></form>
+</section><section class="clean-list-card"><div style="display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px;"><div><h3>Lista oficial de alunos</h3><p>Os nomes ficam dentro de uma caixa com rolagem para não espalhar tudo na tela.</p></div><span class="clean-pill">{{ alunos_dados|length }} alunos</span></div><div class="clean-scroll clean-list">{% for item in alunos_dados %}
+ <article class="clean-list-item"><div class="clean-list-main"><strong>{{ item.aluno.nome }}</strong><small>{{ item.aluno.turma.nome|default:"Turma não informada" }} • Matrícula {{ item.aluno.matricula|default:"sem matrícula" }}</small><small>Frequência {% if item.frequencia is not None %}{{ item.frequencia }}%{% else %}—{% endif %} · Média {% if item.media is not None %}{{ item.media }}{% else %}—{% endif %} · Faltas {{ item.faltas }}</small></div><div class="clean-actions"><span class="clean-pill">{{ item.status }}</span><a href="{% url 'gestao_ficha_aluno' item.aluno.id %}">Ficha oficial</a><a href="{% url 'boletim_aluno' item.aluno.id %}?origem=gestao">Boletim</a></div></article>{% empty %}
+ <div class="clean-empty">Nenhum aluno encontrado para os filtros atuais.</div>{% endfor %}
+ </div>
 </section>
 {% endblock %}

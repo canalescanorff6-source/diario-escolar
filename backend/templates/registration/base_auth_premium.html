@@ -1,58 +1,35 @@
 {% load static %}
 <!doctype html>
-<html lang="pt-br">
+<html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{% block title %}Acesso Institucional{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'css/premium_base_final.css' %}">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f2842">
+  <title>{% block title %}Acesso · Diário Escolar Pro{% endblock %}</title>
+  <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
+  <link rel="icon" href="{% static 'img/icon-192.png' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
 </head>
-<body class="auth-premium-body auth-portal-body auth-executive-body">
-  <main class="auth-portal-shell auth-executive-shell">
-    <section class="auth-institutional-card auth-executive-card" aria-label="Informações institucionais da escola">
-      <div class="auth-orbit auth-orbit-one"></div>
-      <div class="auth-orbit auth-orbit-two"></div>
-      <div class="auth-official-border"></div>
-
-      <header class="auth-executive-header">
-        <div class="auth-school-logo-box auth-executive-logo">
-          <img src="{% static 'img/logo_escola_login.png' %}" alt="Brasão institucional" class="auth-school-logo-img auth-school-logo-fixed">
-        </div>
-        <div class="auth-government-block auth-executive-government">
-          <span>{{ escola_login_estado|default:'ESTADO DO MARANHÃO' }}</span>
-          <strong>{{ escola_login_secretaria|default:'SECRETARIA DE ESTADO DA EDUCAÇÃO' }}</strong>
-        </div>
-      </header>
-
-      <section class="auth-executive-intro">
-        <span class="auth-system-label auth-executive-label">Identificação institucional</span>
-        <p>{{ escola_login_texto|default:'Portal oficial de acesso ao diário escolar da instituição.' }}</p>
-      </section>
-
-      <section class="auth-institutional-table auth-executive-record" aria-label="Dados institucionais">
-        <div class="auth-table-row auth-table-row-main auth-school-name-row">
-          <small>Escola</small>
-          <strong>{{ escola_login_nome_info|default:'Aguardando configuração no painel da gestão' }}</strong>
-        </div>
-        <div class="auth-table-row">
-          <small>Aldeia</small>
-          <strong>{{ escola_login_aldeia|default:'Aguardando configuração no painel da gestão' }}</strong>
-        </div>
-        <div class="auth-table-row">
-          <small>Terra indígena</small>
-          <strong>{{ escola_login_terra|default:'Aguardando configuração no painel da gestão' }}</strong>
-        </div>
-        <div class="auth-table-row auth-table-row-main">
-          <small>Gestão da unidade escolar</small>
-          <strong>{{ gestor_login_nome|default:'Direção escolar' }}</strong>
-          <em>Responsável institucional pela escola</em>
-        </div>
-      </section>
-    </section>
-
-    <section class="auth-access-card auth-access-card-v3" aria-label="Acesso ao sistema">
+<body>
+<main class="auth-page">
+  <section class="auth-brand" aria-label="Identidade institucional">
+    {% if escola_login_logo %}<img class="auth-brand-logo" src="{{ escola_login_logo }}" alt="Logo da escola">{% else %}<img class="auth-brand-logo" src="{% static 'img/icon-192.png' %}" alt="Diário Escolar Pro">{% endif %}
+    <div>
+      <span class="eyebrow light">Gestão acadêmica inteligente</span>
+      <h1>Diário Escolar Pro</h1>
+      <p>{{ escola_login_texto|default:'Um ambiente simples, seguro e organizado para professores e gestão escolar.' }}</p>
+      <div class="auth-institution">
+        <strong>{{ escola_login_nome_info|default:'Sua instituição de ensino' }}</strong>
+        {% if escola_login_municipio %}<span>{{ escola_login_municipio }}{% if escola_login_estado_sigla %} · {{ escola_login_estado_sigla }}{% endif %}</span>{% endif %}
+      </div>
+    </div>
+  </section>
+  <section class="auth-panel">
+    <div class="auth-card">
       {% block auth_content %}{% endblock %}
-    </section>
-  </main>
+    </div>
+  </section>
+</main>
+<script src="{% static 'js/app.js' %}" defer></script>
 </body>
 </html>

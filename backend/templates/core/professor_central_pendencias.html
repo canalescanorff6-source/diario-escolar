@@ -1,45 +1,12 @@
 {% extends 'core/base_professor_premium.html' %}
 {% block titulo %}Pendências do Diário{% endblock %}
 {% block subtitulo %}Visão do que falta preencher nas suas turmas, sem misturar funções da gestão.{% endblock %}
-{% block icone %}✅{% endblock %}
+{% block icone %}{% endblock %}
 {% block conteudo %}
-<div class="ia-page">
-  <section class="cards">
-    <article class="card"><span>Pendências</span><h2>{{ total_pendencias }}</h2><small class="ia-muted">itens em aberto</small></article>
-    <article class="card"><span>Turmas</span><h2>{{ linhas|length }}</h2><small class="ia-muted">vinculadas ao professor</small></article>
-  </section>
-
-  <section class="panel">
-    <div class="ia-row">
-      <div>
-        <h3 class="ia-section-title">Turmas</h3>
-        <p class="ia-muted">Cada linha mostra o que ainda falta para o diário ficar completo.</p>
-      </div>
-      <span class="pill">Professor</span>
-    </div>
-    <div class="table-wrap">
-      <table class="table">
-        <thead><tr><th>Turma</th><th>Alunos</th><th>Notas</th><th>Freq.</th><th>Conteúdos</th><th>Faltas</th><th>Status</th><th>Ações</th></tr></thead>
-        <tbody>
-          {% for item in linhas %}
-          <tr>
-            <td>{{ item.turma.nome }}</td><td>{{ item.alunos }}</td><td>{{ item.notas }}</td><td>{{ item.frequencias }}</td><td>{{ item.conteudos }}</td><td>{{ item.faltas }}</td>
-            <td><span class="pill">{{ item.status }}</span></td>
-            <td>{% for p in item.pendencias %}<span class="warn-pill">{{ p }}</span>{% empty %}<span class="pill">Sem pendências críticas</span>{% endfor %}</td>
-          </tr>
-          {% empty %}<tr><td colspan="8"><div class="empty-state">Nenhuma turma vinculada ao professor.</div></td></tr>{% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="panel">
-    <h3 class="ia-section-title">Últimos conteúdos registrados</h3>
-    <div class="ia-list">
-      {% for c in ultimos_conteudos %}
-      <div class="ia-list-item"><strong>{{ c.data|date:"d/m/Y" }}</strong> • {{ c.turma.nome }} • {{ c.disciplina.nome }} — {{ c.descricao|truncatechars:120 }}</div>
-      {% empty %}<div class="empty-state">Nenhum conteúdo registrado ainda.</div>{% endfor %}
-    </div>
-  </section>
+<div class="ia-page"><section class="cards"><article class="card"><span>Pendências</span><h2>{{ total_pendencias }}</h2><small class="ia-muted">itens em aberto</small></article><article class="card"><span>Turmas</span><h2>{{ linhas|length }}</h2><small class="ia-muted">vinculadas ao professor</small></article></section><section class="panel"><div class="ia-row"><div><h3 class="ia-section-title">Turmas</h3><p class="ia-muted">Cada linha mostra o que ainda falta para o diário ficar completo.</p></div><span class="pill">Professor</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Turma</th><th>Alunos</th><th>Notas</th><th>Freq.</th><th>Conteúdos</th><th>Faltas</th><th>Status</th><th>Ações</th></tr></thead><tbody>{% for item in linhas %}
+ <tr><td>{{ item.turma.nome }}</td><td>{{ item.alunos }}</td><td>{{ item.notas }}</td><td>{{ item.frequencias }}</td><td>{{ item.conteudos }}</td><td>{{ item.faltas }}</td><td><span class="pill">{{ item.status }}</span></td><td>{% for p in item.pendencias %}<span class="warn-pill">{{ p }}</span>{% empty %}<span class="pill">Sem pendências críticas</span>{% endfor %}</td></tr>{% empty %}<tr><td colspan="8"><div class="empty-state">Nenhuma turma vinculada ao professor.</div></td></tr>{% endfor %}
+ </tbody></table></div></section><section class="panel"><h3 class="ia-section-title">Últimos conteúdos registrados</h3><div class="ia-list">{% for c in ultimos_conteudos %}
+ <div class="ia-list-item"><strong>{{ c.data|date:"d/m/Y" }}</strong> • {{ c.turma.nome }} • {{ c.disciplina.nome }} — {{ c.descricao|truncatechars:120 }}</div>{% empty %}<div class="empty-state">Nenhum conteúdo registrado ainda.</div>{% endfor %}
+ </div></section>
 </div>
 {% endblock %}

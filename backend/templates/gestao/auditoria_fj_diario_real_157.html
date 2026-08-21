@@ -1,6 +1,0 @@
-{% extends 'gestao/base_premium_gestao.html' %}
-{% block titulo %}Auditoria de FJ{% endblock %}
-{% block subtitulo %}Faltas justificadas separadas de presença e falta comum • {{ mes_nome }}/{{ ano }}{% endblock %}
-{% block conteudo %}
-<section class="panel"><h3>Total de FJ no mês: {{ total }}</h3><table class="table"><thead><tr><th>Data</th><th>Aluno</th><th>Turma</th><th>Disciplina</th><th>Observação</th></tr></thead><tbody>{% for r in registros %}<tr><td>{{ r.data|date:'d/m/Y' }}</td><td>{{ r.aluno.nome }}</td><td>{{ r.turma.nome|default:'-' }}</td><td>{{ r.disciplina.nome }}</td><td>{{ r.observacao|default:'FJ' }}</td></tr>{% empty %}<tr><td colspan="5">Nenhuma FJ lançada neste mês.</td></tr>{% endfor %}</tbody></table></section>
-{% endblock %}

@@ -3,42 +3,10 @@
 {% block titulo %}Calendário Letivo{% endblock %}
 {% block subtitulo %}Tela integrada ao Diário Escolar.{% endblock %}
 {% block conteudo %}
-<div class="premium-only-page visual-1161-1220" data-template="gestao/calendario.html">
-<section class="cards gestao-cards">
-            <div class="card premium-card"><span>Eventos</span><h2>{{ total_eventos }}</h2><small>no calendário</small></div>
-            <div class="card premium-card"><span>Dias letivos</span><h2>{{ total_dias_letivos }}</h2><small>registrados</small></div>
-            <div class="card premium-card"><span>Avaliações</span><h2>{{ total_avaliacoes }}</h2><small>programadas</small></div>
-            <div class="card premium-card"><span>Reuniões</span><h2>{{ total_reunioes }}</h2><small>pedagógicas</small></div>
-        </section>
-
-        <section class="grid-layout gestao-grid-layout">
-            <div class="left-column">
-                <div class="panel premium-scroll-panel">
-                    <div class="panel-header"><div><h3>Próximos eventos</h3><span>visão executiva do calendário escolar</span></div><div class="panel-badge">Ano letivo</div></div>
-                    <div class="premium-scroll">
-                        {% for evento in eventos %}
-                        <div class="calendar-card">
-                            <div class="calendar-date"><strong>{{ evento.data_inicio|date:"d" }}</strong><span>{{ evento.data_inicio|date:"M" }}</span></div>
-                            <div><strong>{{ evento.titulo }}</strong><span>{{ evento.get_tipo_display }}{% if evento.data_fim %} • até {{ evento.data_fim|date:"d/m/Y" }}{% endif %}</span><p>{{ evento.descricao|default:"Sem descrição." }}</p></div>
-                        </div>
-                        {% empty %}<div class="empty-risk">Nenhum evento cadastrado.</div>{% endfor %}
-                    </div>
-                </div>
-            </div>
-            <div class="right-column">
-                <div class="panel">
-                    <div class="panel-top"><div><h3>Novo evento</h3><p>registre calendário escolar oficial</p></div></div>
-                    <form method="POST" class="premium-form">
-                        {% csrf_token %}
-                        <label><span>Título</span><input name="titulo" required placeholder="Ex: Reunião pedagógica"></label>
-                        <label><span>Tipo</span><select name="tipo">{% for value,label in tipos_evento %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></label>
-                        <label><span>Data inicial</span><input type="date" name="data_inicio" required></label>
-                        <label><span>Data final</span><input type="date" name="data_fim"></label>
-                        <label><span>Descrição</span><textarea name="descricao" rows="4" placeholder="Observações do evento..."></textarea></label>
-                        <button class="btn-primary" type="submit">💾 Salvar Evento</button>
-                    </form>
-                </div>
-            </div>
-        </section>
+<div class="page-shell page-modern" data-template="gestao/calendario.html">
+<section class="cards gestao-cards"><div class="card premium-card"><span>Eventos</span><h2>{{ total_eventos }}</h2><small>no calendário</small></div><div class="card premium-card"><span>Dias letivos</span><h2>{{ total_dias_letivos }}</h2><small>registrados</small></div><div class="card premium-card"><span>Avaliações</span><h2>{{ total_avaliacoes }}</h2><small>programadas</small></div><div class="card premium-card"><span>Reuniões</span><h2>{{ total_reunioes }}</h2><small>pedagógicas</small></div></section><section class="grid-layout gestao-grid-layout"><div class="left-column"><div class="panel premium-scroll-panel"><div class="panel-header"><div><h3>Próximos eventos</h3><span>visão executiva do calendário escolar</span></div><div class="panel-badge">Ano letivo</div></div><div class="premium-scroll">{% for evento in eventos %}
+ <div class="calendar-card"><div class="calendar-date"><strong>{{ evento.data_inicio|date:"d" }}</strong><span>{{ evento.data_inicio|date:"M" }}</span></div><div><strong>{{ evento.titulo }}</strong><span>{{ evento.get_tipo_display }}{% if evento.data_fim %} • até {{ evento.data_fim|date:"d/m/Y" }}{% endif %}</span><p>{{ evento.descricao|default:"Sem descrição." }}</p></div></div>{% empty %}<div class="empty-risk">Nenhum evento cadastrado.</div>{% endfor %}
+ </div></div></div><div class="right-column"><div class="panel"><div class="panel-top"><div><h3>Novo evento</h3><p>registre calendário escolar oficial</p></div></div><form method="POST" class="premium-form">{% csrf_token %}
+ <label><span>Título</span><input name="titulo" required placeholder="Ex: Reunião pedagógica"></label><label><span>Tipo</span><select name="tipo">{% for value,label in tipos_evento %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></label><label><span>Data inicial</span><input type="date" name="data_inicio" required></label><label><span>Data final</span><input type="date" name="data_fim"></label><label><span>Descrição</span><textarea name="descricao" rows="4" placeholder="Observações do evento..."></textarea></label><button class="btn-primary" type="submit"> Salvar Evento</button></form></div></div></section>
 </div>
 {% endblock %}

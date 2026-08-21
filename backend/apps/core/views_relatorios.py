@@ -1,5 +1,8 @@
-# Camada de views relatorios — refatoração real etapa 1221-1280.
-# Mantém os nomes públicos usados pelas URLs, mas tira o peso do antigo views.py.
+import csv
+
+from django.http import HttpResponse
+
+"""Views de relatórios, documentos e exportações."""
 
 from .views_shared import *  # noqa: F401,F403
 
@@ -19,9 +22,12 @@ def boletim_aluno(request, aluno_id):
     )
 
     turma = aluno.turma
+    if not _usuario_pode_ver_turma(request.user, turma):
+        return render(request, "core/acesso_negado.html")
 
     disciplinas = Disciplina.objects.all().order_by("nome")
 
+    regras = obter_regras_academicas()
     linhas = []
     soma_medias_anuais = Decimal("0")
     total_medias_anuais = 0
@@ -73,15 +79,16 @@ def boletim_aluno(request, aluno_id):
             soma_medias_anuais += media_anual
             total_medias_anuais += 1
 
-            if media_anual >= 6:
+            situacao = classificar_situacao(media_anual, None, tem_notas=True, tem_frequencia=False)
+            if situacao == "Aprovado":
                 status = "Aprovado"
                 status_classe = "status-aprovado"
-            elif media_anual >= 5:
+            elif media_anual < regras.media_aprovacao:
                 status = "Recuperação"
                 status_classe = "status-atencao"
             else:
-                status = "Risco"
-                status_classe = "status-risco"
+                status = "Atenção"
+                status_classe = "status-atencao"
 
         if notas or faltas_disciplina:
             linhas.append({
@@ -122,43 +129,24 @@ def boletim_aluno(request, aluno_id):
 
 @login_required
 def boletim_ia(request, turma_id):
+    """Análise pedagógica da turma, visível somente para usuários autorizados."""
+    if not (usuario_professor(request.user) or usuario_gestor(request.user)):
+        return render(request, "core/acesso_negado.html")
 
-    turma = get_object_or_404(
-        Turma,
-        id=turma_id
-    )
+    turma = get_object_or_404(Turma, id=turma_id)
+    if not _usuario_pode_ver_turma(request.user, turma):
+        return render(request, "core/acesso_negado.html")
 
-    resumo = AnaliseInteligenteService.resumo_turma(
-        turma
-    )
-
-    alunos_risco = AnaliseInteligenteService.alunos_em_risco(
-        turma
-    )
-
-    context = {
-
+    return render(request, "core/analise_turma.html", {
         "turma": turma,
-
-        "resumo": resumo,
-
-        "alunos_risco": alunos_risco,
-
-    }
-
-    return render(
-        request,
-        "core/boletim_ia.html",
-        context
-    )
+        "resumo": AnaliseInteligenteService.resumo_turma(turma),
+        "alunos_risco": AnaliseInteligenteService.alunos_em_risco(turma),
+    })
 
 
 # =====================================================
 # GESTÃO ESCOLAR — PÁGINAS ADMINISTRATIVAS FUNCIONAIS
 # =====================================================
-
-
-# [Etapas 223-228] Função duplicada removida para preservar definição final: _nome_usuario
 
 
 @login_required
@@ -233,6 +221,7 @@ def gestao_documento_boletim_oficial(request, aluno_id):
     notas = Nota.objects.filter(aluno=aluno).select_related("disciplina", "turma").order_by("disciplina__nome", "bimestre")
     disciplinas = Disciplina.objects.filter(id__in=notas.values_list("disciplina_id", flat=True)).order_by("nome")
 
+    regras = obter_regras_academicas()
     linhas = []
     for disciplina in disciplinas:
         notas_disciplina = notas.filter(disciplina=disciplina)
@@ -247,7 +236,7 @@ def gestao_documento_boletim_oficial(request, aluno_id):
             faltas_total = faltas
             periodos.append({"numero": numero, "nota": nota, "media": media, "faltas": faltas})
         media_anual = _media_decimal(medias_periodo)
-        precisa_recuperacao = media_anual is not None and media_anual < 6
+        precisa_recuperacao = media_anual is not None and media_anual < regras.media_aprovacao
         linhas.append({
             "disciplina": disciplina,
             "periodos": periodos,
@@ -267,7 +256,7 @@ def gestao_documento_boletim_oficial(request, aluno_id):
         titulo=f"Boletim oficial • {aluno.nome}",
         aluno=aluno,
         turma=aluno.turma,
-        defaults={"gerado_por": request.user, "observacoes": "Gerado pela Etapa 13 - exportação oficial."},
+        defaults={"gerado_por": request.user, "observacoes": "Gerado pela exportação oficial do sistema."},
     )
     registrar_auditoria(request.user, "Documentos oficiais", "Boletim oficial gerado", objeto=aluno.nome)
 
@@ -319,7 +308,7 @@ def gestao_documento_diario_oficial(request, turma_id):
         tipo="DIARIO",
         titulo=f"Diário oficial • {turma.nome}",
         turma=turma,
-        defaults={"gerado_por": request.user, "observacoes": "Gerado pela Etapa 13 - exportação oficial."},
+        defaults={"gerado_por": request.user, "observacoes": "Gerado pela exportação oficial do sistema."},
     )
     registrar_auditoria(request.user, "Documentos oficiais", "Diário oficial gerado", objeto=turma.nome)
 
@@ -390,47 +379,6 @@ def gestao_relatorio_executivo_oficial(request):
 
 
 @login_required
-def gestao_relatorio_avancado(request):
-    """Relatório analítico cruzando rendimento, frequência e registros de aula."""
-    if not usuario_gestor(request.user):
-        return render(request, "core/acesso_negado.html")
-
-    turmas_dados = []
-    for turma in Turma.objects.all().prefetch_related("alunos"):
-        alunos = turma.alunos.filter(ativo=True)
-        medias = []
-        frequencias = []
-        for aluno in alunos:
-            indicadores = _indicadores_aluno(aluno)
-            medias.append(indicadores["media"])
-            if indicadores["registros"]:
-                frequencias.append(indicadores["frequencia"])
-        media_turma = round(sum(medias) / len(medias), 1) if medias else 0
-        freq_turma = round(sum(frequencias) / len(frequencias), 1) if frequencias else 0
-        conteudos = ConteudoAula.objects.filter(turma=turma).count()
-        pendencias = alunos.count() - sum(1 for m in medias if m >= 6)
-        turmas_dados.append({
-            "turma": turma,
-            "alunos": alunos.count(),
-            "media": media_turma,
-            "frequencia": freq_turma,
-            "conteudos": conteudos,
-            "pendencias": max(pendencias, 0),
-        })
-
-    registrar_auditoria(request.user, "Relatórios", "Relatório avançado consultado", objeto="Rendimento e frequência")
-    context = {
-        "escola": Escola.objects.filter(ativa=True).first(),
-        "hoje": date.today(),
-        "turmas_dados": turmas_dados,
-        "total_turmas": len(turmas_dados),
-        "media_geral": round(sum([t["media"] for t in turmas_dados]) / len(turmas_dados), 1) if turmas_dados else 0,
-        "frequencia_geral": round(sum([t["frequencia"] for t in turmas_dados]) / len(turmas_dados), 1) if turmas_dados else 0,
-    }
-    return render(request, "gestao/relatorio_avancado.html", context)
-
-
-@login_required
 def gestao_documento_declaracao_matricula(request, aluno_id):
     """Declaração de matrícula imprimível, aproveitando os cadastros já existentes."""
     if not usuario_gestor(request.user):
@@ -476,59 +424,6 @@ def professor_relatorios(request):
         "total_faltas": faltas.count(),
     })
 
-
-@login_required
-def professor_relatorio_lancamentos_mes_oficial(request):
-    """Relatório mensal do professor com datas lançadas, P/F/FJ e aulas registradas por turma/disciplina."""
-    if not usuario_professor(request.user):
-        return render(request, "core/acesso_negado.html")
-    mes_param, ano, mes, inicio, fim = _mes_ano_oficial(request)
-    vinculos = ProfessorTurmaDisciplina.objects.filter(professor=request.user, ativo=True).select_related("turma", "disciplina").order_by("turma__nome", "disciplina__nome")
-    linhas = []
-    for vinculo in vinculos:
-        freq = Frequencia.objects.filter(turma=vinculo.turma, disciplina=vinculo.disciplina, data__gte=inicio, data__lte=fim)
-        aulas = ConteudoAula.objects.filter(professor=request.user, turma=vinculo.turma, disciplina=vinculo.disciplina, data__gte=inicio, data__lte=fim)
-        linhas.append({
-            "vinculo": vinculo,
-            "frequencia": _contagens_oficiais_frequencia(freq),
-            "datas_frequencia": freq.order_by("data").values("data").distinct(),
-            "aulas": aulas.order_by("data"),
-            "pendente": freq.count() == 0 or aulas.count() == 0,
-        })
-    return render(request, "core/professor_relatorio_lancamentos_mes_oficial.html", {
-        "linhas": linhas,
-        "mes_param": mes_param,
-        "mes_nome": calendar.month_name[mes].capitalize(),
-        "ano": ano,
-        "hoje": date.today(),
-    })
-
-
-@login_required
-def gestao_relatorios_901(request):
-    if not usuario_gestor(request.user):
-        return render(request, "core/acesso_negado.html")
-    contexto = {
-        "relatorios": relatorios_901_960(),
-        "fechamento": fechamento_mensal_901_960(),
-        "carga": carga_horaria_901_960(),
-        "auditoria_visual": auditoria_visual_901_960(),
-        "hoje": date.today(),
-    }
-    return render(request, "gestao/relatorios_901.html", contexto)
-
-
-@login_required
-def professor_relatorios_901(request):
-    if not usuario_professor(request.user):
-        return redirect("dashboard_gestao") if usuario_gestor(request.user) else render(request, "core/acesso_negado.html")
-    contexto = {
-        "relatorios": relatorios_901_960(professor=request.user),
-        "fechamento": fechamento_mensal_901_960(professor=request.user),
-        "carga": carga_horaria_901_960(professor=request.user),
-        "hoje": date.today(),
-    }
-    return render(request, "core/professor_relatorios_901.html", contexto)
 
 # =====================================================
 # EXPORTAÇÃO GERAL — GESTÃO E PROFESSOR
@@ -613,7 +508,7 @@ def _pdf_escape(text):
 
 
 def _pdf_bytes(title, sections):
-    lines = [title, "Gerado pelo Diário IA Escolar", ""]
+    lines = [title, "Gerado pelo Diário Escolar Pro", ""]
     for section_title, rows in sections:
         lines.append(section_title)
         if not rows or len(rows) == 1:
@@ -748,3 +643,41 @@ def professor_exportar_geral_pdf(request):
     if not usuario_professor(request.user):
         return redirect("dashboard_gestao") if usuario_gestor(request.user) else render(request, "core/acesso_negado.html")
     return _pdf_response("diario_professor_exportacao_geral", "Exportação geral do professor", _professor_export_sheets(request.user))
+
+
+@login_required
+def gestao_auditoria_exportacao(request):
+    """Exporta a trilha de auditoria em CSV UTF-8 para a gestão escolar."""
+    if not usuario_gestor(request.user):
+        return render(request, "core/acesso_negado.html")
+
+    modulo = (request.GET.get("modulo") or "").strip()
+    auditorias = AuditoriaSistema.objects.select_related("usuario").all()
+    if modulo:
+        auditorias = auditorias.filter(modulo__icontains=modulo)
+
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = 'attachment; filename="auditoria-diario-escolar.csv"'
+    response.write("\ufeff")
+    writer = csv.writer(response, delimiter=";")
+    writer.writerow(["Data/hora", "Usuário", "Módulo", "Ação", "Objeto", "Descrição"])
+    for item in auditorias.iterator(chunk_size=500):
+        usuario = "Sistema"
+        if item.usuario_id:
+            usuario = item.usuario.get_full_name() or item.usuario.username
+        writer.writerow([
+            timezone.localtime(item.criado_em).strftime("%d/%m/%Y %H:%M:%S"),
+            usuario,
+            item.modulo,
+            item.acao,
+            item.objeto or "",
+            item.descricao or "",
+        ])
+
+    registrar_auditoria(
+        request.user,
+        "Auditoria",
+        "Trilha de auditoria exportada",
+        descricao=f"Filtro de módulo: {modulo or 'todos'}",
+    )
+    return response

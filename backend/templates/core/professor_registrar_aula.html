@@ -1,0 +1,103 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Registrar aula{% endblock %}
+{% block subtitulo %}Frequência, conteúdo e observações em um único fluxo{% endblock %}
+{% block conteudo %}
+
+{% if not horario %}
+<section class="page-hero">
+  <div>
+    <span class="eyebrow">Diário de Classe</span>
+    <h1>Você ainda não possui uma aula vinculada</h1>
+    <p>Peça à gestão para cadastrar sua turma, disciplina e grade semanal. Assim que o vínculo estiver ativo, o lançamento ficará disponível aqui.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="btn btn-secondary" href="{% url 'professor_agenda' %}">Ver minha agenda</a>
+    <a class="btn btn-ghost" href="{% url 'dashboard_professor_home' %}">Voltar ao início</a>
+  </div>
+</section>
+<section class="empty-state panel">
+  <h2>O que precisa estar cadastrado</h2>
+  <div class="steps-grid">
+    <article><strong>1. Vínculo pedagógico</strong><span>Professor, turma e disciplina.</span></article>
+    <article><strong>2. Horário semanal</strong><span>Dia, ordem e faixa de horário.</span></article>
+    <article><strong>3. Alunos ativos</strong><span>Alunos vinculados à turma.</span></article>
+  </div>
+</section>
+{% else %}
+<section class="page-hero compact">
+  <div>
+    <span class="eyebrow">{{ horario.get_dia_semana_display }} · {{ horario.hora_inicio|time:'H:i' }}–{{ horario.hora_fim|time:'H:i' }} · {{ aula_numero }}ª aula</span>
+    <h1>{{ horario.disciplina.nome }} · {{ horario.turma.nome }}</h1>
+    <p>Registre a chamada e o conteúdo da aula sem sair desta tela.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="btn btn-secondary" href="{% url 'professor_agenda' %}">Minha agenda</a>
+    <a class="btn btn-ghost" href="{% url 'professor_diario_oficial' %}">Diário de Classe</a>
+  </div>
+</section>
+
+<section class="stats-grid four">
+  <article class="stat-card"><span>Alunos</span><strong>{{ resumo.alunos }}</strong><small>ativos na turma</small></article>
+  <article class="stat-card"><span>Presentes</span><strong>{{ resumo.presencas }}</strong><small>status P</small></article>
+  <article class="stat-card"><span>Faltas</span><strong>{{ resumo.faltas }}</strong><small>status F</small></article>
+  <article class="stat-card"><span>Justificadas</span><strong>{{ resumo.fj }}</strong><small>status FJ</small></article>
+</section>
+
+<div class="content-grid two-thirds">
+  <form method="post" class="panel stack-lg">
+    {% csrf_token %}
+    <input type="hidden" name="acao" value="salvar_chamada">
+    <div class="panel-heading split">
+      <div><h2>Chamada</h2><p>Marque P, F ou FJ para cada aluno.</p></div>
+      <label class="field compact-field"><span>Data</span><input type="date" name="data" value="{{ data_aula|date:'Y-m-d' }}"></label>
+    </div>
+    <label class="search-field"><span class="sr-only">Buscar aluno</span><input data-table-filter="#tabela-chamada" placeholder="Buscar aluno por nome ou matrícula"></label>
+    <div class="table-wrap">
+      <table id="tabela-chamada" class="data-table">
+        <thead><tr><th>Aluno</th><th>Status</th><th>Observação</th></tr></thead>
+        <tbody>
+          {% for linha in alunos_linhas %}
+          <tr>
+            <td><strong>{{ linha.aluno.nome }}</strong><small>{{ linha.aluno.matricula }}</small></td>
+            <td>
+              <select name="status_{{ linha.aluno.id }}" aria-label="Status de {{ linha.aluno.nome }}">
+                {% for valor,label in status_choices %}<option value="{{ valor }}" {% if linha.status == valor %}selected{% endif %}>{{ valor }} — {{ label }}</option>{% endfor %}
+              </select>
+            </td>
+            <td><input name="obs_{{ linha.aluno.id }}" value="{{ linha.frequencia.observacao|default:'' }}" placeholder="Opcional"></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3" class="empty-cell">Nenhum aluno ativo nesta turma.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="form-actions"><button class="btn btn-primary" type="submit">Salvar chamada</button></div>
+  </form>
+
+  <div class="stack-lg">
+    <form method="post" class="panel stack-md" id="conteudo-aula">
+      {% csrf_token %}
+      <input type="hidden" name="acao" value="salvar_conteudo">
+      <div class="panel-heading"><h2>Conteúdo ministrado</h2><p>Esse registro compõe o Diário de Classe oficial.</p></div>
+      <label class="field"><span>Data</span><input type="date" name="data" value="{{ data_aula|date:'Y-m-d' }}"></label>
+      <label class="field"><span>Quantidade de aulas</span><input type="number" min="1" max="10" name="quantidade_aulas" value="{{ conteudo.quantidade_aulas|default:1 }}"></label>
+      <label class="field"><span>Conteúdo</span><textarea name="descricao" rows="6" required placeholder="Ex.: Frações equivalentes e resolução de problemas.">{{ conteudo.descricao|default:'' }}</textarea></label>
+      <label class="field"><span>Observações</span><textarea name="observacoes" rows="3" placeholder="Recursos, atividade, recuperação ou observações da turma.">{{ conteudo.observacoes|default:'' }}</textarea></label>
+      <div class="form-actions"><button class="btn btn-primary" type="submit">Salvar conteúdo</button></div>
+    </form>
+
+    <section class="panel stack-md">
+      <div class="panel-heading"><h2>Outras aulas</h2><p>Troque de horário sem voltar ao painel.</p></div>
+      <div class="link-list">
+        {% for aula in outros_horarios %}
+        <a href="{% url 'professor_registrar_aula_horario' aula.id %}" class="link-row {% if aula.id == horario.id %}is-active{% endif %}">
+          <span><strong>{{ aula.get_dia_semana_display }} · {{ aula.hora_inicio|time:'H:i' }}</strong><small>{{ aula.turma.nome }} · {{ aula.disciplina.nome }}</small></span><span aria-hidden="true">›</span>
+        </a>
+        {% empty %}<p class="muted">Nenhum outro horário cadastrado.</p>{% endfor %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

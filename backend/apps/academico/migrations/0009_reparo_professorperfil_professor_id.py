@@ -4,34 +4,40 @@ import django.db.models.deletion
 
 
 def garantir_professor_id(apps, schema_editor):
-    table = 'academico_professorperfil'
-    with schema_editor.connection.cursor() as cursor:
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=%s", [table])
-        if cursor.fetchone() is None:
-            return
-        cursor.execute(f"PRAGMA table_info({table})")
-        colunas = [row[1] for row in cursor.fetchall()]
-        if 'professor_id' not in colunas:
-            cursor.execute(f"ALTER TABLE {table} ADD COLUMN professor_id bigint NULL REFERENCES usuarios_usuario(id) DEFERRABLE INITIALLY DEFERRED")
-        if 'usuario_id' in colunas or 'usuario_id' in [*colunas, 'usuario_id']:
-            cursor.execute(f"UPDATE {table} SET professor_id = usuario_id WHERE professor_id IS NULL AND usuario_id IS NOT NULL")
+    table = "academico_professorperfil"
+    connection = schema_editor.connection
+    if table not in set(connection.introspection.table_names()):
+        return
+    qn = connection.ops.quote_name
+    with connection.cursor() as cursor:
+        colunas = {c.name for c in connection.introspection.get_table_description(cursor, table)}
+        if "professor_id" not in colunas:
+            cursor.execute(f"ALTER TABLE {qn(table)} ADD COLUMN {qn('professor_id')} bigint NULL")
+            colunas.add("professor_id")
+        if "usuario_id" in colunas:
+            cursor.execute(
+                f"UPDATE {qn(table)} SET {qn('professor_id')} = {qn('usuario_id')} "
+                f"WHERE {qn('professor_id')} IS NULL AND {qn('usuario_id')} IS NOT NULL"
+            )
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('academico', '0008_reparo_horario_numero'),
+        ("academico", "0008_reparo_horario_numero"),
     ]
-
     operations = [
         migrations.SeparateDatabaseAndState(
             database_operations=[migrations.RunPython(garantir_professor_id, migrations.RunPython.noop)],
             state_operations=[
                 migrations.AddField(
-                    model_name='professorperfil',
-                    name='professor',
-                    field=models.ForeignKey(blank=True, db_column='professor_id', limit_choices_to={'tipo': 'PROF'}, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL),
+                    model_name="professorperfil",
+                    name="professor",
+                    field=models.ForeignKey(
+                        blank=True, db_column="professor_id", limit_choices_to={"tipo": "PROF"},
+                        null=True, on_delete=django.db.models.deletion.CASCADE, related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
                 ),
             ],
         ),

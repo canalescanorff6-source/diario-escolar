@@ -1,82 +1,12 @@
 {% extends 'core/base_professor_premium.html' %}
 {% block titulo %}Meu Diário de Classe{% endblock %}
 {% block subtitulo %}Central principal do professor para lançar aulas, abrir turmas, consultar frequência e acompanhar o fechamento.{% endblock %}
-{% block icone %}📘{% endblock %}
 {% block conteudo %}
-<section class="hero painel-unico-hero ia-mega-hero no-print">
-  <div>
-    <span class="hero-badge">Professor • Diário de Classe</span>
-    <h1>Meu Diário de Classe</h1>
-    <p>Esta é a central principal do Diário. Escolha uma turma, lance aula, registre frequência e acompanhe tudo que precisa ficar no diário escolar.</p>
-  </div>
-  <div class="hero-actions">
-    <a class="btn-primary" href="{% url 'professor_aula_rapida_321' %}">📝 Lançar aula de hoje</a>
-    <a class="btn-secondary-premium" href="{% url 'turmas' %}">🏫 Minhas turmas</a>
-    <a class="btn-secondary-premium" href="{% url 'professor_fechamento_mensal_901' %}">📕 Fechamento mensal</a>
-  </div>
-</section>
-
-<section class="panel no-print professor-launch-guide">
-  <div class="panel-header"><div><h3>Como usar o Diário de Classe</h3><span>Fluxo simples para o professor usar todos os dias.</span></div></div>
-  <div class="lancamentos-guide-grid">
-    <div class="lancamentos-guide-card"><b>1</b><div><strong>Lançar aula</strong><span>Use a Aula rápida para registrar a aula do dia.</span></div></div>
-    <div class="lancamentos-guide-card"><b>2</b><div><strong>Fazer chamada</strong><span>Marque P, F ou FJ para cada aluno.</span></div></div>
-    <div class="lancamentos-guide-card"><b>3</b><div><strong>Registrar conteúdo</strong><span>Informe o conteúdo trabalhado na aula.</span></div></div>
-    <div class="lancamentos-guide-card"><b>4</b><div><strong>Conferir diário</strong><span>Abra a turma para ver frequência, aulas, notas e documento completo.</span></div></div>
-  </div>
-</section>
-
-{% include 'partials/resumo_861_900_professor.html' %}
-
-<section class="ia-official-document">
-  <div class="ia-document-head">
-    <div>
-      <span class="premium-header-badge">Professor(a)</span>
-      <h2>{{ professor.get_full_name|default:professor.username|default:'Professor' }}</h2>
-      <p>{% if perfil_professor and perfil_professor.escola %}{{ perfil_professor.escola.nome }}{% elif escola %}{{ escola.nome }}{% else %}Escola não vinculada{% endif %}</p>
-    </div>
-    <div class="ia-document-seal">MEU<br>DIÁRIO</div>
-  </div>
-  <div class="ia-document-meta">
-    <div><span>Data</span><strong>{{ hoje|date:'d/m/Y' }}</strong></div>
-    <div><span>Turmas</span><strong>{{ dados|length }}</strong></div>
-    <div><span>Prontidão</span><strong>{{ resumo_861_900_professor.prontidao }}%</strong></div>
-    <div><span>Conteúdos hoje</span><strong>{{ resumo_861_900_professor.conteudos_hoje }}</strong></div>
-  </div>
-</section>
-
-<section class="diario-real-grid" style="margin-top:18px;">
-  {% for item in dados %}
-  <article class="ia-official-document diario-real-card">
-    <div class="diario-real-card-head">
-      <div>
-        <span class="premium-header-badge">{{ item.turma.turno|default:'Turno' }}</span>
-        <h3>{{ item.turma.nome }}</h3>
-        <p>{{ item.total_alunos }} aluno(s) • {{ item.total_disciplinas }} disciplina(s)</p>
-      </div>
-      <strong class="diario-real-score">{{ item.frequencia_percentual }}%</strong>
-    </div>
-    <div class="ia-document-meta">
-      <div><span>Horários</span><strong>{{ item.total_horarios }}</strong></div>
-      <div><span>Aulas</span><strong>{{ item.registros_aulas }}</strong></div>
-      <div><span>Faltas</span><strong>{{ item.total_faltas }}</strong></div>
-      <div><span>Freq.</span><strong>{{ item.frequencia_percentual }}%</strong></div>
-    </div>
-    <div class="diario-real-list">
-      <strong>Minhas disciplinas</strong>
-      <p>{% for disciplina in item.disciplinas %}{{ disciplina.nome }}{% if not forloop.last %}, {% endif %}{% empty %}Nenhum vínculo encontrado. Solicite à gestão o vínculo professor/turma/disciplina.{% endfor %}</p>
-    </div>
-    <div class="diario-real-actions no-print">
-      <a href="{% url 'professor_aula_rapida_321' %}" class="btn-ghost-premium">📝 Lançar aula</a>
-      <a href="{% url 'diario_classe_turma' item.turma.id %}" class="btn-ghost-premium">📘 Diário da turma</a>
-      <a href="{% url 'turma_detalhe' item.turma.id %}" class="btn-ghost-premium">🏫 Resumo da turma</a>
-      <a href="{% url 'frequencia_mensal_turma' item.turma.id %}" class="btn-ghost-premium">📅 Frequência</a>
-      <a href="{% url 'registro_aulas_mensal_turma' item.turma.id %}" class="btn-ghost-premium">📝 Aulas</a>
-      <a href="{% url 'notas_turma' item.turma.id %}" class="btn-ghost-premium">📊 Notas</a>
-    </div>
-  </article>
-  {% empty %}
-  <section class="panel empty-state-premium"><strong>Você ainda não possui turmas vinculadas.</strong><span>Peça para a gestão criar o vínculo professor/turma/disciplina.</span></section>
-  {% endfor %}
+<section class="hero painel-unico-hero ia-mega-hero no-print"><div><span class="hero-badge">Professor • Diário de Classe</span><h1>Meu Diário de Classe</h1><p>Esta é a central principal do Diário. Escolha uma turma, lance aula, registre frequência e acompanhe tudo que precisa ficar no diário escolar.</p></div><div class="hero-actions"><a class="btn-primary" href="{% url 'professor_registrar_aula' %}"> Lançar aula de hoje</a><a class="btn-secondary-premium" href="{% url 'turmas' %}"> Minhas turmas</a><a class="btn-secondary-premium" href="{% url 'professor_consolidado_mensal' %}"> Fechamento mensal</a></div>
+</section><section class="panel no-print professor-launch-guide"><div class="panel-header"><div><h3>Como usar o Diário de Classe</h3><span>Fluxo simples para o professor usar todos os dias.</span></div></div><div class="lancamentos-guide-grid"><div class="lancamentos-guide-card"><b>1</b><div><strong>Lançar aula</strong><span>Use a Aula rápida para registrar a aula do dia.</span></div></div><div class="lancamentos-guide-card"><b>2</b><div><strong>Fazer chamada</strong><span>Marque P, F ou FJ para cada aluno.</span></div></div><div class="lancamentos-guide-card"><b>3</b><div><strong>Registrar conteúdo</strong><span>Informe o conteúdo trabalhado na aula.</span></div></div><div class="lancamentos-guide-card"><b>4</b><div><strong>Conferir diário</strong><span>Abra a turma para ver frequência, aulas, notas e documento completo.</span></div></div></div>
+</section><section class="ia-official-document"><div class="ia-document-head"><div><span class="premium-header-badge">Professor(a)</span><h2>{{ professor.get_full_name|default:professor.username|default:'Professor' }}</h2><p>{% if perfil_professor and perfil_professor.escola %}{{ perfil_professor.escola.nome }}{% elif escola %}{{ escola.nome }}{% else %}Escola não vinculada{% endif %}</p></div><div class="ia-document-seal">MEU<br>DIÁRIO</div></div><div class="ia-document-meta"><div><span>Data</span><strong>{{ hoje|date:'d/m/Y' }}</strong></div><div><span>Turmas</span><strong>{{ dados|length }}</strong></div><div><span>Aulas registradas</span><strong>{{ total_aulas_registradas }}</strong></div><div><span>Conteúdos hoje</span><strong>{{ conteudos_hoje }}</strong></div></div>
+</section><section class="diario-real-grid" style="margin-top:18px;">{% for item in dados %}
+ <article class="ia-official-document diario-real-card"><div class="diario-real-card-head"><div><span class="premium-header-badge">{{ item.turma.turno|default:'Turno' }}</span><h3>{{ item.turma.nome }}</h3><p>{{ item.total_alunos }} aluno(s) • {{ item.total_disciplinas }} disciplina(s)</p></div><strong class="diario-real-score">{{ item.frequencia_percentual }}%</strong></div><div class="ia-document-meta"><div><span>Horários</span><strong>{{ item.total_horarios }}</strong></div><div><span>Aulas</span><strong>{{ item.registros_aulas }}</strong></div><div><span>Faltas</span><strong>{{ item.total_faltas }}</strong></div><div><span>Freq.</span><strong>{{ item.frequencia_percentual }}%</strong></div></div><div class="diario-real-list"><strong>Minhas disciplinas</strong><p>{% for disciplina in item.disciplinas %}{{ disciplina.nome }}{% if not forloop.last %}, {% endif %}{% empty %}Nenhum vínculo encontrado. Solicite à gestão o vínculo professor/turma/disciplina.{% endfor %}</p></div><div class="diario-real-actions no-print"><a href="{% url 'professor_registrar_aula' %}" class="btn-ghost-premium"> Lançar aula</a><a href="{% url 'diario_classe_turma' item.turma.id %}" class="btn-ghost-premium"> Diário da turma</a><a href="{% url 'turma_detalhe' item.turma.id %}" class="btn-ghost-premium"> Resumo da turma</a><a href="{% url 'frequencia_mensal_turma' item.turma.id %}" class="btn-ghost-premium"> Frequência</a><a href="{% url 'registro_aulas_mensal_turma' item.turma.id %}" class="btn-ghost-premium"> Aulas</a><a href="{% url 'notas_turma' item.turma.id %}" class="btn-ghost-premium"> Notas</a></div></article>{% empty %}
+ <section class="panel empty-state-premium"><strong>Você ainda não possui turmas vinculadas.</strong><span>Peça para a gestão criar o vínculo professor/turma/disciplina.</span></section>{% endfor %}
 </section>
 {% endblock %}

@@ -8,7 +8,7 @@ from .models import Usuario
 
 @admin.register(Usuario)
 class UsuarioAdmin(UserAdmin):
-    """Admin profissional para criar e gerenciar usuários do Diário IA.
+    """Admin profissional para criar e gerenciar usuários do Diário Escolar Pro.
 
     Corrige o problema de criação pelo /admin/: agora o Django usa o fluxo
     padrão de criação com senha criptografada, confirmação de senha e campos
@@ -47,7 +47,7 @@ class UsuarioAdmin(UserAdmin):
 
     fieldsets = UserAdmin.fieldsets + (
         (
-            "Diário IA — Perfil escolar",
+            "Diário Escolar Pro — Perfil escolar",
             {
                 "fields": (
                     "tipo",
@@ -124,8 +124,8 @@ class UsuarioAdmin(UserAdmin):
             pass
 
 
-admin.site.site_header = "Diário IA Escolar"
-admin.site.site_title = "Diário IA Admin"
+admin.site.site_header = "Diário Escolar Pro"
+admin.site.site_title = "Diário Escolar Pro Admin"
 admin.site.index_title = "Administração Premium"
 
 

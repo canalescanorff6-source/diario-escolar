@@ -1,47 +1,25 @@
-from django.contrib import admin
 from django.conf import settings
-from django.conf.urls.static import static
-from django.urls import path, include, re_path
+from django.contrib import admin
 from django.contrib.auth.views import LogoutView
-from django.views.static import serve as media_serve
 from django.contrib.staticfiles.views import serve as staticfiles_serve
 from django.http import HttpResponse
+from django.urls import include, path, re_path
 
 
-def health_check_runsite(request):
-    return HttpResponse('ok', content_type='text/plain')
+def health_check(request):
+    return HttpResponse("ok", content_type="text/plain")
 
 
 urlpatterns = []
-
-# Fallback de static para RunSite: se o WhiteNoise não encontrar /static/,
-# o Django serve os arquivos diretamente pelos staticfiles finders.
-# Isso evita tela sem CSS após troca de plataforma ou redeploy.
-if getattr(settings, 'RUNSITE_STATIC_URL_FALLBACK', False):
-    urlpatterns.append(
-        re_path(r'^static/(?P<path>.*)$', staticfiles_serve, {'insecure': True})
-    )
+if getattr(settings, "RUNSITE_STATIC_URL_FALLBACK", False):
+    urlpatterns.append(re_path(r"^static/(?P<path>.*)$", staticfiles_serve, {"insecure": True}))
 
 urlpatterns += [
-    path('healthz', health_check_runsite, name='healthz_no_slash'),
-    path('healthz/', health_check_runsite, name='healthz'),
-    path('health', health_check_runsite, name='health_no_slash'),
-    path('health/', health_check_runsite, name='health'),
-
-    # Django Admin protegido: /admin/ não é usado.
-    # A URL real vem de CRIADOR_ADMIN_URL, normalmente /admin-criador/.
+    path("healthz", health_check, name="healthz_no_slash"),
+    path("health/", health_check, name="health"),
     path(settings.CRIADOR_ADMIN_URL, admin.site.urls),
-
-    path('logout/', LogoutView.as_view(), name='logout_direct'),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('', include('apps.core.urls')),
-    path('diario-inteligente/', include('apps.diario.urls')),
+    path("logout/", LogoutView.as_view(), name="logout_direct"),
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("api/v1/", include("apps.core.api_urls")),
+    path("", include("apps.core.urls")),
 ]
-
-# Uploads do sistema (imagens de perfil).
-urlpatterns += [
-    re_path(r'^media/(?P<path>.*)$', media_serve, {'document_root': settings.MEDIA_ROOT}),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -55,7 +55,7 @@ class Command(BaseCommand):
         if not destino:
             raise CommandError("Nenhum e-mail de destino configurado. Use --destino ou configure GESTAO_AUTORIZACAO_EMAIL.")
 
-        assunto = "Serial/key de ativação — Diário IA Escolar"
+        assunto = "Serial/key de ativação — Diário Escolar Pro"
         mensagem = (
             "Serial/key de ativação da gestão escolar\n\n"
             f"Dias liberados: {dias}\n"
@@ -63,7 +63,7 @@ class Command(BaseCommand):
             f"Observação: {observacao or '-'}\n\n"
             "Serial/key:\n"
             f"{serial}\n\n"
-            "Use este código somente na tela oficial de ativação do Diário IA Escolar."
+            "Use este código somente na tela oficial de ativação do Diário Escolar Pro."
         )
         send_mail(
             subject=assunto,

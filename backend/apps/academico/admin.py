@@ -106,7 +106,7 @@ class ConteudoAulaAdmin(admin.ModelAdmin):
 
 
 @admin.register(AlertaIA)
-class AlertaIAAdmin(admin.ModelAdmin):
+class AlertaPedagogicoAdmin(admin.ModelAdmin):
     list_display = ("aluno", "titulo", "nivel", "resolvido", "criado_em")
     list_filter = ("nivel", "resolvido", "criado_em")
     search_fields = ("aluno__nome", "titulo", "descricao")
@@ -168,26 +168,5 @@ class NotificacaoGestaoAdmin(admin.ModelAdmin):
     list_filter = ("nivel", "resolvida", "turma", "criado_em")
     search_fields = ("titulo", "mensagem", "aluno__nome", "turma__nome")
 
-
-# Etapa 11 — Gestão executiva
-try:
-    from .models import BackupSistema, IntegracaoEscolar, IndicadorGestao
-
-    @admin.register(BackupSistema)
-    class BackupSistemaAdmin(admin.ModelAdmin):
-        list_display = ("titulo", "status", "criado_por", "criado_em")
-        search_fields = ("titulo", "arquivo")
-        list_filter = ("status", "criado_em")
-
-    @admin.register(IntegracaoEscolar)
-    class IntegracaoEscolarAdmin(admin.ModelAdmin):
-        list_display = ("nome", "tipo", "ativa", "criado_em")
-        search_fields = ("nome", "descricao")
-        list_filter = ("tipo", "ativa")
-
-    @admin.register(IndicadorGestao)
-    class IndicadorGestaoAdmin(admin.ModelAdmin):
-        list_display = ("nome", "valor", "referencia", "criado_em")
-        search_fields = ("nome", "descricao")
-except (admin.sites.AlreadyRegistered, ImportError):
-    pass
+# Modelos legados de backup/integração/indicadores permanecem no banco apenas
+# para compatibilidade histórica e não são expostos no Admin da versão 2.0.

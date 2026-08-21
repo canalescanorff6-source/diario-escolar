@@ -26,7 +26,7 @@ class BrevoEmailBackend(BaseEmailBackend):
     Variáveis esperadas:
       BREVO_API_KEY=chave_da_brevo
       BREVO_SENDER_EMAIL=email_remetente_verificado
-      BREVO_SENDER_NAME=Diário IA Escolar
+      BREVO_SENDER_NAME=Diário Escolar Pro
     """
 
     def send_messages(self, email_messages):
@@ -35,13 +35,13 @@ class BrevoEmailBackend(BaseEmailBackend):
 
         api_key = str(getattr(settings, "BREVO_API_KEY", "") or "").strip().strip("'\"")
         api_url = str(getattr(settings, "BREVO_API_URL", "https://api.brevo.com/v3/smtp/email") or "").strip().strip("'\"")
-        sender_name = str(getattr(settings, "BREVO_SENDER_NAME", "Diário IA Escolar") or "").strip()
+        sender_name = str(getattr(settings, "BREVO_SENDER_NAME", "Diário Escolar Pro") or "").strip()
         sender_email = str(getattr(settings, "BREVO_SENDER_EMAIL", "") or "").strip().strip("'\"")
 
         default_name, default_email = _parse_email(getattr(settings, "DEFAULT_FROM_EMAIL", ""))
         default_email = str(default_email or "").strip().strip("'\"")
         sender_email = sender_email or default_email
-        sender_name = sender_name or default_name or "Diário IA Escolar"
+        sender_name = sender_name or default_name or "Diário Escolar Pro"
 
         if not api_key or not sender_email:
             if self.fail_silently:

@@ -1,0 +1,8 @@
+@media print {
+  :root { --bg:#fff; --surface:#fff; --text:#000; --muted:#444; --border:#bbb; }
+  body { background:#fff; color:#000; font-size:11pt; }
+  .sidebar, .mobile-bar, .nav-backdrop, .no-print, .hero-actions, .topbar-right, .gestao-base-actions, .print-actions { display:none !important; }
+  .content, .professor-content, .gestao-content { margin:0; padding:0; }
+  .panel, .card, .premium-card, .ia-official-document { box-shadow:none; break-inside:avoid; }
+  a { text-decoration:none; }
+}

@@ -3,304 +3,81 @@
 {% block titulo %}Notas •{% endblock %}
 {% block subtitulo %}Tela integrada ao Diário Escolar.{% endblock %}
 {% block conteudo %}
-<div class="premium-only-page visual-1161-1220" data-template="core/notas_turma.html">
-<!-- HEADER PREMIUM COMPACTO -->
-
-        
-
-
-        <!-- PROGRESSO BIMESTRAL -->
-
-        <section class="notas-bimestres-panel">
-
-            <div class="notas-panel-left">
-
-                <span class="notas-kicker">
-                    Diário de Classe
-                </span>
-
-                <h2>
-                    Lançamento de Notas
-                </h2>
-
-                <p>
-                    Cada bimestre possui três avaliações. O sistema abre automaticamente o primeiro bimestre incompleto e mantém as notas já salvas.
-                </p>
-
-            </div>
-
-            <div class="bimestres-progress">
-
-                {% for item in progresso_bimestres %}
-
-                    <a href="?bimestre={{ item.numero }}"
-                       class="bimestre-chip {% if item.ativo %}active{% endif %} {% if item.completo %}complete{% endif %}">
-
-                        <strong>
-                            {{ item.numero }}º
-                        </strong>
-
-                        <span>
-                            {{ item.preenchidos }}/{{ item.total }}
-                        </span>
-
-                    </a>
-
-                {% endfor %}
-
-            </div>
-
-        </section>
-
-        <!-- REGRA -->
-
-        <section class="notas-rule-grid">
-
-            <div class="notas-rule-card">
-
-                <span>
-                    Média Bimestral
-                </span>
-
-                <strong>
-                    (N1 + N2 + N3) ÷ 3
-                </strong>
-
-                <small>
-                    Padrão simples para fechamento das três avaliações do bimestre.
-                </small>
-
-            </div>
-
-            <div class="notas-rule-card">
-
-                <span>
-                    Bimestre Atual
-                </span>
-
-                <strong>
-                    {{ bimestre_atual }}º Bimestre
-                </strong>
-
-                <small>
-                    Troque pelos botões acima para revisar notas já lançadas.
-                </small>
-
-            </div>
-
-            <div class="notas-rule-card">
-
-                <span>
-                    Status IA
-                </span>
-
-                <strong>
-                    Automático
-                </strong>
-
-                <small>
-                    Aprovado, atenção ou risco conforme a média calculada.
-                </small>
-
-            </div>
-
-        </section>
-
-        <!-- FORM -->
-
-        <section class="panel table-panel notas-table-panel">
-
-            <form method="POST" id="formNotas">
-
-                {% csrf_token %}
-
-                <input type="hidden"
-                       name="bimestre"
-                       id="bimestreHidden"
-                       value="{{ bimestre_atual }}">
-
-                <div class="notas-toolbar">
-
-                    <div>
-
-                        <h3>
-                            Alunos da Turma
-                        </h3>
-
-                        <p>
-                            Preencha N1, N2 e N3. A média final é calculada automaticamente.
-                        </p>
-
-                    </div>
-
-                    <div class="notas-toolbar-stats">
-
-                        <span>
-                            {{ total_alunos }} alunos
-                        </span>
-
-                        <span id="contadorPreenchidos">
-                            {{ alunos_completos }} completos
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <div class="notas-scroll">
-
-                    <table class="premium-table notas-premium-table">
-
-                        <thead>
-
-                            <tr>
-
-                                <th>Aluno</th>
-                                <th>Nota 1</th>
-                                <th>Nota 2</th>
-                                <th>Nota 3</th>
-                                <th>Média</th>
-                                <th>Status</th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            {% for aluno in alunos %}
-
-                            <tr class="linha-nota"
-                                data-aluno="{{ aluno.id }}">
-
-                                <td>
-
-                                    <div class="student-info">
-
-                                        <div class="student-avatar">
-                                            {{ aluno.nome|slice:":1" }}
-                                        </div>
-
-                                        <div>
-
-                                            <strong>
-                                                {{ aluno.nome }}
-                                            </strong>
-
-                                            <small class="student-subtitle">
-                                                {{ bimestre_atual }}º bimestre
-                                            </small>
-
-                                        </div>
-
-                                    </div>
-
-                                </td>
-
-                                <td>
-
-                                    <input
-                                        type="number"
-                                        name="nota1_{{ aluno.id }}"
-                                        class="nota-input nota-parcial"
-                                        min="0"
-                                        max="10"
-                                        step="0.1"
-                                        value="{{ aluno.nota1|default:'' }}"
-                                        placeholder="0,0"
-                                    >
-
-                                </td>
-
-                                <td>
-
-                                    <input
-                                        type="number"
-                                        name="nota2_{{ aluno.id }}"
-                                        class="nota-input nota-parcial"
-                                        min="0"
-                                        max="10"
-                                        step="0.1"
-                                        value="{{ aluno.nota2|default:'' }}"
-                                        placeholder="0,0"
-                                    >
-
-                                </td>
-
-                                <td>
-
-                                    <input
-                                        type="number"
-                                        name="nota3_{{ aluno.id }}"
-                                        class="nota-input nota-parcial"
-                                        min="0"
-                                        max="10"
-                                        step="0.1"
-                                        value="{{ aluno.nota3|default:'' }}"
-                                        placeholder="0,0"
-                                    >
-
-                                </td>
-
-                                <td>
-
-                                    <div class="media-box">
-
-                                        <strong class="media-aluno">
-                                            {{ aluno.media|default:"0,0" }}
-                                        </strong>
-
-                                    </div>
-
-                                </td>
-
-                                <td>
-
-                                    <span class="nota-status {{ aluno.status_classe }}">
-                                        {{ aluno.status }}
-                                    </span>
-
-                                </td>
-
-                            </tr>
-
-                            {% empty %}
-
-                            <tr>
-
-                                <td colspan="6"
-                                    style="text-align:center;padding:40px;color:#94a3b8;">
-
-                                    Nenhum aluno encontrado.
-
-                                </td>
-
-                            </tr>
-
-                            {% endfor %}
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-                <div class="notas-footer-actions">
-
-                    <a href="{% url 'turma_detalhe' turma.id %}"
-                       class="btn-secondary-premium">
-                        ↩ Voltar
-                    </a>
-
-                    <button class="btn-primary"
-                            type="submit">
-                        💾 Salvar {{ bimestre_atual }}º Bimestre
-                    </button>
-
-                </div>
-
-            </form>
-
-        </section>
+<div class="page-shell page-modern" data-template="core/notas_turma.html">
+<!-- HEADER PREMIUM COMPACTO --><!-- PROGRESSO BIMESTRAL --><section class="notas-bimestres-panel"><div class="notas-panel-left"><span class="notas-kicker">Diário de Classe
+ </span><h2>Lançamento de Notas
+ </h2><p>Cada bimestre possui três avaliações. O sistema abre automaticamente o primeiro bimestre incompleto e mantém as notas já salvas.
+ </p></div><div class="bimestres-progress">{% for item in progresso_bimestres %}
+
+ <a href="?bimestre={{ item.numero }}"
+ class="bimestre-chip {% if item.ativo %}active{% endif %} {% if item.completo %}complete{% endif %}"><strong>{{ item.numero }}º
+ </strong><span>{{ item.preenchidos }}/{{ item.total }}
+ </span></a>{% endfor %}
+
+ </div></section><!-- REGRA --><section class="notas-rule-grid"><div class="notas-rule-card"><span>Média Bimestral
+ </span><strong>(N1 + N2 + N3) ÷ 3
+ </strong><small>Padrão simples para fechamento das três avaliações do bimestre.
+ </small></div><div class="notas-rule-card"><span>Bimestre Atual
+ </span><strong>{{ bimestre_atual }}º Bimestre
+ </strong><small>Troque pelos botões acima para revisar notas já lançadas.
+ </small></div><div class="notas-rule-card"><span>Status pedagógico
+ </span><strong>Automático
+ </strong><small>Aprovado, atenção ou risco conforme a média calculada.
+ </small></div></section><!-- FORM --><section class="panel table-panel notas-table-panel"><form method="POST" id="formNotas">{% csrf_token %}
+
+ <input type="hidden"
+ name="bimestre"
+ id="bimestreHidden"
+ value="{{ bimestre_atual }}"><div class="notas-toolbar"><div><h3>Alunos da Turma
+ </h3><p>Preencha N1, N2 e N3. A média final é calculada automaticamente.
+ </p></div><div class="notas-toolbar-stats"><span>{{ total_alunos }} alunos
+ </span><span id="contadorPreenchidos">{{ alunos_completos }} completos
+ </span></div></div><div class="notas-scroll"><table class="premium-table notas-premium-table"><thead><tr><th>Aluno</th><th>Nota 1</th><th>Nota 2</th><th>Nota 3</th><th>Média</th><th>Status</th></tr></thead><tbody>{% for aluno in alunos %}
+
+ <tr class="linha-nota"
+ data-aluno="{{ aluno.id }}"><td><div class="student-info"><div class="student-avatar">{{ aluno.nome|slice:":1" }}
+ </div><div><strong>{{ aluno.nome }}
+ </strong><small class="student-subtitle">{{ bimestre_atual }}º bimestre
+ </small></div></div></td><td><input
+ type="number"
+ name="nota1_{{ aluno.id }}"
+ class="nota-input nota-parcial"
+ min="0"
+ max="10"
+ step="0.1"
+ value="{{ aluno.nota1|default:'' }}"
+ placeholder="0,0"
+ ></td><td><input
+ type="number"
+ name="nota2_{{ aluno.id }}"
+ class="nota-input nota-parcial"
+ min="0"
+ max="10"
+ step="0.1"
+ value="{{ aluno.nota2|default:'' }}"
+ placeholder="0,0"
+ ></td><td><input
+ type="number"
+ name="nota3_{{ aluno.id }}"
+ class="nota-input nota-parcial"
+ min="0"
+ max="10"
+ step="0.1"
+ value="{{ aluno.nota3|default:'' }}"
+ placeholder="0,0"
+ ></td><td><div class="media-box"><strong class="media-aluno">{{ aluno.media|default:"0,0" }}
+ </strong></div></td><td><span class="nota-status {{ aluno.status_classe }}">{{ aluno.status }}
+ </span></td></tr>{% empty %}
+
+ <tr><td colspan="6"
+ style="text-align:center;padding:40px;color:#94a3b8;">Nenhum aluno encontrado.
+
+ </td></tr>{% endfor %}
+
+ </tbody></table></div><div class="notas-footer-actions"><a href="{% url 'turma_detalhe' turma.id %}"
+ class="btn-secondary-premium">↩ Voltar
+ </a><button class="btn-primary"
+ type="submit">Salvar {{ bimestre_atual }}º Bimestre
+ </button></div></form></section>
 </div>
 {% endblock %}

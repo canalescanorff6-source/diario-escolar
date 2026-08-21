@@ -1,4 +1,4 @@
-# Migration de reparo para bancos SQLite antigos do Diário IA.
+# Migration de reparo para bancos SQLite antigos do Diário Escolar Pro.
 # Ela é idempotente: só cria colunas/tabelas ausentes, preservando dados existentes.
 
 from django.db import migrations
@@ -23,6 +23,10 @@ def _add_column_if_missing(cursor, table_name, column_name, sql_fragment):
 
 def reparar_schema(apps, schema_editor):
     connection = schema_editor.connection
+    # Esta migration existe apenas para reparar bases SQLite históricas.
+    # Em PostgreSQL a estrutura já é criada pelas migrations declarativas anteriores.
+    if connection.vendor != "sqlite":
+        return
     cursor = connection.cursor()
 
     # Campos que versões antigas do banco podem não possuir.

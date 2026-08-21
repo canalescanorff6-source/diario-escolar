@@ -1,6 +1,0 @@
-{% extends 'gestao/base_premium_gestao.html' %}
-{% block titulo %}Conferência 321–340{% endblock %}
-{% block subtitulo %}Fluxo de aula, aula rápida e acabamento visual final{% endblock %}
-{% block conteudo %}
-<section class="panel"><table class="table premium-table"><thead><tr><th>Item</th><th>Status</th><th>Detalhe</th></tr></thead><tbody>{% for l in linhas %}<tr><td>{{ l.item }}</td><td><span class="pill">{{ l.status }}</span></td><td>{{ l.detalhe }}</td></tr>{% endfor %}</tbody></table></section>
-{% endblock %}

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -o errexit
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-python manage.py collectstatic --noinput
+set -euo pipefail
+cd "$(dirname "$0")/backend"
+exec bash build.sh

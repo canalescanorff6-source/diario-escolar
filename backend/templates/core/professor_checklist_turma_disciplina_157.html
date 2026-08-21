@@ -1,6 +1,0 @@
-{% extends 'core/base_professor_premium.html' %}
-{% block titulo %}Conferência mensal da turma{% endblock %}
-{% block subtitulo %}Alunos, horários, frequência P/F/FJ e aulas registradas • {{ mes_nome }}/{{ ano }}{% endblock %}
-{% block conteudo %}
-<section class="panel"><table class="table"><thead><tr><th>Turma</th><th>Disciplina</th><th>Turno</th><th>Alunos</th><th>Horários</th><th>Frequência</th><th>Aulas</th><th>Pendências</th></tr></thead><tbody>{% for linha in linhas %}<tr><td>{{ linha.vinculo.turma.nome }}</td><td>{{ linha.vinculo.disciplina.nome }}</td><td>{{ linha.turno }}</td><td>{{ linha.bloco.total_alunos }}</td><td>{{ linha.bloco.horarios_count }}</td><td>P {{ linha.bloco.frequencia.presencas }} / F {{ linha.bloco.frequencia.faltas }} / FJ {{ linha.bloco.frequencia.fj }}</td><td>{{ linha.bloco.aulas_count }}</td><td>{% if linha.bloco.pendencias %}{% for p in linha.bloco.pendencias %}<span class="pill">{{ p }}</span> {% endfor %}{% else %}<span class="pill">OK</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="8">Nenhum vínculo ativo para este professor.</td></tr>{% endfor %}</tbody></table></section>
-{% endblock %}

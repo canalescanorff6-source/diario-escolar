@@ -1,21 +1,22 @@
 {% extends "admin/base.html" %}
 {% load static %}
 
-{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Diário IA Admin{% endblock %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Diário Escolar Pro{% endblock %}
 
 {% block extrahead %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'css/premium_base_final.css' %}?v=admin-premium-base">
+<style>
+  :root { --primary:#0f766e; --secondary:#0f172a; --accent:#14b8a6; }
+  #header { background:#0f172a; color:#fff; }
+  #site-name a { color:#fff; font-weight:750; }
+  .module h2, .module caption, .inline-group h2 { background:#0f766e; }
+  div.breadcrumbs { background:#0b5f59; }
+  .button, input[type=submit], input[type=button], .submit-row input { background:#0f766e; }
+</style>
 {% endblock %}
 
 {% block branding %}
-<div class="diario-admin-brand">
-    <span class="diario-admin-logo">🏫</span>
-    <div>
-        <h1 id="site-name"><a href="{% url 'admin:index' %}">Diário IA Escolar</a></h1>
-        <small>Gestão administrativa • usuários • escolas • diário escolar</small>
-    </div>
-</div>
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Diário Escolar Pro • Administração</a></h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}

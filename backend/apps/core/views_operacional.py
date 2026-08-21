@@ -1,7 +1,53 @@
-# Camada de views operacional — refatoração real etapa 1221-1280.
-# Mantém os nomes públicos usados pelas URLs, mas tira o peso do antigo views.py.
+"""Views operacionais e painel da gestão."""
 
 from .views_shared import *  # noqa: F401,F403
+
+
+
+def media_arquivo(request, path):
+    """Entrega mídia local sem expor fotos de alunos/professores anonimamente.
+
+    Brasões/logos em ``escolas/`` podem aparecer na tela pública de login.
+    Fotos pessoais exigem sessão e autorização sobre o registro correspondente.
+    """
+    from django.http import FileResponse, Http404
+
+    relativo = Path(str(path or ""))
+    if relativo.is_absolute() or ".." in relativo.parts:
+        raise Http404
+
+    raiz = Path(settings.MEDIA_ROOT).resolve()
+    arquivo = (raiz / relativo).resolve()
+    try:
+        arquivo.relative_to(raiz)
+    except ValueError as exc:
+        raise Http404 from exc
+    if not arquivo.is_file():
+        raise Http404
+
+    caminho = relativo.as_posix()
+    if caminho.startswith("escolas/"):
+        return FileResponse(open(arquivo, "rb"))
+
+    if not getattr(request.user, "is_authenticated", False):
+        raise Http404
+
+    if caminho.startswith("alunos/"):
+        aluno = Aluno.objects.select_related("turma").filter(foto=caminho).first()
+        if not aluno or not (usuario_gestor(request.user) or _usuario_pode_ver_turma(request.user, aluno.turma)):
+            raise Http404
+    elif caminho.startswith("professores/"):
+        Usuario = get_user_model()
+        dono = Usuario.objects.filter(foto=caminho).first()
+        if not dono or not (usuario_gestor(request.user) or dono.pk == request.user.pk):
+            raise Http404
+    elif not usuario_gestor(request.user):
+        raise Http404
+
+    response = FileResponse(open(arquivo, "rb"))
+    response["Cache-Control"] = "private, max-age=300"
+    response["X-Content-Type-Options"] = "nosniff"
+    return response
 
 def healthz(request):
     """Health check HTTP para Render: confirma app, banco e static sem exigir login."""
@@ -16,12 +62,26 @@ def healthz(request):
         db_status = f"erro: {exc.__class__.__name__}"
         http_status = 503
     return JsonResponse({
-        "app": "Diario IA Escolar Premium",
+        "app": "Diário Escolar Pro",
         "status": "ok" if http_status == 200 else "erro",
         "database": db_status,
         "render": bool(os.environ.get("RENDER")),
-        "version": "1081-1160",
+        "version": "2.0",
     }, status=http_status)
+
+
+def service_worker(request):
+    """Entrega o service worker no escopo raiz sem armazenar páginas autenticadas em cache."""
+    from django.contrib.staticfiles import finders
+    from django.http import FileResponse, HttpResponse
+
+    caminho = finders.find("js/service-worker.js")
+    if not caminho:
+        return HttpResponse("// service worker indisponível", content_type="application/javascript", status=404)
+    response = FileResponse(open(caminho, "rb"), content_type="application/javascript")
+    response["Service-Worker-Allowed"] = "/"
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
 
 
 @login_required
@@ -38,9 +98,9 @@ def dashboard_gestao(request):
     horarios = HorarioAula.objects.select_related("turma", "disciplina", "professor").filter(ativo=True).order_by("turno", "dia_semana", "hora_inicio")[:10]
     vinculos = ProfessorTurmaDisciplina.objects.filter(ativo=True)
 
-    status_frequencia = diagnostico_tecnico_diario_real()
-    total_frequencias = status_frequencia["frequencias"]
-    total_presencas = status_frequencia["presencas"]
+    frequencias_qs = Frequencia.objects.all()
+    total_frequencias = frequencias_qs.count()
+    total_presencas = frequencias_qs.filter(status="P").count()
     frequencia_geral = round((total_presencas / total_frequencias) * 100, 1) if total_frequencias else 100
     media_escola = Nota.objects.aggregate(media=Avg("valor"))["media"] or 0
     media_escola = round(float(media_escola), 1) if media_escola else 0
@@ -81,8 +141,8 @@ def dashboard_gestao(request):
         })
 
     total_disciplinas = Disciplina.objects.count()
-    total_faltas = status_frequencia["faltas"]
-    total_fj = status_frequencia["fj"]
+    total_faltas = frequencias_qs.filter(status="F").count()
+    total_fj = frequencias_qs.filter(status="FJ").count()
     turmas_sem_vinculo = Turma.objects.filter(ativa=True).exclude(vinculos_professores__ativo=True).distinct().count()
     turmas_sem_horario = Turma.objects.filter(ativa=True).exclude(horarios__ativo=True).distinct().count()
     pendencias_gestao = []
@@ -95,16 +155,6 @@ def dashboard_gestao(request):
     if turmas_sem_horario:
         pendencias_gestao.append(f"{turmas_sem_horario} turma(s) sem horário semanal")
 
-    fluxo_gestao = fluxo_gestao_unificado()
-
-    diagnostico_gestao = {
-        "escola_configurada": escola is not None,
-        "ano_letivo_configurado": ano_letivo is not None,
-        "turmas_sem_vinculo": turmas_sem_vinculo,
-        "turmas_sem_horario": turmas_sem_horario,
-        "painel_unificado": True,
-    }
-
     context = {
         "escola": escola,
         "ano_letivo": ano_letivo,
@@ -113,82 +163,16 @@ def dashboard_gestao(request):
         "total_alunos": total_alunos,
         "total_professores": total_professores,
         "total_horarios": total_horarios,
-        "total_vinculos": total_vinculos,
-        "total_disciplinas": total_disciplinas,
-        "carga_horaria_professores": carga_horaria_professores_resumo(),
         "total_faltas": total_faltas,
         "total_fj": total_fj,
-        "turmas_sem_vinculo": turmas_sem_vinculo,
-        "turmas_sem_horario": turmas_sem_horario,
         "pendencias_gestao": pendencias_gestao,
-        "fluxo_gestao": fluxo_gestao,
-        "diagnostico_gestao": diagnostico_gestao,
         "total_risco": total_risco,
         "frequencia_geral": frequencia_geral,
         "media_escola": media_escola,
-        "professores": professores,
         "professores_dados": professores_dados,
-        "horarios": horarios,
         "dados_turmas": dados_turmas,
-        "alunos_risco": alunos_risco[:8],
         "alunos_risco_admin": alunos_risco[:8],
-        "grafico_labels": json.dumps(["Turmas", "Alunos", "Professores", "Horários", "Vínculos"]),
-        "grafico_dados": json.dumps([total_turmas, total_alunos, total_professores, total_horarios, total_vinculos]),
-        "resumo_861_900_gestao": resumo_gestao_861_900(),
-        "finalizacao_901_960_gestao": finalizacao_901_960(),
-        "mega_checkup_961_1000_gestao": mega_checkup_961_1000(),
-        "mega_checkup_1001_1080_gestao": mega_checkup_1001_1080(),
     }
     return render(request, "core/dashboard_admin.html", context)
 
 
-
-
-@login_required
-def checkup_etapas_301_320(request):
-    if not usuario_gestor(request.user):
-        return render(request, "core/acesso_negado.html")
-    linhas = []
-    linhas.append({"item": "Botões premium", "status": "Aplicado", "detalhe": "Links soltos e ações comuns recebem classe visual global."})
-    linhas.append({"item": "Separação de área", "status": "Aplicado", "detalhe": "Rotas novas redirecionam gestão/professor para sua área correta."})
-    linhas.append({"item": "Carga horária semanal", "status": "Aplicado", "detalhe": "Professor e gestão possuem visão semanal por grade HorarioAula."})
-    linhas.append({"item": "Gestão sem admin", "status": "Em expansão", "detalhe": "Central de cadastros cobre ano, disciplina, turma, professor, aluno, vínculo e horário."})
-    linhas.append({"item": "Diário Escolar", "status": "Preservado", "detalhe": "Não foi removida lógica de frequência, aulas ou ficha oficial."})
-    return render(request, "gestao/checkup_etapas_301_320.html", {"linhas": linhas})
-
-
-@login_required
-def checkup_etapas_321_340(request):
-    if not usuario_gestor(request.user):
-        return render(request, "core/acesso_negado.html")
-    linhas = [
-        {"item": "Central da Gestão Escolar", "status": "Aplicado", "detalhe": "Nova tela mostra pendências reais, turnos, vínculos, horários e carga horária."},
-        {"item": "Central do Professor", "status": "Aplicado", "detalhe": "Professor entra em rotina de trabalho com aulas de hoje, pendências e chamada rápida."},
-        {"item": "Aula rápida", "status": "Aplicado", "detalhe": "Tela única salva frequência P/F/FJ e conteúdo de aula."},
-        {"item": "Botões premium", "status": "Reforçado", "detalhe": "CSS global transforma links soltos e ações em botões/cards premium."},
-        {"item": "Turnos oficiais", "status": "Aplicado", "detalhe": "Gestão pode normalizar turmas sem turno para manhã/tarde/noite."},
-        {"item": "Sem admin obrigatório", "status": "Em avanço", "detalhe": "Fluxo principal continua saindo do /admin/ para a gestão."},
-    ]
-    return render(request, "gestao/checkup_etapas_321_340.html", {"linhas": linhas, "hoje": date.today()})
-
-
-@login_required
-def checkup_etapas_361_380(request):
-    if not usuario_gestor(request.user):
-        return render(request, "core/acesso_negado.html")
-    arquivos = _saude_deploy_render()
-    cards, pendencias = _qualidade_operacional_escola()
-    linhas = [
-        {"item": "Render online", "status": "Preparado", "detalhe": "build.sh, Procfile, render.yaml, runtime.txt, WhiteNoise e DATABASE_URL."},
-        {"item": "Botões premium", "status": "Reforçado", "detalhe": "Ações e links soltos recebem padrão visual consistente."},
-        {"item": "Carga horária", "status": "Reforçada", "detalhe": "Gestão e professor conseguem acompanhar aulas e horas semanais."},
-        {"item": "Qualidade operacional", "status": "Criada", "detalhe": "Gestão vê pendências reais de turno, vínculo, horário e alunos."},
-        {"item": "Separação de áreas", "status": "Preservada", "detalhe": "Professor continua sem cair na gestão e gestão sem cair no professor."},
-    ]
-    return render(request, "gestao/checkup_etapas_361_380.html", {
-        "linhas": linhas,
-        "arquivos": arquivos,
-        "cards": cards,
-        "pendencias": pendencias,
-        "hoje": date.today(),
-    })

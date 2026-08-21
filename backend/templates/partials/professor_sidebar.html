@@ -1,25 +1,45 @@
-<aside class="sidebar professor-sidebar-premium">
-  <div class="logo" aria-label="Diário IA Professor">🤖</div>
-  <nav class="professor-nav-clean" aria-label="Menu principal do professor">
-    <div class="sidebar-section-title">Principal</div>
-    <a href="{% url 'dashboard_professor' %}" data-active-paths="/|/professor/">🏠 <span>Painel</span></a>
-    <a href="{% url 'professor_rotina_semanal_361' %}" data-active-paths="/professor/rotina-semanal/">🗓️ <span>Rotina semanal</span></a>
-    <a href="{% url 'professor_centro_operacional_321' %}" data-active-paths="/professor/centro-operacional/|/professor/operacao-real/">🎯 <span>Central do Professor</span></a>
-    <a href="{% url 'professor_aula_rapida_321' %}" data-active-paths="/professor/aula-rapida/">⚡ <span>Aula rápida</span></a>
-    <a href="{% url 'turmas' %}" data-active-paths="/turmas/|/professor/horarios-reais/">🏫 <span>Minhas turmas</span></a>
+<aside class="sidebar professor-sidebar" id="app-sidebar" aria-label="Navegação do professor">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11a3 3 0 0 1 3 3v15a3 3 0 0 0-3-3H4z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H14v15a3 3 0 0 1 3-3h3z"/></svg>
+    </span>
+    <span class="brand-copy"><strong>Diário Escolar Pro</strong><span>Área do professor</span></span>
+  </div>
+  <nav aria-label="Menu principal">
+    <div class="sidebar-section-title">Trabalho</div>
+    <a href="{% url 'dashboard_professor' %}" data-active-paths="/|/professor/">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg><span>Início</span>
+    </a>
+    <a href="{% url 'professor_registrar_aula' %}" data-active-paths="/professor/aulas/nova/">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg><span>Registrar aula</span>
+    </a>
+    <a href="{% url 'turmas' %}" data-active-paths="/professor/turmas/|/turma/">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1M14 9h1M9 13h1M14 13h1"/></svg><span>Turmas</span>
+    </a>
+    <a href="{% url 'professor_diario_oficial' %}" data-active-paths="/professor/diario/">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2"/></svg><span>Diário de Classe</span>
+    </a>
+    <a href="{% url 'professor_agenda' %}" data-active-paths="/professor/agenda/">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Agenda</span>
+    </a>
 
-    <div class="sidebar-section-title">Diário de classe</div>
-    <a href="{% url 'professor_aula_rapida_321' %}" data-active-paths="/professor/aula-rapida/|/professor/registro-rapido-aula/|/professor/frequencia-rapida/">📝 <span>Lançar aula</span></a>
-    <a href="{% url 'professor_diario_oficial' %}" data-active-paths="/professor/diario-oficial/|/professor/diario-classe-oficial-completo/|/turma/|/professor/turma/">📗 <span>Meu Diário de Classe</span></a>
-    <a href="{% url 'professor_carga_horaria_301' %}" data-active-paths="/professor/carga-horaria/|/professor/horarios-reais/|/professor/agenda-semanal/">🕒 <span>Carga horária</span></a>
-    <a href="{% url 'professor_fechamento_mensal_901' %}" data-active-paths="/professor/fechamento-mensal-final/|/professor/prontidao-lancamentos/|/professor/consolidado-mensal/|/professor/relatorio-lancamentos-mes/|/professor/espelho-mensal/">📕 <span>Fechamento mensal</span></a>
-    <a href="{% url 'professor_relatorios_901' %}" data-active-paths="/professor/relatorios-final/|/professor/relatorios/">📄 <span>Relatórios</span></a>
+    <div class="sidebar-section-title">Acompanhamento</div>
+    <a href="{% url 'professor_alunos' %}" data-active-paths="/professor/alunos/|/aluno/">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Alunos</span>
+    </a>
+    <a href="{% url 'professor_relatorios' %}" data-active-paths="/professor/relatorios/">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9M10 19V5M16 19v-8M22 19H2"/></svg><span>Relatórios</span>
+    </a>
+    <a href="{% url 'professor_assistente_pedagogico' %}" data-active-paths="/professor/assistente-pedagogico/">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.5 2a3.5 3.5 0 0 0-3.38 4.4A4 4 0 0 0 4 13.5 4 4 0 0 0 8 20h1.5M14.5 2a3.5 3.5 0 0 1 3.38 4.4A4 4 0 0 1 20 13.5a4 4 0 0 1-4 6.5h-1.5M12 2v20"/></svg><span>Assistente Pedagógico</span>
+    </a>
 
-    <div class="sidebar-section-title">Apoio</div>
-    <a href="{% url 'professor_alunos' %}" data-active-paths="/professor/alunos/|/professor/turma/|/aluno/">👨‍🎓 <span>Alunos</span></a>
-    <a href="{% url 'professor_central_pendencias' %}" data-active-paths="/professor/pendencias/|/professor/checkup-meu-diario/">✅ <span>Pendências</span></a>
-    <a href="{% url 'professor_ia_pedagogica_901' %}" data-active-paths="/professor/ia-pedagogica-final/|/professor/ia-pedagogica/|/professor/alertas-inteligentes/|/professor/plano-intervencao/">🧠 <span>IA Pedagógica</span></a>
-    <a href="{% url 'professor_configuracoes' %}" data-active-paths="/professor/configuracoes/">⚙️ <span>Configurações</span></a>
-    <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">{% csrf_token %}<button type="submit" class="sidebar-logout-btn">🚪 <span>Sair</span></button></form>
+    <div class="sidebar-section-title">Conta</div>
+    <a href="{% url 'professor_configuracoes' %}" data-active-paths="/professor/configuracoes/">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06-2.83 2.83-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21h-4v-.09a1.65 1.65 0 0 0-1.08-1.5 1.65 1.65 0 0 0-1.82.33l-.06.06-2.83-2.83.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3v-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06 2.83-2.83.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3h4v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06 2.83 2.83-.06.06A1.65 1.65 0 0 0 19.4 9c.12.6.58 1.06 1.18 1.18H21v4h-.42A1.65 1.65 0 0 0 19.4 15z"/></svg><span>Configurações</span>
+    </a>
+    <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">{% csrf_token %}<button type="submit" class="sidebar-logout-btn">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg><span>Sair</span>
+    </button></form>
   </nav>
 </aside>

@@ -6,6 +6,7 @@ from django.core import signing
 from django.utils import timezone
 
 
+# Não alterar: este salt legado mantém válidas as licenças já emitidas.
 SERIAL_SALT = "diario-ia-escolar-licenca-gestao-v1"
 PERFIS_GESTAO = {"ADMIN", "COORD", "SEC"}
 

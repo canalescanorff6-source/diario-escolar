@@ -1,0 +1,10 @@
+{% extends 'core/base_professor_premium.html' %}
+{% block titulo %}Assistente Pedagógico{% endblock %}
+{% block subtitulo %}{{ subtitulo }}{% endblock %}
+{% block icone %}{% endblock %}
+{% block conteudo %}
+<section class="assistant-hero"><div><span class="assistant-badge">Diário Escolar Pro • {{ modo }}</span><h2>Assistente pedagógico</h2><p>Indicadores consolidados de notas, frequência, recuperação e acompanhamento escolar.</p><div class="ia-actions"><a href="{% url 'professor_assistente_pedagogico' %}"> Abrir assistente</a><a class="secondary" href="{% url 'professor_registrar_aula' %}"> Aula rápida</a></div></div><div class="assistant-score"><strong>{{ alunos_risco|length }}</strong><span>alunos em atenção</span></div>
+</section>
+<section class="assistant-grid"><div class="assistant-card"><span>Alunos</span><strong>{{ total_alunos }}</strong><small>analisados</small></div><div class="assistant-card"><span>Turmas</span><strong>{{ total_turmas }}</strong><small>vinculadas</small></div><div class="assistant-card"><span>Notas</span><strong>{{ total_notas }}</strong><small>lançadas</small></div><div class="assistant-card"><span>Faltas</span><strong>{{ total_faltas }}</strong><small>registradas</small></div></section>
+<section class="assistant-grid"><div class="assistant-panel"><h3>Alunos em atenção</h3><div class="assistant-list">{% for item in alunos_risco %}<div class="assistant-item"><div><strong>{{ item.aluno.nome }}</strong><small>{{ item.aluno.turma.nome }} • {{ item.motivos }}{% if item.media %} • Média {{ item.media|floatformat:2 }}{% endif %} • Faltas {{ item.faltas }}</small></div><span class="ia-status {{ item.nivel|lower }}">{{ item.nivel }}</span></div>{% empty %}<div class="ia-empty">Nenhum aluno em risco detectado com os dados atuais.</div>{% endfor %}</div></div><div class="assistant-panel"><h3>Recomendações</h3><div class="assistant-list">{% for recomendacao in recomendacoes %}<div class="assistant-item"><strong> {{ recomendacao }}</strong></div>{% endfor %}</div></div></section>
+{% endblock %}

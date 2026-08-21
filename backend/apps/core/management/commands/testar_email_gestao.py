@@ -48,9 +48,9 @@ class Command(BaseCommand):
 
         try:
             enviados = send_mail(
-                subject="Teste de e-mail — Diário IA Escolar",
+                subject="Teste de e-mail — Diário Escolar Pro",
                 message=(
-                    "Teste de envio do Diário IA Escolar.\n\n"
+                    "Teste de envio do Diário Escolar Pro.\n\n"
                     "Se você recebeu esta mensagem, o envio real por e-mail está funcionando.\n\n"
                     f"Código numérico de teste: {codigo}\n\n"
                     "Atenção: este código é apenas para testar o envio de e-mail. "

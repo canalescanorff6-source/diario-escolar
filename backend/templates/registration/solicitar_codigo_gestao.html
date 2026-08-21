@@ -1,54 +1,16 @@
 {% extends "registration/base_auth_premium.html" %}
-{% block title %}Receber código da gestão{% endblock %}
-
+{% block title %}Primeiro acesso · Diário Escolar Pro{% endblock %}
 {% block auth_content %}
-  <div class="auth-access-head auth-access-head-v3">
-    <span>E-mail autorizado</span>
-    <h2>Receber código</h2>
-    <p>O código numérico de 6 dígitos para criação da gestão será enviado somente para o e-mail autorizado da escola.</p>
-  </div>
-
-  {% if messages %}
-    {% for message in messages %}
-      <div class="{% if message.tags == 'success' %}auth-success{% else %}auth-error{% endif %}">{{ message }}</div>
-    {% endfor %}
+  <span class="eyebrow">Primeiro acesso da gestão</span>
+  <h2>Receber código de autorização</h2>
+  <p>O código temporário será enviado ao endereço autorizado configurado no servidor.</p>
+  {% if messages %}{% for message in messages %}<div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">{{ message }}</div>{% endfor %}{% endif %}
+  {% if email_autorizado %}
+    <div class="info-card"><span>Destino configurado</span><strong>{{ email_autorizado }}</strong><small>O endereço completo pode ser alterado somente pela configuração segura do ambiente.</small></div>
+    <form method="post" class="stack-md">{% csrf_token %}<button type="submit" class="btn btn-primary auth-submit">Enviar código</button></form>
+  {% else %}
+    <div class="alert alert-danger">Nenhum e-mail de autorização foi configurado. Defina <code>GESTAO_AUTORIZACAO_EMAIL</code> no ambiente antes de criar a primeira conta.</div>
   {% endif %}
-
-  <form method="post" class="auth-form auth-form-v3 auth-locked-email-form" novalidate>
-    {% csrf_token %}
-
-    <div class="auth-locked-email-card">
-      <span class="auth-locked-email-label">E-mail autorizado para receber o código</span>
-
-      <strong class="auth-locked-email-value">
-        {{ email_autorizado|default:"thiago01268230@gmail.com" }}
-      </strong>
-
-      <small>
-        Este é o e-mail autorizado para receber o código de criação da conta da gestão escolar.
-        Em caso de dificuldade no acesso ou necessidade de alteração do e-mail autorizado,
-        entre em contato pelo WhatsApp:
-        <a href="https://wa.me/5598996127032" target="_blank" rel="noopener">
-          (98) 99612-7032
-        </a>.
-      </small>
-    </div>
-
-    <button type="submit" class="auth-submit auth-submit-v3">
-      Enviar código para este e-mail
-    </button>
-  </form>
-
-  <a class="auth-secondary-link" href="{% url 'criar_conta_gestao_autorizada' %}">
-    Já tenho o código
-  </a>
-
-  <a class="auth-secondary-link auth-secondary-link-soft" href="{% url 'login' %}">
-    Voltar ao acesso
-  </a>
-
-  <div class="auth-help-box">
-    Somente a direção/gestão autorizada recebe o código numérico de 6 dígitos para criar a conta inicial da gestão.
-    O código expira em {{ validade_minutos|default:15 }} minutos.
-  </div>
+  <div class="auth-links"><a href="{% url 'criar_conta_gestao_autorizada' %}">Já tenho um código</a><a href="{% url 'login' %}">Voltar ao login</a></div>
+  <p class="auth-meta">Por segurança, o código expira em {{ validade_minutos|default:15 }} minutos.</p>
 {% endblock %}

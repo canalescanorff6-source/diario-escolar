@@ -1,4 +1,4 @@
-# Generated for Diário IA Escolar Premium - Etapas 223-228
+# Migração do status oficial de frequência P/F/FJ.
 from django.db import migrations, models
 
 
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='frequencia',
             name='status',
-            field=models.CharField(choices=[('P', 'Presença'), ('F', 'Falta'), ('FJ', 'Falta justificada')], db_index=True, default='P', help_text='Status oficial do Diário Real: P, F ou FJ.', max_length=2),
+            field=models.CharField(choices=[('P', 'Presença'), ('F', 'Falta'), ('FJ', 'Falta justificada')], db_index=True, default='P', help_text='Status oficial do Diário Escolar: P, F ou FJ.', max_length=2),
         ),
         migrations.RunPython(migrar_status_frequencia, migrations.RunPython.noop),
     ]

@@ -1,1 +1,1 @@
-# Template tags do Diário IA Escolar.
+# Template tags do Diário Escolar Pro.

@@ -213,12 +213,14 @@ class Nota(models.Model):
     atualizado_em = models.DateTimeField(auto_now=True)
 
     class Meta:
-
         unique_together = (
             'aluno',
             'disciplina',
             'bimestre'
         )
+        indexes = [
+            models.Index(fields=['turma', 'disciplina', 'bimestre'], name='nota_turma_disc_bim'),
+        ]
 
     @property
     def completa(self):
@@ -295,6 +297,12 @@ class Frequencia(models.Model):
         help_text="Status oficial do Diário Escolar: P, F ou FJ.",
     )
 
+    aula_numero = models.PositiveSmallIntegerField(
+        "Aula/horário do dia",
+        default=1,
+        help_text="Permite registrar mais de uma aula da mesma disciplina no mesmo dia.",
+    )
+
     observacao = models.TextField(
         blank=True,
         null=True
@@ -303,14 +311,16 @@ class Frequencia(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-
         ordering = ['-data']
-
         unique_together = (
             'aluno',
             'disciplina',
-            'data'
+            'data',
+            'aula_numero',
         )
+        indexes = [
+            models.Index(fields=['turma', 'data', 'disciplina'], name='freq_turma_data_disc'),
+        ]
 
     def save(self, *args, **kwargs):
         if self.status == "P":
@@ -368,17 +378,38 @@ class ConteudoAula(models.Model):
         null=True
     )
 
+    quantidade_aulas = models.PositiveSmallIntegerField(
+        default=1,
+        help_text="Quantidade de aulas/tempos registrados neste lançamento.",
+    )
+
+    aula_numero = models.PositiveSmallIntegerField(
+        "Aula/horário do dia",
+        default=1,
+        help_text="Diferencia duas aulas da mesma disciplina no mesmo dia.",
+    )
+
     criado_em = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-data']
+        ordering = ['-data', 'aula_numero']
+        unique_together = (
+            'professor',
+            'turma',
+            'disciplina',
+            'data',
+            'aula_numero',
+        )
+        indexes = [
+            models.Index(fields=['turma', 'data', 'disciplina'], name='cont_turma_data_disc'),
+        ]
 
     def __str__(self):
         return f"{self.turma.nome} - {self.data}"
 
 
 # =====================================================
-# ALERTAS IA
+# ALERTAS PEDAGÓGICOS
 # =====================================================
 
 class AlertaIA(models.Model):
@@ -409,6 +440,8 @@ class AlertaIA(models.Model):
 
     class Meta:
         ordering = ['-criado_em']
+        verbose_name = "Alerta pedagógico"
+        verbose_name_plural = "Alertas pedagógicos"
 
     def __str__(self):
         return f"{self.aluno.nome} - {self.nivel}"
@@ -446,14 +479,14 @@ class Escola(models.Model):
     estado_nome = models.CharField(
         "Estado/órgão superior",
         max_length=160,
-        default="ESTADO DO MARANHÃO",
+        default="",
         blank=True
     )
 
     secretaria = models.CharField(
         "Secretaria/órgão responsável",
         max_length=180,
-        default="SECRETARIA DE ESTADO DA EDUCAÇÃO",
+        default="",
         blank=True
     )
 
@@ -477,6 +510,26 @@ class Escola(models.Model):
         null=True
     )
 
+    # Regras acadêmicas centralizadas. Todas as telas devem consultar estes valores.
+    media_aprovacao = models.DecimalField(
+        "Média mínima para aprovação",
+        max_digits=4,
+        decimal_places=2,
+        default=6.0,
+    )
+    media_atencao = models.DecimalField(
+        "Média de atenção pedagógica",
+        max_digits=4,
+        decimal_places=2,
+        default=7.0,
+    )
+    frequencia_minima = models.DecimalField(
+        "Frequência mínima (%)",
+        max_digits=5,
+        decimal_places=2,
+        default=75.0,
+    )
+
     municipio = models.CharField(
         max_length=120,
         blank=True,
@@ -485,7 +538,8 @@ class Escola(models.Model):
 
     estado = models.CharField(
         max_length=2,
-        default="MA"
+        default="",
+        blank=True,
     )
 
     ano_letivo_ativo = models.ForeignKey(
@@ -611,6 +665,9 @@ class ProfessorTurmaDisciplina(models.Model):
         )
         verbose_name = "Vínculo professor/turma/disciplina"
         verbose_name_plural = "Vínculos professor/turma/disciplina"
+        indexes = [
+            models.Index(fields=['professor', 'ativo', 'turma'], name='vinc_prof_ativo_turma'),
+        ]
 
     def __str__(self):
         nome = self.professor.get_full_name() or self.professor.username
@@ -694,6 +751,9 @@ class HorarioAula(models.Model):
         )
         verbose_name = "Horário de aula"
         verbose_name_plural = "Horários de aula"
+        indexes = [
+            models.Index(fields=['professor', 'ativo', 'dia_semana'], name='hora_prof_ativo_dia'),
+        ]
 
     def save(self, *args, **kwargs):
         if not self.horario_numero:
@@ -709,7 +769,7 @@ class HorarioAula(models.Model):
         )
 
 # =====================================================
-# ETAPA 9 — CALENDÁRIO, FECHAMENTO, PARECER E ASSINATURA
+# Calendário, fechamento, parecer e assinatura
 # Models aditivos para gestão escolar sem remover estrutura existente.
 # =====================================================
 
@@ -956,7 +1016,7 @@ class AssinaturaDocumento(models.Model):
 
 
 # =====================================================
-# ETAPA 10 — HISTÓRICO, AUDITORIA, DOCUMENTOS E NOTIFICAÇÕES
+# Histórico, auditoria, documentos e notificações
 # Models aditivos para gestão escolar avançada.
 # =====================================================
 
@@ -1190,7 +1250,7 @@ class NotificacaoGestao(models.Model):
 
 
 # =====================================================
-# ETAPA 11 — Gestão executiva, backup e integrações
+# Gestão executiva e integrações
 # =====================================================
 
 class BackupSistema(models.Model):
@@ -1260,7 +1320,7 @@ class IndicadorGestao(models.Model):
 
 
 # =====================================================
-# FECHAMENTO MENSAL OFICIAL — ETAPA 1221-1280
+# Fechamento mensal oficial
 # Estrutura persistente para fechar mês por professor/turma/disciplina.
 # =====================================================
 class FechamentoMensal(models.Model):

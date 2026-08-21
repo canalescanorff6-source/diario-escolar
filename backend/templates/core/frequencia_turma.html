@@ -1,363 +1,62 @@
 {% extends "core/base_professor_premium.html" %}
-{% load static %}
-
-{% block titulo %}Frequência da Turma{% endblock %}
-{% block subtitulo %}Faça a chamada da turma de forma simples e organizada.{% endblock %}
-
+{% block titulo %}Frequência da turma{% endblock %}
+{% block subtitulo %}Registre presença, falta ou falta justificada por disciplina e horário.{% endblock %}
 {% block conteudo %}
-<style>
-  .freq-page {
-    display: grid;
-    gap: 24px;
-  }
+<div class="page-shell">
+  {% if messages %}{% for message in messages %}<div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-info{% endif %}">{{ message }}</div>{% endfor %}{% endif %}
 
-  .freq-kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
-  }
-
-  .freq-kpi-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 18px;
-    min-height: 118px;
-    padding: 24px 28px;
-    border: 1px solid rgba(82, 255, 235, 0.22);
-    border-radius: 24px;
-    background:
-      radial-gradient(circle at 100% 100%, rgba(82, 255, 235, 0.14), transparent 42%),
-      linear-gradient(135deg, rgba(7, 20, 38, 0.94), rgba(4, 34, 42, 0.72));
-    box-shadow: 0 20px 42px rgba(0, 0, 0, 0.18);
-  }
-
-  .freq-kpi-copy {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    min-width: 0;
-  }
-
-  .freq-kpi-label {
-    font-size: 13px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: rgba(219, 239, 255, 0.72);
-  }
-
-  .freq-kpi-help {
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(219, 239, 255, 0.72);
-  }
-
-  .freq-kpi-value {
-    flex: 0 0 auto;
-    font-size: clamp(42px, 5vw, 64px);
-    line-height: 0.9;
-    font-weight: 950;
-    letter-spacing: -0.06em;
-    color: #5fffee;
-    text-shadow: 0 0 26px rgba(82, 255, 235, 0.25);
-  }
-
-  .freq-panel {
-    border: 1px solid rgba(82, 255, 235, 0.22);
-    border-radius: 26px;
-    background:
-      linear-gradient(135deg, rgba(8, 19, 38, 0.95), rgba(3, 36, 42, 0.74));
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.18);
-    overflow: hidden;
-  }
-
-  .freq-panel-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 18px;
-    padding: 26px 28px 18px;
-    border-bottom: 1px solid rgba(82, 255, 235, 0.12);
-  }
-
-  .freq-panel-title {
-    display: grid;
-    gap: 6px;
-  }
-
-  .freq-panel-title h3 {
-    margin: 0;
-    font-size: 24px;
-    color: #f4fbff;
-  }
-
-  .freq-panel-title span {
-    color: rgba(219, 239, 255, 0.72);
-    font-size: 14px;
-    line-height: 1.4;
-  }
-
-  .freq-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 46px;
-    height: 34px;
-    padding: 0 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(82, 255, 235, 0.3);
-    color: #5fffee;
-    background: rgba(82, 255, 235, 0.09);
-    font-size: 12px;
-    font-weight: 950;
-    letter-spacing: 0.06em;
-  }
-
-  .freq-table-wrap {
-    padding: 0 20px 22px;
-    overflow-x: auto;
-  }
-
-  .freq-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 10px;
-    min-width: 720px;
-  }
-
-  .freq-table th {
-    padding: 12px 14px;
-    color: rgba(219, 239, 255, 0.72);
-    font-size: 12px;
-    font-weight: 950;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    background: rgba(15, 29, 54, 0.72);
-  }
-
-  .freq-table th:first-child {
-    border-radius: 14px 0 0 14px;
-  }
-
-  .freq-table th:last-child {
-    border-radius: 0 14px 14px 0;
-  }
-
-  .freq-table td {
-    padding: 14px;
-    background: rgba(255, 255, 255, 0.035);
-    border-top: 1px solid rgba(82, 255, 235, 0.12);
-    border-bottom: 1px solid rgba(82, 255, 235, 0.12);
-    vertical-align: middle;
-  }
-
-  .freq-table td:first-child {
-    border-left: 1px solid rgba(82, 255, 235, 0.12);
-    border-radius: 16px 0 0 16px;
-  }
-
-  .freq-table td:last-child {
-    border-right: 1px solid rgba(82, 255, 235, 0.12);
-    border-radius: 0 16px 16px 0;
-  }
-
-  .freq-student {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .freq-avatar {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 16px;
-    border: 1px solid rgba(82, 255, 235, 0.24);
-    background: rgba(82, 255, 235, 0.09);
-    color: #5fffee;
-    font-weight: 950;
-    text-transform: uppercase;
-  }
-
-  .freq-student-name {
-    display: grid;
-    gap: 2px;
-  }
-
-  .freq-student-name strong {
-    color: #f4fbff;
-    font-size: 15px;
-  }
-
-  .freq-student-name small {
-    color: rgba(219, 239, 255, 0.58);
-    font-size: 12px;
-  }
-
-  .freq-presence-cell {
-    text-align: center;
-  }
-
-  .freq-check-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    border: 1px solid rgba(82, 255, 235, 0.2);
-    border-radius: 999px;
-    color: rgba(244, 251, 255, 0.9);
-    background: rgba(82, 255, 235, 0.07);
-    font-weight: 800;
-    cursor: pointer;
-  }
-
-  .freq-check-label input {
-    width: 22px;
-    height: 22px;
-    accent-color: #5fffee;
-  }
-
-  .freq-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 12px;
-    border-radius: 999px;
-    color: #b7ffdc;
-    background: rgba(50, 255, 150, 0.1);
-    border: 1px solid rgba(50, 255, 150, 0.2);
-    font-size: 13px;
-    font-weight: 800;
-  }
-
-  .freq-actions {
-    display: flex;
-    justify-content: flex-start;
-    padding: 0 28px 28px;
-  }
-
-  .freq-save-btn {
-    border: 1px solid rgba(82, 255, 235, 0.32);
-    border-radius: 18px;
-    padding: 13px 20px;
-    color: #f4fbff;
-    background: linear-gradient(135deg, rgba(82, 255, 235, 0.24), rgba(32, 91, 112, 0.42));
-    font-weight: 950;
-    cursor: pointer;
-    box-shadow: 0 16px 28px rgba(0, 0, 0, 0.2);
-  }
-
-  .freq-empty {
-    text-align: center;
-    padding: 42px 18px !important;
-    color: rgba(219, 239, 255, 0.72);
-  }
-
-  @media (max-width: 980px) {
-    .freq-kpi-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .freq-panel-head {
-      flex-direction: column;
-    }
-  }
-</style>
-
-<div class="premium-only-page visual-1161-1220 freq-page" data-template="core/frequencia_turma.html">
-  {% if messages %}
-    {% for message in messages %}
-      <div class="{% if message.tags == 'success' %}auth-success{% else %}auth-error{% endif %}">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
-
-  <section class="freq-kpi-grid" aria-label="Resumo da frequência da turma">
-    <article class="freq-kpi-card">
-      <div class="freq-kpi-copy">
-        <span class="freq-kpi-label">Alunos</span>
-        <small class="freq-kpi-help">matriculados na turma</small>
-      </div>
-      <strong class="freq-kpi-value">{{ alunos.count }}</strong>
-    </article>
-
-    <article class="freq-kpi-card">
-      <div class="freq-kpi-copy">
-        <span class="freq-kpi-label">Presentes</span>
-        <small class="freq-kpi-help">última chamada</small>
-      </div>
-      <strong class="freq-kpi-value">{{ total_presentes }}</strong>
-    </article>
-
-    <article class="freq-kpi-card">
-      <div class="freq-kpi-copy">
-        <span class="freq-kpi-label">Faltas</span>
-        <small class="freq-kpi-help">registradas</small>
-      </div>
-      <strong class="freq-kpi-value">{{ total_faltas }}</strong>
-    </article>
+  <section class="page-hero compact">
+    <div><span class="eyebrow">Chamada</span><h1>{{ turma.nome }}</h1><p>Use um lançamento por aula para preservar o histórico diário corretamente.</p></div>
+    <div class="hero-actions"><a class="btn-secondary-premium" href="{% url 'turma_detalhe' turma.id %}">Voltar à turma</a><a class="btn-primary" href="{% url 'professor_registrar_aula' %}">Registrar aula completa</a></div>
   </section>
 
-  <section class="freq-panel">
-    <div class="freq-panel-head">
-      <div class="freq-panel-title">
-        <h3>Fazer chamada</h3>
-        <span>Marque os alunos presentes e salve a frequência no Diário de Classe.</span>
-      </div>
-      <span class="freq-badge">IA</span>
+  <section class="stats-grid four">
+    <article class="stat-card"><span>Alunos</span><strong>{{ total_alunos }}</strong><small>ativos na turma</small></article>
+    <article class="stat-card"><span>Presentes</span><strong>{{ total_presentes }}</strong><small>neste lançamento</small></article>
+    <article class="stat-card"><span>Ausências</span><strong>{{ total_faltas }}</strong><small>F + FJ</small></article>
+    <article class="stat-card"><span>Aula</span><strong>{{ aula_numero }}</strong><small>{{ data_aula|date:"d/m/Y" }}</small></article>
+  </section>
+
+  <form method="post" class="panel stack-lg">{% csrf_token %}
+    <div class="panel-heading split">
+      <div><h2>Dados da chamada</h2><p>Selecione a disciplina e identifique o horário desta aula.</p></div>
+      <div class="form-actions"><button class="btn-primary" type="submit">Salvar chamada</button></div>
+    </div>
+    <div class="form-grid three">
+      <label class="field">Disciplina
+        <select name="disciplina" required>
+          {% for item in disciplinas %}<option value="{{ item.id }}" {% if disciplina and item.id == disciplina.id %}selected{% endif %}>{{ item.nome }}</option>{% empty %}<option value="">Nenhuma disciplina vinculada</option>{% endfor %}
+        </select>
+      </label>
+      <label class="field">Data<input type="date" name="data" value="{{ data_aula|date:'Y-m-d' }}" required></label>
+      <label class="field">Aula/horário<input type="number" name="aula_numero" min="1" max="20" value="{{ aula_numero }}" required></label>
     </div>
 
-    <form method="POST">
-      {% csrf_token %}
-
-      <div class="freq-table-wrap">
-        <table class="freq-table">
-          <thead>
-            <tr>
-              <th>Aluno</th>
-              <th>Presença</th>
-              <th>Status IA</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for aluno in alunos %}
-              <tr>
-                <td>
-                  <div class="freq-student">
-                    <span class="freq-avatar">{{ aluno.nome|slice:":1" }}</span>
-                    <span class="freq-student-name">
-                      <strong>{{ aluno.nome }}</strong>
-                      <small>Aluno matriculado</small>
-                    </span>
-                  </div>
-                </td>
-                <td class="freq-presence-cell">
-                  <label class="freq-check-label">
-                    <input type="checkbox" name="aluno_{{ aluno.id }}" checked>
-                    Presente
-                  </label>
-                </td>
-                <td>
-                  <span class="freq-status">✓ Monitorado</span>
-                </td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td colspan="3" class="freq-empty">
-                  Nenhum aluno encontrado nesta turma. Cadastre os alunos na gestão para fazer a chamada.
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="freq-actions">
-        <button type="submit" class="freq-save-btn">💾 Salvar chamada</button>
-      </div>
-    </form>
-  </section>
+    {% if disciplina %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Aluno</th><th>Matrícula</th><th>Status</th><th>Observação</th></tr></thead>
+        <tbody>
+          {% for item in alunos_linhas %}
+          <tr>
+            <td><strong>{{ item.aluno.nome }}</strong></td>
+            <td>{{ item.aluno.matricula }}</td>
+            <td>
+              <select name="status_{{ item.aluno.id }}" aria-label="Frequência de {{ item.aluno.nome }}">
+                <option value="P" {% if item.status == 'P' %}selected{% endif %}>Presença</option>
+                <option value="F" {% if item.status == 'F' %}selected{% endif %}>Falta</option>
+                <option value="FJ" {% if item.status == 'FJ' %}selected{% endif %}>Falta justificada</option>
+              </select>
+            </td>
+            <td><input type="text" name="obs_{{ item.aluno.id }}" value="{{ item.observacao|default:'' }}" placeholder="Opcional"></td>
+          </tr>
+          {% empty %}<tr><td colspan="4" class="empty-cell">Nenhum aluno ativo nesta turma.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="alert alert-info">A gestão precisa vincular pelo menos uma disciplina a esta turma antes da chamada.</div>
+    {% endif %}
+  </form>
 </div>
 {% endblock %}
